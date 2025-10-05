@@ -108,7 +108,7 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
 
   return (
     <div className="mt-3 border-t border-zinc-700/50 pt-4">
-      <div className="bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 rounded-lg p-4 border border-zinc-700/30">
+      <div className="bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 rounded-lg p-3 sm:p-4 border border-zinc-700/30">
         <div className="flex items-center mb-4">
           <span className="text-2xl mr-2">📊</span>
           <h2 className="text-lg font-bold text-fuchsia-400">Your Day Review</h2>

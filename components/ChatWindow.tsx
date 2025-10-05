@@ -146,7 +146,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-6">
+    <div className="flex-1 overflow-y-auto px-2 py-4 sm:px-4 space-y-6">
       {messages.map((message) => {
         return (
           <div
@@ -164,7 +164,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
             </div>
             <div className="flex flex-col">
               <div
-                className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl ${
+                className={`max-w-[280px] sm:max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl ${
                   message.sender === 'user'
                     ? 'bg-fuchsia-600 text-white rounded-br-none'
                     : 'bg-zinc-800 text-gray-200 rounded-bl-none'

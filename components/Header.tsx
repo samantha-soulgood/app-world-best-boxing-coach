@@ -12,7 +12,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ currentUser, onLogout }) => {
   return (
     <header className="flex-shrink-0 bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-700/50 shadow-lg">
-      <div className="max-w-4xl mx-auto p-4 flex items-center justify-between">
+      <div className="max-w-4xl mx-auto px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
             <Avatar />
             <div>
