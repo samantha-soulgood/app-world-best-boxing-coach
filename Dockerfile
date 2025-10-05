@@ -5,7 +5,6 @@ WORKDIR /app
 
 # Copy package files first for better caching
 COPY package.json ./
-COPY package-lock.json* ./
 
 # Install frontend dependencies
 RUN npm install
@@ -33,7 +32,6 @@ WORKDIR /app
 
 # Copy server package files
 COPY server/package.json ./
-COPY server/package-lock.json* ./
 
 # Install server dependencies
 RUN npm install
