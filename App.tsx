@@ -792,13 +792,14 @@ const App: React.FC = () => {
   return (
     <>
       <div className="flex flex-col h-[100dvh] bg-zinc-900 text-gray-100 font-sans">
-        <Header currentUser={currentUser.name} onLogout={handleLogout} />
+        <Header currentUser={currentUser} onLogout={handleLogout} />
         <div className="flex-1 flex flex-col max-w-4xl w-full mx-auto px-2 sm:px-4 pb-4 overflow-hidden">
           <ChatWindow
             messages={displayedMessages}
             isLoading={isLoading}
             isGeneratingWorkout={isGeneratingWorkout}
             onStartWorkout={handleStartWorkout}
+            currentUser={currentUser}
           />
           <div className="flex-shrink-0 pt-4">
               <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isTopicsVisible ? 'max-h-48' : 'max-h-0'}`}>

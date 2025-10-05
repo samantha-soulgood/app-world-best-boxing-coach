@@ -1,17 +1,20 @@
 
 import React, { useRef, useEffect } from 'react';
-import type { Message, WorkoutPlan } from '../types';
+import type { Message, WorkoutPlan, User } from '../types';
 import { LoadingIcon, PlayIcon } from './icons';
 import WorkoutDisplay from './WorkoutDisplay';
+import Avatar from './Avatar';
+import UserAvatar from './UserAvatar';
 
 interface ChatWindowProps {
   messages: Message[];
   isLoading: boolean;
   isGeneratingWorkout?: boolean;
   onStartWorkout: (plan: WorkoutPlan, messageId: string) => void;
+  currentUser: User | null;
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGeneratingWorkout, onStartWorkout }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGeneratingWorkout, onStartWorkout, currentUser }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,6 +37,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
               message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'
             }`}
           >
+            <div className="flex-shrink-0">
+              {message.sender === 'user' && currentUser ? (
+                <UserAvatar user={currentUser} size="w-8 h-8" />
+              ) : (
+                <Avatar size="w-8 h-8" />
+              )}
+            </div>
             <div className="flex flex-col">
               <div
                 className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl ${
@@ -59,7 +69,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
               </div>
               {message.sender === 'sammi' && message.workoutPlan && (
                   <button
-                      onClick={() => onStartWorkout(message.workoutPlan!, message.id)}
+                      onClick={() => onStartWorkout(message.workoutPlan, message.id)}
                       className="mt-2 self-start text-sm font-bold text-white bg-green-600 rounded-lg px-3 py-2 hover:bg-green-500 transition-all duration-200 flex items-center justify-center gap-2 animate-fade-in"
                   >
                       <PlayIcon className="w-5 h-5" />
@@ -72,6 +82,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
       })}
       {isLoading && (
         <div className="flex items-end gap-3 flex-row">
+            <div className="flex-shrink-0">
+              <Avatar size="w-8 h-8" />
+            </div>
             <div className="bg-zinc-800 text-gray-200 rounded-2xl rounded-bl-none p-4 inline-flex items-center justify-center gap-2">
                 <LoadingIcon />
                 {isGeneratingWorkout && (

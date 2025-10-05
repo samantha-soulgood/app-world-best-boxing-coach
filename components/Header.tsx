@@ -1,9 +1,11 @@
 
 import React from 'react';
 import Avatar from './Avatar';
+import UserAvatar from './UserAvatar';
+import type { User } from '../types';
 
 interface HeaderProps {
-    currentUser: string | null;
+    currentUser: User | null;
     onLogout: () => void;
 }
 
@@ -20,7 +22,10 @@ const Header: React.FC<HeaderProps> = ({ currentUser, onLogout }) => {
         </div>
         {currentUser && (
             <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-300 hidden sm:block">Welcome, <span className="font-bold text-white">{currentUser}</span></span>
+                <div className="flex items-center space-x-3">
+                    <UserAvatar user={currentUser} size="w-8 h-8" />
+                    <span className="text-sm text-gray-300 hidden sm:block">Welcome, <span className="font-bold text-white">{currentUser.name}</span></span>
+                </div>
                 <button
                     onClick={onLogout}
                     className="text-sm font-medium text-fuchsia-300 bg-zinc-800/80 border border-zinc-700 rounded-lg px-4 py-2 hover:bg-zinc-700 hover:text-fuchsia-200 transition-all duration-200"
