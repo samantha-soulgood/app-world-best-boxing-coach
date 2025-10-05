@@ -192,9 +192,12 @@ const App: React.FC = () => {
   const initChat = (historyMessages: Message[], userProfile?: OnboardingData) => {
     try {
       if (!process.env.API_KEY) {
+        console.error("API_KEY environment variable not set");
+        console.error("Available env vars:", Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')));
         throw new Error("API_KEY environment variable not set");
       }
       if (!aiRef.current) {
+        console.log("Initializing GoogleGenAI with API key length:", process.env.API_KEY.length);
         aiRef.current = new GoogleGenAI({ apiKey: process.env.API_KEY });
       }
       const history = historyMessages.map(msg => ({
@@ -519,6 +522,9 @@ const App: React.FC = () => {
   const sendMessage = useCallback(async (text: string, sender: Sender) => {
     if (!text.trim()) return;
 
+    console.log("Sending message:", { text: text.trim(), sender, timestamp: Date.now() });
+    console.log("User agent:", navigator.userAgent);
+
     const userMessage: Message = { id: Date.now().toString(), text, sender, timestamp: Date.now() };
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
@@ -646,10 +652,27 @@ const App: React.FC = () => {
         }
 
     } catch (e) {
-      console.error(e);
-      const errorMessage = "Sorry, champ. I'm having a bit of trouble connecting. Let's take a quick breather and try again in a moment.";
+      console.error("Send message error:", e);
+      console.error("Error details:", {
+        name: e.name,
+        message: e.message,
+        stack: e.stack,
+        userAgent: navigator.userAgent
+      });
+      
+      let errorMessage = "Sorry, champ. I'm having a bit of trouble connecting. Let's take a quick breather and try again in a moment.";
+      
+      // Provide more specific error messages for mobile users
+      if (e.message?.includes('fetch')) {
+        errorMessage = "Network connection issue. Please check your internet connection and try again.";
+      } else if (e.message?.includes('API') || e.message?.includes('key')) {
+        errorMessage = "API configuration issue. Please refresh the page and try again.";
+      } else if (e.message?.includes('CORS')) {
+        errorMessage = "Browser security issue. Please try refreshing the page.";
+      }
+      
       setError(errorMessage);
-       const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
+      const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
       setMessages(prev => [...prev, errorResponse]);
     } finally {
       setIsLoading(false);
