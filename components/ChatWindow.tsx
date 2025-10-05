@@ -30,6 +30,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
 
   // Helper function to detect if a message contains a nutrition plan
   const isNutritionPlan = (text: string): boolean => {
+    // Skip if it contains Python code snippets
+    if (text.includes('print(createNutritionPlan') || text.includes('```python') || text.includes('```')) {
+      return false;
+    }
+    
     const nutritionKeywords = [
       'breakfast', 'lunch', 'dinner', 'meal plan', 'nutrition plan',
       '### breakfast', '### lunch', '### dinner', '## monday', '## tuesday',
@@ -39,6 +44,21 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
     const lowerText = text.toLowerCase();
     return nutritionKeywords.some(keyword => lowerText.includes(keyword)) && 
            (lowerText.includes('###') || lowerText.includes('##'));
+  };
+
+  // Helper function to extract nutrition plan content from text
+  const extractNutritionPlan = (text: string): string => {
+    // If the text contains a Python code snippet, try to extract the plan content
+    if (text.includes('print(createNutritionPlan')) {
+      // Look for the plan content after the opening triple quotes
+      const planMatch = text.match(/plan='''\s*([\s\S]*?)'''/);
+      if (planMatch && planMatch[1]) {
+        return planMatch[1].trim();
+      }
+    }
+    
+    // If it's already a clean nutrition plan, return as is
+    return text;
   };
 
   // Helper function to render message content
@@ -55,7 +75,28 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
       );
     }
     
-    if (message.sender === 'sammi' && isNutritionPlan(message.text)) {
+    // Check if this contains a nutrition plan (either clean format or Python code snippet)
+    if (message.sender === 'sammi' && (isNutritionPlan(message.text) || message.text.includes('print(createNutritionPlan'))) {
+      const extractedPlan = extractNutritionPlan(message.text);
+      
+      // If we extracted a plan from Python code, show intro text + formatted plan
+      if (message.text.includes('print(createNutritionPlan') && extractedPlan !== message.text) {
+        // Extract the intro text before the Python code
+        const introMatch = message.text.match(/^(.*?)(?=print\(createNutritionPlan)/s);
+        const introText = introMatch ? introMatch[1].trim() : "Here's your nutrition plan:";
+        
+        return (
+          <>
+            <div
+              className="prose"
+              dangerouslySetInnerHTML={createMarkup(introText)}
+            />
+            <NutritionPlanDisplay planText={extractedPlan} />
+          </>
+        );
+      }
+      
+      // For clean nutrition plans, show both markdown and formatted version
       return (
         <>
           <div
