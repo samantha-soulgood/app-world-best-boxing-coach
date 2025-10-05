@@ -4,6 +4,7 @@ import type { Message, WorkoutPlan, User } from '../types';
 import { LoadingIcon, PlayIcon } from './Icons';
 import WorkoutDisplay from './WorkoutDisplay';
 import NutritionPlanDisplay from './NutritionPlanDisplay';
+import DayReviewDisplay from './DayReviewDisplay';
 import Avatar from './Avatar';
 import UserAvatar from './UserAvatar';
 
@@ -46,13 +47,27 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
            (lowerText.includes('###') || lowerText.includes('##'));
   };
 
+  // Helper function to detect if a message contains a day review
+  const isDayReview = (text: string): boolean => {
+    const reviewKeywords = [
+      'day\'s activities', 'what you did well', 'fired up for tomorrow',
+      'review of my day', 'today\'s progress', 'daily review',
+      'great job today', 'tomorrow\'s plan', 'keep it up',
+      'last 24 hours', 'your day\'s activities'
+    ];
+    
+    const lowerText = text.toLowerCase();
+    return reviewKeywords.some(keyword => lowerText.includes(keyword));
+  };
+
   // Helper function to extract nutrition plan content from text
   const extractNutritionPlan = (text: string): string => {
     // If the text contains a Python code snippet, try to extract the plan content
     if (text.includes('print(createNutritionPlan')) {
       // Look for the plan content after the opening triple quotes
-      const planMatch = text.match(/plan='''\s*([\s\S]*?)'''/);
-      if (planMatch && planMatch[1]) {
+      const planRegex = /plan='''\s*([\s\S]*?)'''/;
+      const planMatch = planRegex.exec(text);
+      if (planMatch?.[1]) {
         return planMatch[1].trim();
       }
     }
@@ -75,6 +90,19 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
       );
     }
     
+    // Check if this contains a day review
+    if (message.sender === 'sammi' && isDayReview(message.text)) {
+      return (
+        <>
+          <div
+            className="prose"
+            dangerouslySetInnerHTML={createMarkup(message.text)}
+          />
+          <DayReviewDisplay reviewText={message.text} />
+        </>
+      );
+    }
+    
     // Check if this contains a nutrition plan (either clean format or Python code snippet)
     if (message.sender === 'sammi' && (isNutritionPlan(message.text) || message.text.includes('print(createNutritionPlan'))) {
       const extractedPlan = extractNutritionPlan(message.text);
@@ -82,8 +110,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
       // If we extracted a plan from Python code, show intro text + formatted plan
       if (message.text.includes('print(createNutritionPlan') && extractedPlan !== message.text) {
         // Extract the intro text before the Python code
-        const introMatch = message.text.match(/^(.*?)(?=print\(createNutritionPlan)/s);
-        const introText = introMatch ? introMatch[1].trim() : "Here's your nutrition plan:";
+        const introRegex = /^(.*?)(?=print\(createNutritionPlan)/s;
+        const introMatch = introRegex.exec(message.text);
+        const introText = introMatch?.[1]?.trim() ?? "Here's your nutrition plan:";
         
         return (
           <>
