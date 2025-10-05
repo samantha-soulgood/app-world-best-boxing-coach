@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import type { Message, WorkoutPlan, User } from '../types';
 import { LoadingIcon, PlayIcon } from './icons';
 import WorkoutDisplay from './WorkoutDisplay';
+import NutritionPlanDisplay from './NutritionPlanDisplay';
 import Avatar from './Avatar';
 import UserAvatar from './UserAvatar';
 
@@ -25,6 +26,53 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
     // Use marked from the window object to parse markdown.
     const rawMarkup = window.marked.parse(text);
     return { __html: rawMarkup };
+  };
+
+  // Helper function to detect if a message contains a nutrition plan
+  const isNutritionPlan = (text: string): boolean => {
+    const nutritionKeywords = [
+      'breakfast', 'lunch', 'dinner', 'meal plan', 'nutrition plan',
+      '### breakfast', '### lunch', '### dinner', '## monday', '## tuesday',
+      '## wednesday', '## thursday', '## friday', '## saturday', '## sunday'
+    ];
+    
+    const lowerText = text.toLowerCase();
+    return nutritionKeywords.some(keyword => lowerText.includes(keyword)) && 
+           (lowerText.includes('###') || lowerText.includes('##'));
+  };
+
+  // Helper function to render message content
+  const renderMessageContent = (message: Message) => {
+    if (message.sender === 'sammi' && message.workoutPlan) {
+      return (
+        <>
+          <div
+            className="prose"
+            dangerouslySetInnerHTML={createMarkup(message.workoutPlan.summary)}
+          />
+          <WorkoutDisplay plan={message.workoutPlan} />
+        </>
+      );
+    }
+    
+    if (message.sender === 'sammi' && isNutritionPlan(message.text)) {
+      return (
+        <>
+          <div
+            className="prose"
+            dangerouslySetInnerHTML={createMarkup(message.text)}
+          />
+          <NutritionPlanDisplay planText={message.text} />
+        </>
+      );
+    }
+    
+    return (
+      <div
+        className="prose"
+        dangerouslySetInnerHTML={createMarkup(message.text)}
+      />
+    );
   };
 
   return (
@@ -52,20 +100,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
                     : 'bg-zinc-800 text-gray-200 rounded-bl-none'
                 }`}
               >
-                 {message.sender === 'sammi' && message.workoutPlan ? (
-                  <>
-                    <div
-                      className="prose"
-                      dangerouslySetInnerHTML={createMarkup(message.workoutPlan.summary)}
-                    />
-                    <WorkoutDisplay plan={message.workoutPlan} />
-                  </>
-                ) : (
-                  <div
-                    className="prose"
-                    dangerouslySetInnerHTML={createMarkup(message.text)}
-                  />
-                )}
+                {renderMessageContent(message)}
               </div>
               {message.sender === 'sammi' && message.workoutPlan && (
                   <button
