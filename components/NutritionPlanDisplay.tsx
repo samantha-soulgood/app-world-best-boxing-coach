@@ -9,7 +9,7 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
   const formatNutritionPlan = (text: string) => {
     // Split by lines and process each line
     const lines = text.split('\n');
-    const formattedElements: JSX.Element[] = [];
+    const formattedElements: React.ReactElement[] = [];
     let keyCounter = 0;
 
     for (const [, line] of lines.entries()) {

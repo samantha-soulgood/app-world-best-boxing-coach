@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Video } from '../types';
-import { CloseIcon } from './icons';
+import { CloseIcon } from './Icons';
 
 interface VideoPlayerProps {
   video: Video;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { JournalEntry } from '../types';
-import { CloseIcon, JournalIcon } from './icons';
+import { CloseIcon, JournalIcon } from './Icons';
 
 interface JournalProps {
   entries: JournalEntry[];

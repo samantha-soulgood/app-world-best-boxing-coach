@@ -13,7 +13,7 @@ import VideoLibrary from './components/VideoLibrary';
 import VideoPlayer from './components/VideoPlayer';
 import TopicButton from './components/TopicButton';
 import Journal from './components/Journal';
-import { ChevronDownIcon, ChevronUpIcon } from './components/icons';
+import { ChevronDownIcon, ChevronUpIcon } from './components/Icons';
 import { parseWorkoutJson } from './utils';
 
 // Add a declaration for the google object from the GSI script

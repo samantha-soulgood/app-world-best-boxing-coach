@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PlayIcon, PauseIcon } from './icons';
+import { PlayIcon, PauseIcon } from './Icons';
 
 interface TimerProps {
   initialSeconds: number;

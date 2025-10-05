@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import type { WorkoutPlan, WorkoutPlan_Phase, WorkoutPlan_Exercise } from '../types';
 import Timer from './Timer';
-import { CloseIcon, NextIcon, PrevIcon, PlayIcon, PauseIcon } from './icons';
+import { CloseIcon, NextIcon, PrevIcon, PlayIcon, PauseIcon } from './Icons';
 import { parseDurationToSeconds } from '../utils';
 import WorkoutFeedback from './WorkoutFeedback';
 

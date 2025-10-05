@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import type { Message, WorkoutPlan, User } from '../types';
-import { LoadingIcon, PlayIcon } from './icons';
+import { LoadingIcon, PlayIcon } from './Icons';
 import WorkoutDisplay from './WorkoutDisplay';
 import NutritionPlanDisplay from './NutritionPlanDisplay';
 import Avatar from './Avatar';

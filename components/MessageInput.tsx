@@ -1,6 +1,6 @@
 
 import React, { useState, KeyboardEvent } from 'react';
-import { SendIcon } from './icons';
+import { SendIcon } from './Icons';
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;

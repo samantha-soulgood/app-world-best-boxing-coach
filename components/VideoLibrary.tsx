@@ -1,7 +1,7 @@
 import React from 'react';
 import { videoLibrary } from '../videos';
 import type { Video } from '../types';
-import { CloseIcon, FilmIcon, PlayIcon } from './icons';
+import { CloseIcon, FilmIcon, PlayIcon } from './Icons';
 
 interface VideoLibraryProps {
   onClose: () => void;
