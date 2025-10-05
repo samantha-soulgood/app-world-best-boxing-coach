@@ -1,54 +1,59 @@
-export enum Role {
-  User = 'user',
-  Model = 'model',
-}
+export type Sender = 'user' | 'sammi';
 
 export interface Message {
-  role: Role;
+  id: string;
   text: string;
+  sender: Sender;
+  timestamp: number;
+  workoutPlan?: WorkoutPlan;
+  isWorkoutCompleted?: boolean;
+  rpe?: number; // Rating of Perceived Exertion
+  feedback?: string; // User feedback text
 }
 
-export interface SimpleExercise {
-  exercise: string;
-  youtubeVideoId: string;
-  searchQuery: string;
-  duration: number; // duration in seconds
-  rest?: number;    // rest after exercise in seconds
+export interface User {
+  id: string;
+  name: string;
+  profile?: OnboardingData;
 }
 
-export interface Exercise extends SimpleExercise {
-  rest: number;     // rest after exercise in seconds
+export interface OnboardingData {
+  pronouns: string;
+  age: string;
+  goals: string;
+  injuries: string;
+  equipment: string;
+  activityLevel: string;
 }
 
-export interface Circuit {
-  repeat: number;
-  restBetweenSets: number;
-  exercises: Exercise[];
+export interface WorkoutPlan_Exercise {
+  name: string;
+  sets: number;
+  reps: string;
+  notes?: string;
+  duration: string;
 }
 
-export interface Workout {
-  day: number;
-  title: string;
-  description: string;
-  warmup: SimpleExercise[];
-  main: Circuit[];
-  core: Exercise[];
-  cooldown: SimpleExercise[];
+export interface WorkoutPlan_Phase {
+  name: string;
+  exercises: WorkoutPlan_Exercise[];
 }
 
 export interface WorkoutPlan {
-  workouts: Workout[];
+  summary: string;
+  workout: {
+    phases: WorkoutPlan_Phase[];
+  };
 }
 
-export type WorkoutPhase = 'Warm-up-Work' | 'Warm-up-Rest' | 'Main-Work' | 'Main-Rest' | 'Circuit-Rest' | 'Core-Work' | 'Core-Rest' | 'Cool-down-Work' | 'Cool-down-Rest' | 'Finished';
+export interface Video {
+  id: string;
+  title: string;
+  watchUrl: string;
+}
 
-export interface WorkoutSession {
-  workout: Workout;
-  phase: WorkoutPhase;
-  phaseIndex: number;      // index of exercise within a phase (warmup, core, cooldown, or circuit)
-  circuitIndex: number;    // index of the current circuit in the main workout
-  circuitRepetition: number; // current repetition of the circuit
-  timer: number;
-  totalDuration: number;
-  isPaused: boolean;
+export interface JournalEntry {
+  id: string;
+  text: string;
+  timestamp: number;
 }
