@@ -28,10 +28,20 @@ const publicPath = path.join(__dirname,'public');
 if (!apiKey) {
     // Only log an error, don't exit. The server will serve apps without proxy functionality
     console.error("Warning: GEMINI_API_KEY or API_KEY environment variable is not set! Proxy functionality will be disabled.");
+    console.error("Available environment variables:", Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')));
 }
 else {
-  console.log("API KEY FOUND (proxy will use this)")
+  console.log("API KEY FOUND (proxy will use this)");
+  console.log("API Key length:", apiKey.length);
 }
+
+// CORS middleware for all responses
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Goog-Api-Key');
+    next();
+});
 
 // Limit body size to 50mb
 app.use(express.json({ limit: '50mb' }));
@@ -64,6 +74,7 @@ app.use('/api-proxy', async (req, res, next) => {
 
     // Handle OPTIONS request for CORS preflight
     if (req.method === 'OPTIONS') {
+        console.log("CORS preflight request from:", req.headers.origin || req.headers['user-agent']);
         res.setHeader('Access-Control-Allow-Origin', '*'); // Adjust as needed for security
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Goog-Api-Key');
