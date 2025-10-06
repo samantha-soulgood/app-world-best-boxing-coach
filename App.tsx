@@ -224,8 +224,6 @@ const App: React.FC = () => {
       }
 
 
-      const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
-      
       const chatConfig: any = {
         model: 'gemini-2.5-flash',
         config: {
