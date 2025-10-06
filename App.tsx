@@ -237,13 +237,15 @@ const App: React.FC = () => {
         history: history,
       };
       
-      // For mobile Safari, configure non-streaming mode
+      // For mobile Safari, use direct API calls instead of the client library
       if (isMobileSafari) {
+        console.log("Mobile Safari detected - using direct API approach");
+        // We'll handle mobile Safari differently in the sendMessage function
+        chatRef.current = null; // Don't use the client library for mobile Safari
+      } else {
         chatConfig.config.streaming = false;
-        console.log("Configuring chat for non-streaming mode (mobile Safari)");
+        chatRef.current = aiRef.current.chats.create(chatConfig);
       }
-      
-      chatRef.current = aiRef.current.chats.create(chatConfig);
       setError(null);
     } catch (e) {
       console.error(e);
@@ -542,6 +544,36 @@ const App: React.FC = () => {
           return null;
       }
   }, []);
+
+  // Direct API call for mobile Safari to avoid ReadableStream issues
+  const sendDirectApiCall = async (text: string): Promise<any> => {
+    const response = await fetch('/api-proxy/v1beta/models/gemini-2.5-flash:generateContent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text }]
+        }],
+        generationConfig: {
+          temperature: 0.9,
+          topK: 1,
+          topP: 1,
+          maxOutputTokens: 2048,
+        },
+        tools: [{
+          functionDeclarations: [createWorkoutPlanFunction, findBoxingVideoFunction, showVideoLibraryFunction, createNutritionPlanFunction]
+        }]
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
+  };
   
   const sendMessage = useCallback(async (text: string, sender: Sender) => {
     if (!text.trim()) return;
@@ -559,16 +591,30 @@ const App: React.FC = () => {
     setError(null);
 
     try {
-        if (!chatRef.current) throw new Error("Chat session not initialized.");
-
-        // Add timeout for mobile Safari
-        const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Request timeout - mobile Safari may have network restrictions')), 30000);
-        });
-
-        const responsePromise = chatRef.current.sendMessage({ message: text });
+        const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
         
-        const response = await Promise.race([responsePromise, timeoutPromise]);
+        let response: any;
+        
+        if (isMobileSafari) {
+            console.log("Using direct API call for mobile Safari");
+            // Use direct API call for mobile Safari
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Request timeout - mobile Safari may have network restrictions')), 30000);
+            });
+
+            const responsePromise = sendDirectApiCall(text);
+            response = await Promise.race([responsePromise, timeoutPromise]);
+        } else {
+            // Use normal client library for other browsers
+            if (!chatRef.current) throw new Error("Chat session not initialized.");
+
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Request timeout - mobile Safari may have network restrictions')), 30000);
+            });
+
+            const responsePromise = chatRef.current.sendMessage({ message: text });
+            response = await Promise.race([responsePromise, timeoutPromise]);
+        }
         const workoutToolCall = response.functionCalls?.find(fc => fc.name === 'createWorkoutPlan');
         const videoToolCall = response.functionCalls?.find(fc => fc.name === 'findBoxingVideo');
         const videoLibraryToolCall = response.functionCalls?.find(fc => fc.name === 'showVideoLibrary');
