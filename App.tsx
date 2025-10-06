@@ -589,6 +589,14 @@ const App: React.FC = () => {
     try {
         const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
         
+        console.log("Mobile Safari Detection:", {
+            userAgent: navigator.userAgent,
+            isMobileSafari,
+            isIPhone: /iPhone/.test(navigator.userAgent),
+            isSafari: /Safari/.test(navigator.userAgent),
+            isChrome: /Chrome|CriOS|FxiOS/.test(navigator.userAgent)
+        });
+        
         let response: any;
         
         if (isMobileSafari) {
