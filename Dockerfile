@@ -1,26 +1,18 @@
-# Simplified single-stage build to avoid corruption issues
-FROM node:22
+FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY package.json package-lock.json* ./
+# Copy everything
+COPY . .
 
-# Install dependencies
+# Install all dependencies
 RUN npm install
 
-# Copy source code (including server files)
-COPY . ./
+# Install server dependencies
+RUN cd server && npm install
 
 # Build the frontend
 RUN npm run build
-
-# Install server dependencies
-WORKDIR /app/server
-RUN npm install
-
-# Go back to app root
-WORKDIR /app
 
 EXPOSE 3000
 
