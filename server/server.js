@@ -349,6 +349,14 @@ const server = app.listen(port, () => {
     console.log(`WebSocket proxy active on /api-proxy/**`);
 });
 
+server.on('error', (error) => {
+    console.error('Server startup error:', error);
+    if (error.code === 'EADDRINUSE') {
+        console.error(`Port ${port} is already in use. Trying to find alternative...`);
+    }
+    process.exit(1);
+});
+
 // Create WebSocket server and attach it to the HTTP server
 const wss = new WebSocket.Server({ noServer: true });
 
