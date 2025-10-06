@@ -16,9 +16,9 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const externalApiBaseUrl = 'https://api.openai.com';
-// Support OpenAI API key
-const apiKey = process.env.OPENAI_API_KEY || process.env.API_KEY;
+// Support both OpenAI and Groq APIs
+const externalApiBaseUrl = process.env.GROQ_API_KEY ? 'https://api.groq.com' : 'https://api.openai.com';
+const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY || process.env.API_KEY;
 
 const staticPath = path.join(__dirname, '..', 'dist');
 const publicPath = path.join(__dirname,'public');

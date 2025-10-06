@@ -506,7 +506,7 @@ const App: React.FC = () => {
     console.log("sendDirectApiCall: Request text:", text);
     
     const requestBody = {
-      model: "gpt-3.5-turbo",
+      model: "llama-3.1-70b-versatile", // Groq model - much faster and free tier available
       messages: [
         {
           role: "system",
