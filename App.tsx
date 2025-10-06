@@ -192,17 +192,8 @@ const App: React.FC = () => {
 
   const initChat = (historyMessages: Message[], userProfile?: OnboardingData) => {
     try {
-      if (!process.env.API_KEY) {
-        console.error("API_KEY environment variable not set");
-        console.error("Available env vars:", Object.keys(process.env).filter(key => key.includes('API') || key.includes('OPENAI')));
-        throw new Error("API_KEY environment variable not set");
-      }
-      
+      // OpenAI uses direct API calls via server proxy - no client-side API key needed
       console.log("InitChat - OpenAI integration ready");
-      console.log("InitChat - API Key available:", !!process.env.API_KEY);
-      console.log("InitChat - API Key length:", process.env.API_KEY?.length || 0);
-      
-      // OpenAI uses direct API calls - no client initialization needed
       setError(null);
       console.log("OpenAI chat initialized successfully");
     } catch (e) {
@@ -560,37 +551,22 @@ const App: React.FC = () => {
             title: 'How to do a Perfect Squat - Proper Form Tutorial',
             watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
           },
-          'squats': {
-            id: 'YaXPRqUwItQ',
-            title: 'How to do a Perfect Squat - Proper Form Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
-          },
-          'push ups': {
-            id: 'IODxDxX7oi4',
-            title: 'How to do Push-Ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
-          },
           'pushup': {
             id: 'IODxDxX7oi4',
             title: 'How to do Push-Ups - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
           },
-          'pushups': {
-            id: 'IODxDxX7oi4',
-            title: 'How to do Push-Ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
-          },
-          'planks': {
+          'plank': {
             id: 'ASdvN_XEl_c',
             title: 'How to do a Plank - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=ASdvN_XEl_c'
-          },        
-          'lunges': {
+          },
+          'lunge': {
             id: 'QOVaHwm-Q6U',
             title: 'How to do Lunges - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
           },
-          'burpees': {
+          'burpee': {
             id: 'TU8QYVCh0TI',
             title: 'How to do Burpees - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
@@ -605,30 +581,10 @@ const App: React.FC = () => {
             title: 'Beginner Yoga Flow',
             watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
           },
-          'stretching': {
+          'stretch': {
             id: 'g_tea8ZNk5A',
             title: 'Full Body Stretching Routine',
             watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'hand wrapping': {
-            id: 'dQw4w9WgXcQ',
-            title: 'How to Wrap Your Hands for Boxing - Step by Step Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-          },
-          'hand wraps': {
-            id: 'dQw4w9WgXcQ',
-            title: 'How to Wrap Your Hands for Boxing - Step by Step Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-          },
-          'wrap hands': {
-            id: 'dQw4w9WgXcQ',
-            title: 'How to Wrap Your Hands for Boxing - Step by Step Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-          },
-          'wrapping': {
-            id: 'dQw4w9WgXcQ',
-            title: 'How to Wrap Your Hands for Boxing - Step by Step Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
           }
         };
         
