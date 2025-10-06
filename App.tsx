@@ -196,10 +196,26 @@ const App: React.FC = () => {
         console.error("Available env vars:", Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')));
         throw new Error("API_KEY environment variable not set");
       }
-      // Check if we're on mobile Safari first
+      // Check if we're on mobile Safari first - more aggressive detection
       const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
       
-      if (!aiRef.current && !isMobileSafari) {
+      console.log("InitChat - Mobile Safari Detection:", {
+        userAgent: navigator.userAgent,
+        isMobileSafari,
+        isIPhone: /iPhone/.test(navigator.userAgent),
+        isSafari: /Safari/.test(navigator.userAgent),
+        isChrome: /Chrome|CriOS|FxiOS/.test(navigator.userAgent)
+      });
+      
+      // For mobile Safari, completely skip GoogleGenAI initialization
+      if (isMobileSafari) {
+        console.log("Mobile Safari detected - completely skipping GoogleGenAI initialization");
+        aiRef.current = null;
+        chatRef.current = null;
+        return; // Exit early for mobile Safari
+      }
+      
+      if (!aiRef.current) {
         console.log("Initializing GoogleGenAI with API key length:", process.env.API_KEY.length);
         
         const config: any = { 
@@ -208,9 +224,6 @@ const App: React.FC = () => {
         };
         
         aiRef.current = new GoogleGenAI(config);
-      } else if (isMobileSafari) {
-        console.log("Mobile Safari detected - skipping GoogleGenAI initialization");
-        aiRef.current = null;
       }
       const history = historyMessages.map(msg => ({
           role: msg.sender === 'user' ? 'user' : 'model' as const,
@@ -233,15 +246,9 @@ const App: React.FC = () => {
         history: history,
       };
       
-      // For mobile Safari, completely bypass the Google Generative AI client library
-      if (isMobileSafari) {
-        console.log("Mobile Safari detected - bypassing Google Generative AI client library completely");
-        chatRef.current = null; // Don't use the client library for mobile Safari
-        aiRef.current = null; // Don't initialize the client library at all for mobile Safari
-      } else {
-        chatConfig.config.streaming = false;
-        chatRef.current = aiRef.current.chats.create(chatConfig);
-      }
+      // Create chat session for non-mobile Safari browsers
+      chatConfig.config.streaming = false;
+      chatRef.current = aiRef.current.chats.create(chatConfig);
       setError(null);
     } catch (e) {
       console.error(e);
@@ -543,32 +550,46 @@ const App: React.FC = () => {
 
   // Direct API call for mobile Safari to avoid ReadableStream issues
   const sendDirectApiCall = async (text: string): Promise<any> => {
+    console.log("sendDirectApiCall: Making direct API call for mobile Safari");
+    console.log("sendDirectApiCall: Request text:", text);
+    
+    const requestBody = {
+      contents: [{
+        parts: [{ text }]
+      }],
+      generationConfig: {
+        temperature: 0.9,
+        topK: 1,
+        topP: 1,
+        maxOutputTokens: 2048,
+      },
+      tools: [{
+        functionDeclarations: [createWorkoutPlanFunction, findBoxingVideoFunction, showVideoLibraryFunction, createNutritionPlanFunction]
+      }]
+    };
+    
+    console.log("sendDirectApiCall: Request body:", JSON.stringify(requestBody, null, 2));
+    
     const response = await fetch('/api-proxy/v1beta/models/gemini-2.5-flash:generateContent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text }]
-        }],
-        generationConfig: {
-          temperature: 0.9,
-          topK: 1,
-          topP: 1,
-          maxOutputTokens: 2048,
-        },
-        tools: [{
-          functionDeclarations: [createWorkoutPlanFunction, findBoxingVideoFunction, showVideoLibraryFunction, createNutritionPlanFunction]
-        }]
-      })
+      body: JSON.stringify(requestBody)
     });
 
+    console.log("sendDirectApiCall: Response status:", response.status);
+    console.log("sendDirectApiCall: Response headers:", Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
-      throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error("sendDirectApiCall: Error response:", errorText);
+      throw new Error(`API call failed: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log("sendDirectApiCall: Success response:", result);
+    return result;
   };
   
   const sendMessage = useCallback(async (text: string, sender: Sender) => {
