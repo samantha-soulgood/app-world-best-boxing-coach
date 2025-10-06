@@ -506,7 +506,7 @@ const App: React.FC = () => {
     console.log("sendDirectApiCall: Request text:", text);
     
     const requestBody = {
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
