@@ -1,53 +1,31 @@
-# Stage 1: Build the frontend
-FROM node:22 AS frontend-builder
+# Simplified single-stage build to avoid corruption issues
+FROM node:22
 
 WORKDIR /app
 
 # Copy package files first for better caching
-COPY package.json ./
+COPY package.json package-lock.json* ./
 
-# Install frontend dependencies
+# Install dependencies
 RUN npm install
 
 # Copy source code
 COPY . ./
 
-# Don't create placeholder env file - use actual environment variables from deployment
-
-# Debug: Show what files we have
-RUN ls -la
-
-# Debug: Show package.json contents
-RUN cat package.json
-
-# Build the frontend with verbose output
-RUN npm run build --verbose
-
-# Stage 2: Build the server
-FROM node:22 AS server-builder
-
-WORKDIR /app
-
-# Copy server package files
-COPY server/package.json ./
+# Build the frontend
+RUN npm run build
 
 # Install server dependencies
+WORKDIR /app/server
+COPY server/package.json ./
 RUN npm install
 
 # Copy server source code
 COPY server/ ./
 
-# Stage 3: Final production image
-FROM node:22
-
+# Go back to app root
 WORKDIR /app
-
-# Copy server files from server builder
-COPY --from=server-builder /app ./
-
-# Copy built frontend assets from frontend builder
-COPY --from=frontend-builder /app/dist ./dist
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["node", "server/server.js"]
