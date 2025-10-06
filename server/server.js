@@ -125,11 +125,15 @@ app.use('/api-proxy', async (req, res, next) => {
         }
 
 
+        // Check if this is a mobile Safari request
+        const userAgent = req.headers['user-agent'] || '';
+        const isMobileSafari = /iPhone|iPad|iPod/.test(userAgent) && /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS/.test(userAgent);
+        
         const axiosConfig = {
             method: req.method,
             url: apiUrl,
             headers: outgoingHeaders,
-            responseType: 'stream',
+            responseType: isMobileSafari ? 'json' : 'stream', // Use json for mobile Safari to avoid ReadableStream
             validateStatus: function (status) {
                 return true; // Accept any status code, we'll pipe it through
             },
@@ -149,24 +153,30 @@ app.use('/api-proxy', async (req, res, next) => {
         }
         res.status(apiResponse.status);
 
+        if (isMobileSafari) {
+            // For mobile Safari, send JSON response directly
+            console.log('Sending JSON response for mobile Safari');
+            res.json(apiResponse.data);
+        } else {
+            // For other browsers, use streaming response
+            apiResponse.data.on('data', (chunk) => {
+                res.write(chunk);
+            });
 
-        apiResponse.data.on('data', (chunk) => {
-            res.write(chunk);
-        });
-
-        apiResponse.data.on('end', () => {
-            res.end();
-        });
-
-        apiResponse.data.on('error', (err) => {
-            console.error('Error during streaming data from target API:', err);
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Proxy error during streaming from target' });
-            } else {
-                // If headers already sent, we can't send a JSON error, just end the response.
+            apiResponse.data.on('end', () => {
                 res.end();
-            }
-        });
+            });
+
+            apiResponse.data.on('error', (err) => {
+                console.error('Error during streaming data from target API:', err);
+                if (!res.headersSent) {
+                    res.status(500).json({ error: 'Proxy error during streaming from target' });
+                } else {
+                    // If headers already sent, we can't send a JSON error, just end the response.
+                    res.end();
+                }
+            });
+        }
 
     } catch (error) {
         console.error('Proxy error before request to target API:', error);
