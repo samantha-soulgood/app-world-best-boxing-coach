@@ -133,7 +133,10 @@ app.use('/api-proxy', async (req, res, next) => {
             userAgent,
             isMobileSafari,
             method: req.method,
-            contentType: req.headers['content-type']
+            contentType: req.headers['content-type'],
+            apiUrl: apiUrl,
+            apiKeyPresent: !!apiKey,
+            apiKeyLength: apiKey ? apiKey.length : 0
         });
         
         const axiosConfig = {
@@ -215,6 +218,16 @@ app.use('/api-proxy', async (req, res, next) => {
 
     } catch (error) {
         console.error('Proxy error before request to target API:', error);
+        console.error('Error details:', {
+            message: error.message,
+            code: error.code,
+            syscall: error.syscall,
+            hostname: error.hostname,
+            port: error.port,
+            apiUrl: apiUrl,
+            apiKeyPresent: !!apiKey
+        });
+        
         if (!res.headersSent) {
             if (error.response) {
                 const errorData = {
@@ -223,8 +236,18 @@ app.use('/api-proxy', async (req, res, next) => {
                     details: error.response.data?.error?.details || null
                 };
                 res.status(error.response.status).json(errorData);
+            } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
+                res.status(503).json({ 
+                    error: 'Gemini API connectivity issue', 
+                    message: 'Unable to connect to Google Gemini API from Render servers',
+                    details: `Network error: ${error.code} - ${error.message}`
+                });
             } else {
-                res.status(500).json({ error: 'Proxy setup error', message: error.message });
+                res.status(500).json({ 
+                    error: 'Proxy setup error', 
+                    message: error.message,
+                    details: `Error code: ${error.code || 'UNKNOWN'}`
+                });
             }
         }
     }
