@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { GoogleGenAI, Chat, Type, FunctionDeclaration } from '@google/genai';
+// OpenAI integration - no client library needed, using direct API calls
 import type { Message, Sender, OnboardingData, User, WorkoutPlan, Video, JournalEntry } from './types';
 import { SAMMI_PERSONA } from './constants';
 import Header from './components/Header';
@@ -71,28 +71,28 @@ const pruneHistoryToLastNCompletedWorkouts = (messages: Message[], count: number
 // --- AI Schemas and Tool Definitions ---
 
 const workoutSchema = {
-    type: Type.OBJECT,
+    type: 'object',
     properties: {
-        summary: { type: Type.STRING, description: "A brief, encouraging string about the workout." },
+        summary: { type: 'string', description: "A brief, encouraging string about the workout." },
         workout: {
-            type: Type.OBJECT,
+            type: 'object',
             properties: {
                 phases: {
-                    type: Type.ARRAY,
+                    type: 'array',
                     items: {
-                        type: Type.OBJECT,
+                        type: 'object',
                         properties: {
-                            name: { type: Type.STRING },
+                            name: { type: 'string' },
                             exercises: {
-                                type: Type.ARRAY,
+                                type: 'array',
                                 items: {
-                                    type: Type.OBJECT,
+                                    type: 'object',
                                     properties: {
-                                        name: { type: Type.STRING },
-                                        sets: { type: Type.NUMBER },
-                                        reps: { type: Type.STRING },
-                                        duration: { type: Type.STRING },
-                                        notes: { type: Type.STRING }
+                                        name: { type: 'string' },
+                                        sets: { type: 'number' },
+                                        reps: { type: 'string' },
+                                        duration: { type: 'string' },
+                                        notes: { type: 'string' }
                                     },
                                     required: ['name', 'sets', 'reps', 'duration']
                                 }
@@ -108,28 +108,28 @@ const workoutSchema = {
     required: ['summary', 'workout']
 };
 
-const createWorkoutPlanFunction: FunctionDeclaration = {
+const createWorkoutPlanFunction = {
     name: 'createWorkoutPlan',
     description: 'Creates a detailed, boxing-inspired workout plan when the user explicitly asks for one.',
     parameters: {
-        type: Type.OBJECT,
+        type: 'object',
         properties: {
             duration: {
-                type: Type.STRING,
+                type: 'string',
                 description: 'The desired total duration of the workout, e.g., "30 minutes". If not specified, a standard workout of the day is created.'
             },
         },
     },
 };
 
-const findBoxingVideoFunction: FunctionDeclaration = {
+const findBoxingVideoFunction = {
     name: 'findBoxingVideo',
     description: 'Finds a relevant boxing tutorial video on YouTube when a user asks for one.',
     parameters: {
-        type: Type.OBJECT,
+        type: 'object',
         properties: {
             topic: {
-                type: Type.STRING,
+                type: 'string',
                 description: 'The specific boxing technique or topic the user wants a video for (e.g., "jab", "footwork", "uppercut").'
             }
         },
@@ -137,31 +137,31 @@ const findBoxingVideoFunction: FunctionDeclaration = {
     },
 };
 
-const showVideoLibraryFunction: FunctionDeclaration = {
+const showVideoLibraryFunction = {
     name: 'showVideoLibrary',
     description: 'Shows the user the library of pre-selected video drills and tutorials when they ask to see the video list or library.',
     parameters: {
-        type: Type.OBJECT,
+        type: 'object',
         properties: {},
     },
 };
 
-const createNutritionPlanFunction: FunctionDeclaration = {
+const createNutritionPlanFunction = {
     name: 'createNutritionPlan',
     description: 'Creates a personalized nutrition plan when a user asks for a diet plan, meal plan, or a structured list of what to eat.',
     parameters: {
-        type: Type.OBJECT,
+        type: 'object',
         properties: {
             goal: {
-                type: Type.STRING,
+                type: 'string',
                 description: 'The specific dietary goal, e.g., "weight loss", "muscle gain", "race day prep". Inferred from the user query.'
             },
             dietaryRestrictions: {
-                type: Type.STRING,
+                type: 'string',
                 description: 'Any specific dietary restrictions or preferences the user mentions, e.g., "vegetarian", "gluten-free", "allergic to nuts".'
             },
             duration: {
-                type: Type.STRING,
+                type: 'string',
                 description: 'The duration of the meal plan, e.g., "one day", "for the week". Defaults to a single day if not specified.'
             }
         },
@@ -176,8 +176,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isGeneratingWorkout, setIsGeneratingWorkout] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const chatRef = useRef<Chat | null>(null);
-  const aiRef = useRef<GoogleGenAI | null>(null);
+  // OpenAI integration - using direct API calls only
   const [activeWorkoutInfo, setActiveWorkoutInfo] = useState<{ plan: WorkoutPlan, messageId: string } | null>(null);
   const [showVideoLibrary, setShowVideoLibrary] = useState<boolean>(false);
   const [activeVideo, setActiveVideo] = useState<Video | null>(null);
@@ -193,67 +192,20 @@ const App: React.FC = () => {
     try {
       if (!process.env.API_KEY) {
         console.error("API_KEY environment variable not set");
-        console.error("Available env vars:", Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')));
+        console.error("Available env vars:", Object.keys(process.env).filter(key => key.includes('API') || key.includes('OPENAI')));
         throw new Error("API_KEY environment variable not set");
       }
-      // Check if we're on mobile Safari first - more aggressive detection
-      const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
       
-      console.log("InitChat - Mobile Safari Detection:", {
-        userAgent: navigator.userAgent,
-        isMobileSafari,
-        isIPhone: /iPhone/.test(navigator.userAgent),
-        isSafari: /Safari/.test(navigator.userAgent),
-        isChrome: /Chrome|CriOS|FxiOS/.test(navigator.userAgent)
-      });
+      console.log("InitChat - OpenAI integration ready");
+      console.log("InitChat - API Key available:", !!process.env.API_KEY);
+      console.log("InitChat - API Key length:", process.env.API_KEY?.length || 0);
       
-      // For mobile Safari, completely skip GoogleGenAI initialization
-      if (isMobileSafari) {
-        console.log("Mobile Safari detected - completely skipping GoogleGenAI initialization");
-        aiRef.current = null;
-        chatRef.current = null;
-        return; // Exit early for mobile Safari
-      }
-      
-      if (!aiRef.current) {
-        console.log("Initializing GoogleGenAI with API key length:", process.env.API_KEY.length);
-        
-        const config: any = { 
-          apiKey: process.env.API_KEY,
-          dangerouslyAllowBrowser: true
-        };
-        
-        aiRef.current = new GoogleGenAI(config);
-      }
-      const history = historyMessages.map(msg => ({
-          role: msg.sender === 'user' ? 'user' : 'model' as const,
-          parts: [{ text: msg.text }]
-      }));
-
-      let systemInstruction = SAMMI_PERSONA;
-      if (userProfile) {
-          const profileString = `\n\nThis is the user's profile. Refer to it to personalize your responses:\n- Activity Level: ${userProfile.activityLevel || 'Not specified'}\n- Pronouns: ${userProfile.pronouns || 'Not specified'}\n- Age: ${userProfile.age || 'Not specified'}\n- Injuries/Concerns: ${userProfile.injuries || 'None'}\n- Goals: ${userProfile.goals || 'Not specified'}\n- Equipment: ${userProfile.equipment || 'Bodyweight only'}`;
-          systemInstruction += profileString;
-      }
-
-
-      const chatConfig: any = {
-        model: 'gemini-2.5-flash',
-        config: {
-          systemInstruction: systemInstruction,
-          tools: [{ functionDeclarations: [createWorkoutPlanFunction, findBoxingVideoFunction, showVideoLibraryFunction, createNutritionPlanFunction] }]
-        },
-        history: history,
-      };
-      
-      // Create chat session for non-mobile Safari browsers
-      chatConfig.config.streaming = false;
-      chatRef.current = aiRef.current.chats.create(chatConfig);
+      // OpenAI uses direct API calls - no client initialization needed
       setError(null);
+      console.log("OpenAI chat initialized successfully");
     } catch (e) {
       console.error(e);
       setError("Failed to initialize the AI. Please check the API key.");
-      chatRef.current = null;
     }
   };
 
@@ -548,29 +500,43 @@ const App: React.FC = () => {
       }
   }, []);
 
-  // Direct API call for mobile Safari to avoid ReadableStream issues
+  // Direct API call for OpenAI
   const sendDirectApiCall = async (text: string): Promise<any> => {
-    console.log("sendDirectApiCall: Making direct API call for mobile Safari");
+    console.log("sendDirectApiCall: Making direct OpenAI API call");
     console.log("sendDirectApiCall: Request text:", text);
     
     const requestBody = {
-      contents: [{
-        parts: [{ text }]
-      }],
-      generationConfig: {
-        temperature: 0.9,
-        topK: 1,
-        topP: 1,
-        maxOutputTokens: 2048,
-      },
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: SAMMI_PERSONA
+        },
+        {
+          role: "user", 
+          content: text
+        }
+      ],
+      temperature: 0.9,
+      max_tokens: 2048,
       tools: [{
-        functionDeclarations: [createWorkoutPlanFunction, findBoxingVideoFunction, showVideoLibraryFunction, createNutritionPlanFunction]
+        type: "function",
+        function: createWorkoutPlanFunction
+      }, {
+        type: "function", 
+        function: findBoxingVideoFunction
+      }, {
+        type: "function",
+        function: showVideoLibraryFunction
+      }, {
+        type: "function",
+        function: createNutritionPlanFunction
       }]
     };
     
     console.log("sendDirectApiCall: Request body:", JSON.stringify(requestBody, null, 2));
     
-    const response = await fetch('/api-proxy/v1beta/models/gemini-2.5-flash:generateContent', {
+    const response = await fetch('/api-proxy/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -618,42 +584,28 @@ const App: React.FC = () => {
             isChrome: /Chrome|CriOS|FxiOS/.test(navigator.userAgent)
         });
         
-        let response: any;
-        
-        if (isMobileSafari) {
-            console.log("Using direct API call for mobile Safari");
-            // Use direct API call for mobile Safari
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Request timeout - mobile Safari may have network restrictions')), 30000);
-            });
+        // Use direct OpenAI API call for all browsers
+        console.log("Using direct OpenAI API call");
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Request timeout')), 30000);
+        });
 
-            const responsePromise = sendDirectApiCall(text);
-            response = await Promise.race([responsePromise, timeoutPromise]);
-        } else {
-            // Use normal client library for other browsers
-            if (!chatRef.current) {
-                console.error("Chat session not initialized for non-mobile Safari browser");
-                throw new Error("Chat session not initialized.");
-            }
-
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Request timeout - mobile Safari may have network restrictions')), 30000);
-            });
-
-            const responsePromise = chatRef.current.sendMessage({ message: text });
-            response = await Promise.race([responsePromise, timeoutPromise]);
-        }
-        const workoutToolCall = response.functionCalls?.find(fc => fc.name === 'createWorkoutPlan');
-        const videoToolCall = response.functionCalls?.find(fc => fc.name === 'findBoxingVideo');
-        const videoLibraryToolCall = response.functionCalls?.find(fc => fc.name === 'showVideoLibrary');
-        const nutritionToolCall = response.functionCalls?.find(fc => fc.name === 'createNutritionPlan');
+        const responsePromise = sendDirectApiCall(text);
+        const response = await Promise.race([responsePromise, timeoutPromise]);
+        // Parse OpenAI response format
+        const toolCalls = response.choices?.[0]?.message?.tool_calls || [];
+        const workoutToolCall = toolCalls.find(tc => tc.function?.name === 'createWorkoutPlan');
+        const videoToolCall = toolCalls.find(tc => tc.function?.name === 'findBoxingVideo');
+        const videoLibraryToolCall = toolCalls.find(tc => tc.function?.name === 'showVideoLibrary');
+        const nutritionToolCall = toolCalls.find(tc => tc.function?.name === 'createNutritionPlan');
 
 
         if (nutritionToolCall) {
             try {
-                const goal = nutritionToolCall.args.goal as string | undefined;
-                const dietaryRestrictions = nutritionToolCall.args.dietaryRestrictions as string | undefined;
-                const duration = nutritionToolCall.args.duration as string | undefined;
+                const args = JSON.parse(nutritionToolCall.function.arguments);
+                const goal = args.goal as string | undefined;
+                const dietaryRestrictions = args.dietaryRestrictions as string | undefined;
+                const duration = args.duration as string | undefined;
                 
                 const nutritionPlanText = await generateNutritionPlan({ goal, dietaryRestrictions, duration, userInfo: currentUser?.profile, journalEntries });
 
@@ -676,7 +628,8 @@ const App: React.FC = () => {
         } else if (workoutToolCall) {
             setIsGeneratingWorkout(true);
             try {
-                const duration = workoutToolCall.args.duration as string | undefined;
+                const args = JSON.parse(workoutToolCall.function.arguments);
+                const duration = args.duration as string | undefined;
                 
                 const lastCompletedWorkoutMessage = messages
                   .slice()
@@ -705,7 +658,8 @@ const App: React.FC = () => {
                 setIsGeneratingWorkout(false);
             }
         } else if (videoToolCall) {
-            const topic = videoToolCall.args.topic as string;
+            const args = JSON.parse(videoToolCall.function.arguments);
+            const topic = args.topic as string;
             
             try {
                 const foundVideo = await handleFindVideo(topic);
@@ -745,14 +699,17 @@ const App: React.FC = () => {
             };
             setMessages(prev => [...prev, sammiResponse]);
         } else {
+            // Handle regular text response from OpenAI
+            const responseText = response.choices?.[0]?.message?.content || response.text || "Sorry, I couldn't process that request.";
+            
             const sammiResponse: Message = {
                 id: (Date.now() + 1).toString(),
-                text: response.text,
+                text: responseText,
                 sender: 'sammi',
                 timestamp: Date.now(),
             };
             
-            const workoutPlan = parseWorkoutJson(response.text);
+            const workoutPlan = parseWorkoutJson(responseText);
             if (workoutPlan) {
                 sammiResponse.workoutPlan = workoutPlan;
             }

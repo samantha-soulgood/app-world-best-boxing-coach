@@ -16,10 +16,9 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const externalApiBaseUrl = 'https://generativelanguage.googleapis.com';
-const externalWsBaseUrl = 'wss://generativelanguage.googleapis.com';
-// Support either API key env-var variant
-const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+const externalApiBaseUrl = 'https://api.openai.com';
+// Support OpenAI API key
+const apiKey = process.env.OPENAI_API_KEY || process.env.API_KEY;
 
 const staticPath = path.join(__dirname, '..', 'dist');
 const publicPath = path.join(__dirname,'public');
@@ -27,8 +26,8 @@ const publicPath = path.join(__dirname,'public');
 
 if (!apiKey) {
     // Only log an error, don't exit. The server will serve apps without proxy functionality
-    console.error("Warning: GEMINI_API_KEY or API_KEY environment variable is not set! Proxy functionality will be disabled.");
-    console.error("Available environment variables:", Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')));
+    console.error("Warning: OPENAI_API_KEY or API_KEY environment variable is not set! Proxy functionality will be disabled.");
+    console.error("Available environment variables:", Object.keys(process.env).filter(key => key.includes('API') || key.includes('OPENAI')));
 }
 else {
   console.log("API KEY FOUND (proxy will use this)");
@@ -39,7 +38,7 @@ else {
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Goog-Api-Key');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
 
@@ -77,7 +76,7 @@ app.use('/api-proxy', async (req, res, next) => {
         console.log("CORS preflight request from:", req.headers.origin || req.headers['user-agent']);
         res.setHeader('Access-Control-Allow-Origin', '*'); // Adjust as needed for security
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Goog-Api-Key');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         res.setHeader('Access-Control-Max-Age', '86400'); // Cache preflight response for 1 day
         return res.sendStatus(200);
     }
@@ -101,8 +100,8 @@ app.use('/api-proxy', async (req, res, next) => {
             }
         }
 
-        // Set the actual API key in the appropriate header
-        outgoingHeaders['X-Goog-Api-Key'] = apiKey;
+        // Set the actual API key in the appropriate header for OpenAI
+        outgoingHeaders['Authorization'] = `Bearer ${apiKey}`;
 
         // Set Content-Type from original request if present (for relevant methods)
         if (req.headers['content-type'] && ['POST', 'PUT', 'PATCH'].includes(req.method.toUpperCase())) {
