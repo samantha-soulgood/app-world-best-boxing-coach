@@ -15,10 +15,5 @@ export const videoLibrary: Video[] = [
     id: 'sK-6Ujp3KYY',
     title: 'How To Throw a POWERFUL Cross',
     watchUrl: 'https://www.youtube.com/watch?v=sK-6Ujp3KYY', // FightCamp
-  },
-  {
-    id: 'k2p_3d_T-cc',
-    title: 'How To Move Forward & Backward',
-    watchUrl: 'https://www.youtube.com/watch?v=k2p_3d_T-cc', // Tony Jeffries
   }
 ];

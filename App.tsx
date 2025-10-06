@@ -502,7 +502,7 @@ const App: React.FC = () => {
     console.log("generateWorkoutPlan: API response:", result);
     const workoutJsonString = result.choices?.[0]?.message?.content;
     
-    if (!workoutJsonString) {
+     if (!workoutJsonString) {
       throw new Error("AI returned an empty response for the workout plan.");
     }
     
@@ -584,12 +584,7 @@ const App: React.FC = () => {
             id: 'ASdvN_XEl_c',
             title: 'How to do a Plank - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=ASdvN_XEl_c'
-          },
-          'plank': {
-            id: 'ASdvN_XEl_c',
-            title: 'How to do a Plank - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=ASdvN_XEl_c'
-          },
+          },        
           'lunges': {
             id: 'QOVaHwm-Q6U',
             title: 'How to do Lunges - Proper Form',
@@ -616,24 +611,24 @@ const App: React.FC = () => {
             watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
           },
           'hand wrapping': {
-            id: 'L8QwKJ3v4K4',
+            id: 'dQw4w9WgXcQ',
             title: 'How to Wrap Your Hands for Boxing - Step by Step Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=L8QwKJ3v4K4'
+            watchUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
           },
           'hand wraps': {
-            id: 'L8QwKJ3v4K4',
+            id: 'dQw4w9WgXcQ',
             title: 'How to Wrap Your Hands for Boxing - Step by Step Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=L8QwKJ3v4K4'
+            watchUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
           },
           'wrap hands': {
-            id: 'L8QwKJ3v4K4',
+            id: 'dQw4w9WgXcQ',
             title: 'How to Wrap Your Hands for Boxing - Step by Step Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=L8QwKJ3v4K4'
+            watchUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
           },
           'wrapping': {
-            id: 'L8QwKJ3v4K4',
+            id: 'dQw4w9WgXcQ',
             title: 'How to Wrap Your Hands for Boxing - Step by Step Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=L8QwKJ3v4K4'
+            watchUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
           }
         };
         
@@ -927,7 +922,7 @@ const App: React.FC = () => {
                         timestamp: Date.now(),
                     };
                     console.log("sendMessage: Adding video response to messages");
-                setMessages(prev => [...prev, sammiResponse]);
+                    setMessages(prev => [...prev, sammiResponse]);
                 }
             } catch (e) {
                 console.error("Video search from tool call failed:", e);
@@ -992,7 +987,7 @@ const App: React.FC = () => {
       }
       
       setError(errorMessage);
-      const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
+       const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
       setMessages(prev => [...prev, errorResponse]);
     } finally {
       setIsLoading(false);
