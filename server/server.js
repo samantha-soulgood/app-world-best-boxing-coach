@@ -89,6 +89,8 @@ app.use('/api-proxy', async (req, res, next) => {
         const targetPath = req.url.startsWith('/') ? req.url.substring(1) : req.url;
         const apiUrl = `${externalApiBaseUrl}/${targetPath}`;
         console.log(`HTTP Proxy: Forwarding request to ${apiUrl}`);
+        console.log(`HTTP Proxy: Target path: ${targetPath}`);
+        console.log(`HTTP Proxy: External API base URL: ${externalApiBaseUrl}`);
 
         // Prepare headers for the outgoing request
         const outgoingHeaders = {};
@@ -237,8 +239,8 @@ app.use('/api-proxy', async (req, res, next) => {
                 res.status(error.response.status).json(errorData);
             } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
                 res.status(503).json({ 
-                    error: 'Gemini API connectivity issue', 
-                    message: 'Unable to connect to Google Gemini API from Render servers',
+                    error: 'OpenAI API connectivity issue', 
+                    message: 'Unable to connect to OpenAI API from Render servers',
                     details: `Network error: ${error.code} - ${error.message}`
                 });
             } else {
