@@ -8,9 +8,11 @@ interface UserAvatarProps {
 
 const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8' }) => {
   const [imageError, setImageError] = useState(false);
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
   
   // Check if we're on mobile Safari and force initials fallback
   const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
+  
   // Generate a consistent seed based on user ID
   const getAvatarSeed = (userId: string): string => {
     // Create a hash-like seed from the user ID
@@ -23,12 +25,18 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8' }) => {
     return Math.abs(hash).toString();
   };
 
-  // Generate avatar URL using a different approach to avoid 403 errors
-  const generateAvatarUrl = (userId: string): string => {
+  // Generate avatar URLs using multiple fallback services
+  const generateAvatarUrls = (userId: string): string[] => {
     const seed = getAvatarSeed(userId);
-    // Try a different avatar service that's more reliable
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1f2937&color=ffffff&size=200&format=svg`;
+    return [
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1f2937&color=ffffff&size=200&format=png`,
+      `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=1f2937&textColor=ffffff&size=200`,
+      `https://www.gravatar.com/avatar/${seed}?d=identicon&s=200&f=y`
+    ];
   };
+
+  const avatarUrls = generateAvatarUrls(user.id);
+  const currentAvatarUrl = avatarUrls[currentServiceIndex];
 
   // Get initials for fallback
   const getInitials = (name: string): string => {
@@ -40,13 +48,31 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8' }) => {
       .slice(0, 2);
   };
 
-  const avatarUrl = generateAvatarUrl(user.id);
   const initials = getInitials(user.name);
+  
+  // Handle image load error with fallback to next service
+  const handleImageError = () => {
+    console.warn(`Avatar service ${currentServiceIndex} failed for user: ${user.name}`);
+    if (currentServiceIndex < avatarUrls.length - 1) {
+      // Try next service
+      setCurrentServiceIndex(prev => prev + 1);
+      console.log(`Trying next avatar service: ${currentServiceIndex + 1}`);
+    } else {
+      // All services failed, fall back to initials
+      setImageError(true);
+      console.warn(`All avatar services failed for user: ${user.name}, falling back to initials`);
+    }
+  };
+
+  const handleImageLoad = () => {
+    console.log(`Avatar loaded successfully for user: ${user.name} using service ${currentServiceIndex}`);
+  };
   
   console.log("UserAvatar Debug:", {
     userId: user.id,
     userName: user.name,
-    avatarUrl,
+    currentAvatarUrl,
+    currentServiceIndex,
     initials,
     imageError,
     isMobileSafari,
@@ -56,21 +82,17 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8' }) => {
   return (
     <div className={`${size} rounded-full p-0.5 bg-gradient-to-tr from-fuchsia-500 to-pink-500 flex-shrink-0`} title={`Avatar for ${user.name}`}>
       <div className="w-full h-full rounded-full overflow-hidden border border-zinc-900 bg-zinc-800 flex items-center justify-center">
-        {!imageError ? (
+        {!imageError && !isMobileSafari ? (
           <img
-            src={avatarUrl}
+            key={currentServiceIndex} // Force re-render when service changes
+            src={currentAvatarUrl}
             alt={`${user.name}'s avatar`}
             className="w-full h-full object-cover"
             crossOrigin="anonymous"
             loading="lazy"
             decoding="async"
-            onError={() => {
-              setImageError(true);
-              console.warn(`Avatar failed to load for user: ${user.name}, falling back to initials`);
-            }}
-            onLoad={() => {
-              console.log(`Avatar loaded successfully for user: ${user.name}`);
-            }}
+            onError={handleImageError}
+            onLoad={handleImageLoad}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white font-bold text-sm">
