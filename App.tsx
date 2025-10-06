@@ -196,23 +196,21 @@ const App: React.FC = () => {
         console.error("Available env vars:", Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')));
         throw new Error("API_KEY environment variable not set");
       }
-      if (!aiRef.current) {
+      // Check if we're on mobile Safari first
+      const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
+      
+      if (!aiRef.current && !isMobileSafari) {
         console.log("Initializing GoogleGenAI with API key length:", process.env.API_KEY.length);
         
-        // Check if we're on mobile Safari and configure accordingly
-        const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
-        
         const config: any = { 
-          apiKey: process.env.API_KEY 
+          apiKey: process.env.API_KEY,
+          dangerouslyAllowBrowser: true
         };
         
-        // For mobile Safari, disable streaming to avoid ReadableStream issues
-        if (isMobileSafari) {
-          console.log("Mobile Safari detected - configuring non-streaming mode");
-          config.dangerouslyAllowBrowser = true;
-        }
-        
         aiRef.current = new GoogleGenAI(config);
+      } else if (isMobileSafari) {
+        console.log("Mobile Safari detected - skipping GoogleGenAI initialization");
+        aiRef.current = null;
       }
       const history = historyMessages.map(msg => ({
           role: msg.sender === 'user' ? 'user' : 'model' as const,
@@ -237,11 +235,11 @@ const App: React.FC = () => {
         history: history,
       };
       
-      // For mobile Safari, use direct API calls instead of the client library
+      // For mobile Safari, completely bypass the Google Generative AI client library
       if (isMobileSafari) {
-        console.log("Mobile Safari detected - using direct API approach");
-        // We'll handle mobile Safari differently in the sendMessage function
+        console.log("Mobile Safari detected - bypassing Google Generative AI client library completely");
         chatRef.current = null; // Don't use the client library for mobile Safari
+        aiRef.current = null; // Don't initialize the client library at all for mobile Safari
       } else {
         chatConfig.config.streaming = false;
         chatRef.current = aiRef.current.chats.create(chatConfig);
