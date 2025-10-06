@@ -24,3 +24,8 @@ steps:
 # Store images in Google Container Registry
 images:
   - 'gcr.io/$PROJECT_ID/soul-good-boxing-coach:$COMMIT_SHA'
+
+# Logging options to fix the service account error
+options:
+  logging: CLOUD_LOGGING_ONLY
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
