@@ -1,11 +1,11 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/soul-good-boxing-coach:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/app-world-best-boxing-coach/soul-good-boxing-coach:$COMMIT_SHA', '.']
   
-  # Push the container image to Container Registry
+  # Push the container image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/soul-good-boxing-coach:$COMMIT_SHA']
+    args: ['push', 'us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/app-world-best-boxing-coach/soul-good-boxing-coach:$COMMIT_SHA']
   
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -15,15 +15,15 @@ steps:
     - 'deploy'
     - 'soul-good-boxing-coach'
     - '--image'
-    - 'gcr.io/$PROJECT_ID/soul-good-boxing-coach:$COMMIT_SHA'
+    - 'us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/app-world-best-boxing-coach/soul-good-boxing-coach:$COMMIT_SHA'
     - '--region'
     - 'us-west1'
     - '--platform'
     - 'managed'
 
-# Store images in Google Container Registry
+# Store images in Artifact Registry
 images:
-  - 'gcr.io/$PROJECT_ID/soul-good-boxing-coach:$COMMIT_SHA'
+  - 'us-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/app-world-best-boxing-coach/soul-good-boxing-coach:$COMMIT_SHA'
 
 # Logging options to fix the service account error
 options:
