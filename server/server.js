@@ -22,6 +22,13 @@ console.log('PORT environment variable:', process.env.PORT);
 const externalApiBaseUrl = process.env.GROQ_API_KEY ? 'https://api.groq.com' : 'https://api.openai.com';
 const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY || process.env.API_KEY;
 
+console.log('API Configuration:');
+console.log('- GROQ_API_KEY present:', !!process.env.GROQ_API_KEY);
+console.log('- OPENAI_API_KEY present:', !!process.env.OPENAI_API_KEY);
+console.log('- API_KEY present:', !!process.env.API_KEY);
+console.log('- Using API:', externalApiBaseUrl);
+console.log('- API Key length:', apiKey ? apiKey.length : 0);
+
 const staticPath = path.join(__dirname, '..', 'dist');
 const publicPath = path.join(__dirname,'public');
 
@@ -98,8 +105,8 @@ app.use('/api-proxy', async (req, res, next) => {
     }
     try {
         // Construct the target URL by taking the part of the path after /api-proxy/
-        const targetPath = req.url.startsWith('/') ? req.url.substring(1) : req.url;
-        const apiUrl = `${externalApiBaseUrl}/${targetPath}`;
+        const targetPath = req.url.replace('/api-proxy', '');
+        const apiUrl = `${externalApiBaseUrl}${targetPath}`;
         console.log(`HTTP Proxy: Forwarding request to ${apiUrl}`);
         console.log(`HTTP Proxy: Target path: ${targetPath}`);
         console.log(`HTTP Proxy: External API base URL: ${externalApiBaseUrl}`);
