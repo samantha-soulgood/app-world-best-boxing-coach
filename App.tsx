@@ -610,7 +610,10 @@ const App: React.FC = () => {
             response = await Promise.race([responsePromise, timeoutPromise]);
         } else {
             // Use normal client library for other browsers
-            if (!chatRef.current) throw new Error("Chat session not initialized.");
+            if (!chatRef.current) {
+                console.error("Chat session not initialized for non-mobile Safari browser");
+                throw new Error("Chat session not initialized.");
+            }
 
             const timeoutPromise = new Promise((_, reject) => {
                 setTimeout(() => reject(new Error('Request timeout - mobile Safari may have network restrictions')), 30000);

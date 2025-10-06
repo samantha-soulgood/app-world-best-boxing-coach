@@ -23,12 +23,11 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8' }) => {
     return Math.abs(hash).toString();
   };
 
-  // Generate avatar URL using DiceBear API with a boxing theme
+  // Generate avatar URL using a different approach to avoid 403 errors
   const generateAvatarUrl = (userId: string): string => {
     const seed = getAvatarSeed(userId);
-    // Using DiceBear's personas API with boxing-inspired styling
-    // Mobile Safari-friendly URL with fewer parameters
-    return `https://api.dicebear.com/7.x/personas/svg?seed=${seed}&backgroundColor=1f2937&hairColor=262626&skinColor=edb98a&eyesColor=262626&clothingColor=ef4444&clothing=hoodie&accessoriesProbability=30&accessories=glasses&mouth=smile&eyebrows=default&glasses=round`;
+    // Try a different avatar service that's more reliable
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1f2937&color=ffffff&size=200&format=svg`;
   };
 
   // Get initials for fallback
@@ -57,7 +56,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8' }) => {
   return (
     <div className={`${size} rounded-full p-0.5 bg-gradient-to-tr from-fuchsia-500 to-pink-500 flex-shrink-0`} title={`Avatar for ${user.name}`}>
       <div className="w-full h-full rounded-full overflow-hidden border border-zinc-900 bg-zinc-800 flex items-center justify-center">
-        {!imageError && !isMobileSafari ? (
+        {!imageError ? (
           <img
             src={avatarUrl}
             alt={`${user.name}'s avatar`}
