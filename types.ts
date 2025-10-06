@@ -6,6 +6,7 @@ export interface Message {
   sender: Sender;
   timestamp: number;
   workoutPlan?: WorkoutPlan;
+  video?: Video;
   isWorkoutCompleted?: boolean;
   rpe?: number; // Rating of Perceived Exertion
   feedback?: string; // User feedback text

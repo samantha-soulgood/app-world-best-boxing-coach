@@ -1,10 +1,11 @@
 
-import React, { useRef, useEffect } from 'react';
-import type { Message, WorkoutPlan, User } from '../types';
+import React, { useRef, useEffect, useState } from 'react';
+import type { Message, WorkoutPlan, User, Video } from '../types';
 import { LoadingIcon, PlayIcon } from './Icons';
 import WorkoutDisplay from './WorkoutDisplay';
 import NutritionPlanDisplay from './NutritionPlanDisplay';
 import DayReviewDisplay from './DayReviewDisplay';
+import VideoPlayer from './VideoPlayer';
 import Avatar from './Avatar';
 import UserAvatar from './UserAvatar';
 
@@ -18,6 +19,7 @@ interface ChatWindowProps {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGeneratingWorkout, onStartWorkout, currentUser }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -87,6 +89,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
           />
           <WorkoutDisplay plan={message.workoutPlan} />
         </>
+      );
+    }
+    
+    // Handle video messages
+    if (message.sender === 'sammi' && message.video) {
+      return (
+        <div className="space-y-3">
+          <div
+            className="prose"
+            dangerouslySetInnerHTML={createMarkup(message.text)}
+          />
+          <div className="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700/30">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-white">Video Tutorial</h3>
+              <button
+                onClick={() => setSelectedVideo(message.video!)}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors flex items-center gap-2"
+              >
+                <PlayIcon className="w-4 h-4" />
+                Watch Video
+              </button>
+            </div>
+            <p className="text-gray-300 text-sm">{message.video.title}</p>
+          </div>
+        </div>
       );
     }
     
@@ -187,6 +214,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
         </div>
       )}
       <div ref={scrollRef} />
+      {selectedVideo && (
+        <VideoPlayer 
+          video={selectedVideo} 
+          onClose={() => setSelectedVideo(null)} 
+        />
+      )}
     </div>
   );
 };

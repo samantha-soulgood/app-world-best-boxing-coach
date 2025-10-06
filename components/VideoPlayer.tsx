@@ -12,6 +12,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onClose }) => {
   // Dynamically create the embed URL with the required origin parameter for robust embedding.
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const embedUrlWithParams = embedUrl ? `${embedUrl}?autoplay=1&origin=${encodeURIComponent(origin)}` : '';
+  
+  // Debug logging
+  console.log("VideoPlayer: Video object:", video);
+  console.log("VideoPlayer: Video ID:", video.id);
+  console.log("VideoPlayer: Embed URL:", embedUrl);
+  console.log("VideoPlayer: Origin:", origin);
+  console.log("VideoPlayer: Final embed URL:", embedUrlWithParams);
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
