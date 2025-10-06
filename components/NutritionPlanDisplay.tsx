@@ -47,7 +47,10 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
           <div key={keyCounter++} className="ml-5 mb-2">
             <div className="flex items-start">
               <span className="text-fuchsia-400 mr-2 mt-1">•</span>
-              <span className="text-gray-200 text-sm leading-relaxed">{mealItem}</span>
+              <span 
+                className="text-gray-200 text-sm leading-relaxed prose"
+                dangerouslySetInnerHTML={{ __html: window.marked.parse(mealItem) }}
+              />
             </div>
           </div>
         );
@@ -68,7 +71,10 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
       else if (trimmedLine && !trimmedLine.startsWith('#') && !trimmedLine.startsWith('-') && !trimmedLine.startsWith('*') && !/^\d+\.\s/.test(trimmedLine)) {
         formattedElements.push(
           <div key={keyCounter++} className="mb-3">
-            <p className="text-gray-300 text-sm leading-relaxed">{trimmedLine}</p>
+            <p 
+              className="text-gray-300 text-sm leading-relaxed prose"
+              dangerouslySetInnerHTML={{ __html: window.marked.parse(trimmedLine) }}
+            />
           </div>
         );
       }

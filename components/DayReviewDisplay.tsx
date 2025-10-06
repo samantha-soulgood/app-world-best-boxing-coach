@@ -58,7 +58,10 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
             <div className="bg-gradient-to-r from-fuchsia-500/20 to-pink-500/20 border border-fuchsia-500/30 rounded-lg p-4">
               <p className="text-fuchsia-200 font-medium text-sm leading-relaxed flex items-start">
                 <span className="text-xl mr-2 mt-1">🔥</span>
-                <span>{trimmedLine}</span>
+                <span 
+                  className="prose"
+                  dangerouslySetInnerHTML={{ __html: window.marked.parse(trimmedLine) }}
+                />
               </p>
             </div>
           </div>
@@ -71,7 +74,10 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
           <div key={keyCounter++} className="ml-5 mb-2">
             <div className="flex items-start">
               <span className="text-fuchsia-400 mr-2 mt-1">•</span>
-              <span className="text-gray-200 text-sm leading-relaxed">{item}</span>
+              <span 
+                className="text-gray-200 text-sm leading-relaxed prose"
+                dangerouslySetInnerHTML={{ __html: window.marked.parse(item) }}
+              />
             </div>
           </div>
         );
@@ -83,7 +89,10 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
           <div key={keyCounter++} className="ml-5 mb-2">
             <div className="flex items-start">
               <span className="text-fuchsia-400 mr-2 mt-1">•</span>
-              <span className="text-gray-200 text-sm leading-relaxed">{item}</span>
+              <span 
+                className="text-gray-200 text-sm leading-relaxed prose"
+                dangerouslySetInnerHTML={{ __html: window.marked.parse(item) }}
+              />
             </div>
           </div>
         );
@@ -92,7 +101,10 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
       else if (trimmedLine && !trimmedLine.startsWith('#') && !trimmedLine.startsWith('-') && !trimmedLine.startsWith('*') && !/^\d+\.\s/.test(trimmedLine)) {
         formattedElements.push(
           <div key={keyCounter++} className="mb-3">
-            <p className="text-gray-300 text-sm leading-relaxed">{trimmedLine}</p>
+            <p 
+              className="text-gray-300 text-sm leading-relaxed prose"
+              dangerouslySetInnerHTML={{ __html: window.marked.parse(trimmedLine) }}
+            />
           </div>
         );
       }

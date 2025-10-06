@@ -93,13 +93,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
     // Check if this contains a day review
     if (message.sender === 'sammi' && isDayReview(message.text)) {
       return (
-        <>
-          <div
-            className="prose"
-            dangerouslySetInnerHTML={createMarkup(message.text)}
-          />
-          <DayReviewDisplay reviewText={message.text} />
-        </>
+        <DayReviewDisplay reviewText={message.text} />
       );
     }
     
@@ -125,15 +119,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
         );
       }
       
-      // For clean nutrition plans, show both markdown and formatted version
+      // For clean nutrition plans, show only the formatted version
       return (
-        <>
-          <div
-            className="prose"
-            dangerouslySetInnerHTML={createMarkup(message.text)}
-          />
-          <NutritionPlanDisplay planText={message.text} />
-        </>
+        <NutritionPlanDisplay planText={message.text} />
       );
     }
     

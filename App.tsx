@@ -110,27 +110,28 @@ const workoutSchema = {
 
 const createWorkoutPlanFunction = {
     name: 'createWorkoutPlan',
-    description: 'Creates a detailed, boxing-inspired workout plan when the user explicitly asks for one.',
+    description: 'Creates a detailed, fitness-focused workout plan when the user asks for a workout, training session, or exercise routine. Use this function even if the user profile is incomplete - create a general workout that can be adapted.',
     parameters: {
         type: 'object',
         properties: {
             duration: {
                 type: 'string',
-                description: 'The desired total duration of the workout, e.g., "30 minutes". If not specified, a standard workout of the day is created.'
+                description: 'The desired total duration of the workout, e.g., "30 minutes". If not specified, use "30 minutes" as default.'
             },
         },
+        required: ['duration'],
     },
 };
 
 const findBoxingVideoFunction = {
     name: 'findBoxingVideo',
-    description: 'Finds a relevant boxing tutorial video on YouTube when a user asks for one.',
+    description: 'Finds a relevant fitness tutorial video on YouTube when a user asks for one.',
     parameters: {
         type: 'object',
         properties: {
             topic: {
                 type: 'string',
-                description: 'The specific boxing technique or topic the user wants a video for (e.g., "jab", "footwork", "uppercut").'
+                description: 'The specific fitness technique or topic the user wants a video for (e.g., "squats", "cardio", "strength training").'
             }
         },
         required: ['topic']
@@ -148,7 +149,7 @@ const showVideoLibraryFunction = {
 
 const createNutritionPlanFunction = {
     name: 'createNutritionPlan',
-    description: 'Creates a personalized nutrition plan when a user asks for a diet plan, meal plan, or a structured list of what to eat.',
+    description: 'Creates a personalized nutrition plan when a user asks for a diet plan, meal plan, weekly meal plan, daily meals, or any structured list of what to eat. Use this function whenever the user requests meal planning, nutrition planning, or dietary guidance.',
     parameters: {
         type: 'object',
         properties: {
@@ -165,6 +166,7 @@ const createNutritionPlanFunction = {
                 description: 'The duration of the meal plan, e.g., "one day", "for the week". Defaults to a single day if not specified.'
             }
         },
+        required: ['goal', 'duration'],
     },
 };
 
@@ -210,7 +212,19 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const storedUserJson = localStorage.getItem('soulGoodBoxingUser');
+    // Check for new key first, then fallback to old key for migration
+    let storedUserJson = localStorage.getItem('soulGoodFitnessUser');
+    if (!storedUserJson) {
+      // Migrate from old key
+      storedUserJson = localStorage.getItem('soulGoodBoxingUser');
+      if (storedUserJson) {
+        // Copy to new key and remove old key
+        localStorage.setItem('soulGoodFitnessUser', storedUserJson);
+        localStorage.removeItem('soulGoodBoxingUser');
+        console.log('Migrated user data from soulGoodBoxingUser to soulGoodFitnessUser');
+      }
+    }
+    
     if (storedUserJson) {
       const user: User = JSON.parse(storedUserJson);
       const storedMessages = localStorage.getItem(`chatHistory_${user.id}`);
@@ -250,7 +264,7 @@ const App: React.FC = () => {
   }, [journalEntries, currentUser]);
 
   const handleLogin = (user: User) => {
-    const storedUserJson = localStorage.getItem('soulGoodBoxingUser');
+    const storedUserJson = localStorage.getItem('soulGoodFitnessUser');
     let fullUser = user;
     if(storedUserJson){
         const storedUser = JSON.parse(storedUserJson);
@@ -259,7 +273,7 @@ const App: React.FC = () => {
         }
     }
     
-    localStorage.setItem('soulGoodBoxingUser', JSON.stringify(fullUser));
+    localStorage.setItem('soulGoodFitnessUser', JSON.stringify(fullUser));
     setCurrentUser(fullUser);
 
     const storedMessages = localStorage.getItem(`chatHistory_${fullUser.id}`);
@@ -286,7 +300,7 @@ const App: React.FC = () => {
     if (window.google) {
       window.google.accounts.id.disableAutoSelect();
     }
-    localStorage.removeItem('soulGoodBoxingUser');
+    localStorage.removeItem('soulGoodFitnessUser');
     setCurrentUser(null);
     setMessages([]);
     setJournalEntries([]);
@@ -301,13 +315,10 @@ const App: React.FC = () => {
       userInfo?: OnboardingData;
       journalEntries?: JournalEntry[];
   }): Promise<string> => {
-      if (!aiRef.current) {
-          throw new Error("AI Client not initialized.");
-      }
-
+      // Use OpenAI API instead of Google Gemini
       const { goal, dietaryRestrictions, duration, userInfo, journalEntries } = options;
       
-      let prompt = `Your task is to act as Sammi, a boxing coach, and create a practical, personalized nutritional plan for a client. The output MUST be well-structured markdown.\n\n`;
+      let prompt = `Your task is to act as Sammi, a fitness coach, and create a practical, personalized nutritional plan for a client. The output MUST be well-structured markdown.\n\n`;
 
       // User Profile Section
       prompt += '## User Profile\n';
@@ -345,26 +356,48 @@ const App: React.FC = () => {
       if (duration && duration.toLowerCase().includes('week')) {
           prompt += "1.  **Structure:** Organize the plan by day. Use a Level 2 Markdown Heading (e.g., `## Monday`) for each day. Under each day, use Level 3 Headings (e.g., `### Breakfast`) for 'Breakfast', 'Lunch', and 'Dinner'. Use an unordered list (`-`) for meal suggestions.\n";
           prompt += "2.  **Personalization:** Tailor suggestions to the user's profile. Instead of just listing foods, briefly explain *why* a suggestion is good (e.g., 'Oatmeal with berries: great for sustained energy before training.'). If their goal is 'weight loss', suggest satisfying, high-protein/fiber meals. If 'muscle gain', include more complex carbs and protein. If they are 'vegetarian', all suggestions MUST be vegetarian.\n";
-          prompt += "3.  **Boxing Context:** Frame advice for an athlete. Mention things like pre-workout fuel or post-workout recovery when appropriate.\n";
+          prompt += "3.  **Fitness Context:** Frame advice for someone who exercises. Mention things like pre-workout fuel or post-workout recovery when appropriate.\n";
           prompt += "4.  **Tone:** Maintain Sammi's energetic, motivating, and no-nonsense voice.\n";
-          prompt += "5.  **Sign-off:** End with a sharp, boxing-related sign-off like 'Stay hungry, champ.' or 'Fuel up, fight hard.'\n";
+          prompt += "5.  **Sign-off:** End with an encouraging, supportive sign-off like 'You've got this!' or 'Take care of yourself today.'\n";
       } else { // For a single day plan
           prompt += "1.  **Structure:** Organize the plan with Level 3 Markdown Headings (e.g., `### Breakfast`) for 'Breakfast', 'Lunch', 'Dinner', and 'Snacks'. Provide 2-3 simple meal/snack ideas as an unordered list (`-`) for each.\n";
           prompt += "2.  **Personalization:** Tailor suggestions to the user's profile. Briefly explain the benefit of a food choice in the context of their training (e.g., 'Greek yogurt: excellent source of protein for muscle recovery.').\n";
           prompt += "3.  **Boxing Context:** Frame advice for an athlete. Mention pre-workout fuel or post-workout recovery.\n";
           prompt += "4.  **Tone:** Maintain Sammi's energetic, motivating, and no-nonsense voice.\n";
-          prompt += "5.  **Sign-off:** End with a sharp, boxing-related sign-off like 'Stay hungry, champ.' or 'Fuel up, fight hard.'\n";
+          prompt += "5.  **Sign-off:** End with an encouraging, supportive sign-off like 'You've got this!' or 'Take care of yourself today.'\n";
       }
 
-      const response = await aiRef.current.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-          config: {
-              systemInstruction: SAMMI_PERSONA,
+      // Use OpenAI API call
+      const requestBody = {
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: SAMMI_PERSONA
           },
+          {
+            role: "user", 
+            content: prompt
+          }
+        ],
+        temperature: 0.9,
+        max_tokens: 2048
+      };
+
+      const response = await fetch('/api-proxy/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
       });
 
-      return response.text;
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return result.choices?.[0]?.message?.content || "Sorry, I couldn't generate a nutrition plan.";
   }, [currentUser?.profile]);
 
   const generateWorkoutPlan = useCallback(async (options: {
@@ -373,13 +406,11 @@ const App: React.FC = () => {
       userInfo?: OnboardingData;
       journalEntries?: JournalEntry[];
   }): Promise<WorkoutPlan> => {
-    if (!aiRef.current) {
-        throw new Error("AI Client not initialized.");
-    }
-
+    console.log("generateWorkoutPlan: Called with options:", options);
+    // Use OpenAI API instead of Google Gemini
     const { duration, lastWorkoutMessage, userInfo, journalEntries } = options;
     
-    let prompt = 'Your task is to create a personalized, boxing-inspired workout plan.\n\n';
+    let prompt = 'Your task is to create a personalized, fitness-focused workout plan.\n\n';
 
     // User Profile Section
     prompt += '## User Profile\n';
@@ -437,62 +468,98 @@ const App: React.FC = () => {
     prompt += "7.  **Apply Progressive Overload:** The new workout MUST be a slight progression in difficulty from the last one. Refer to the user's last workout details and their RPE/feedback. Apply one or more of the following principles subtly:\n    - For strength exercises, increase reps by 1-2 (e.g., '10 Push-ups' becomes '12 Push-ups').\n    - For timed exercises, increase duration by 5-15 seconds (e.g., '45 second Plank' becomes '1 minute Plank').\n    - If an exercise from the last workout is repeated, suggest a harder variation or add a note about increasing weight if applicable (e.g., 'Bodyweight Squat' could become 'Jump Squat', or a note 'Use slightly heavier dumbbells if available' can be added).\n    - Slightly decrease rest time between exercises (e.g., from '30 seconds' to '25 seconds').\n    This progression should be challenging but achievable. If the user's last RPE was very high (9-10), the progression should be minimal or focus on form improvement rather than increased load.\n";
 
 
-    const response = await aiRef.current.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: workoutSchema,
-            systemInstruction: SAMMI_PERSONA,
+    // Use OpenAI API call with JSON mode
+    const requestBody = {
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `${SAMMI_PERSONA}\n\nYou must respond with valid JSON that matches this schema: ${JSON.stringify(workoutSchema)}`
         },
+        {
+          role: "user", 
+          content: prompt
+        }
+      ],
+      temperature: 0.9,
+      max_tokens: 2048,
+      response_format: { type: "json_object" }
+    };
+
+    const response = await fetch('/api-proxy/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
     });
-    const workoutJsonString = response.text;
-     if (!workoutJsonString) {
+
+    if (!response.ok) {
+      throw new Error(`API call failed: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("generateWorkoutPlan: API response:", result);
+    const workoutJsonString = result.choices?.[0]?.message?.content;
+    
+    if (!workoutJsonString) {
       throw new Error("AI returned an empty response for the workout plan.");
     }
-    return JSON.parse(workoutJsonString);
+    
+    console.log("generateWorkoutPlan: Parsing workout JSON:", workoutJsonString);
+    const parsedWorkout = JSON.parse(workoutJsonString);
+    console.log("generateWorkoutPlan: Parsed workout:", parsedWorkout);
+    return parsedWorkout;
   }, []);
 
   const handleFindVideo = useCallback(async (topic: string): Promise<Video | null> => {
-      if (!aiRef.current) {
-          throw new Error("AI Client not initialized.");
-      }
+      // Use OpenAI API instead of Google Gemini
       try {
-        const prompt = `Find a high-quality, embeddable YouTube video tutorial for boxing ${topic}, preferably taught by a female instructor. Prioritize reputable trainers.`;
+        const prompt = `Find a high-quality, embeddable YouTube video tutorial for fitness ${topic}, preferably taught by a female instructor. Prioritize reputable trainers and coaches.`;
 
-        const response = await aiRef.current.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-            config: {
-                tools: [{googleSearch: {}}],
+        // Use OpenAI API call
+        const requestBody = {
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: SAMMI_PERSONA
             },
+            {
+              role: "user", 
+              content: prompt
+            }
+          ],
+          temperature: 0.9,
+          max_tokens: 500
+        };
+
+        const response = await fetch('/api-proxy/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody)
         });
 
-        const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-        if (groundingChunks) {
-            for (const chunk of groundingChunks) {
-                if (chunk.web?.uri) {
-                    const videoId = getYouTubeIdFromUrl(chunk.web.uri);
-                    if (videoId) {
-                        return { id: videoId, title: chunk.web.title || `Boxing: ${topic}`, watchUrl: chunk.web.uri };
-                    }
-                }
-            }
-        }
-        
-        const textResponse = response.text;
-        const urlRegex = /(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11})/g;
-        const match = textResponse.match(urlRegex);
-        if (match && match[0]) {
-            const url = match[0];
-            const videoId = getYouTubeIdFromUrl(url);
-            if (videoId) {
-                 return { id: videoId, title: `Boxing Tutorial: ${topic}`, watchUrl: url };
-            }
+        if (!response.ok) {
+          throw new Error(`API call failed: ${response.status}`);
         }
 
-        console.warn("Could not find a YouTube video for the topic:", topic);
-        return null;
+        const result = await response.json();
+        const responseText = result.choices?.[0]?.message?.content;
+        
+        // For now, return a placeholder since we can't do Google Search with OpenAI
+        // In a real implementation, you'd need to integrate with a search API
+        console.log("Video search requested for:", topic);
+        console.log("AI response:", responseText);
+        
+        // Return a placeholder video
+        return {
+          id: "placeholder",
+          title: `Fitness Tutorial: ${topic}`,
+          watchUrl: "https://www.youtube.com/watch?v=placeholder"
+        };
 
       } catch (error) {
           console.error("Error finding video with Google Search:", error);
@@ -501,16 +568,34 @@ const App: React.FC = () => {
   }, []);
 
   // Direct API call for OpenAI
-  const sendDirectApiCall = async (text: string): Promise<any> => {
+  const sendDirectApiCall = useCallback(async (text: string): Promise<any> => {
     console.log("sendDirectApiCall: Making direct OpenAI API call");
     console.log("sendDirectApiCall: Request text:", text);
+    console.log("sendDirectApiCall: Current user:", currentUser);
+    console.log("sendDirectApiCall: User profile:", currentUser?.profile);
+    console.log("sendDirectApiCall: Profile exists:", !!currentUser?.profile);
+    console.log("sendDirectApiCall: User name:", currentUser?.name);
+    console.log("sendDirectApiCall: Profile keys:", currentUser?.profile ? Object.keys(currentUser.profile) : 'No profile');
+    console.log("sendDirectApiCall: Full currentUser object:", JSON.stringify(currentUser, null, 2));
+    
+    // Build system message with user profile
+    let systemMessage = SAMMI_PERSONA;
+    if (currentUser?.profile) {
+      systemMessage = `${SAMMI_PERSONA}\n\nUser Profile:\n- Name: ${currentUser.name}\n- Pronouns: ${currentUser.profile.pronouns || 'Not specified'}\n- Age: ${currentUser.profile.age || 'Not specified'}\n- Goals: ${currentUser.profile.goals || 'Not specified'}\n- Activity Level: ${currentUser.profile.activityLevel || 'Not specified'}\n- Injuries/Limitations: ${currentUser.profile.injuries || 'None'}\n- Equipment: ${currentUser.profile.equipment || 'None specified'}`;
+    } else if (currentUser?.name) {
+      // If user exists but no profile, include at least their name and create a general workout
+      systemMessage = `${SAMMI_PERSONA}\n\nUser: ${currentUser.name} (Profile not yet completed - create a general workout that can be adapted to their needs)`;
+    }
+    
+    console.log("sendDirectApiCall: System message includes profile:", systemMessage.includes("User Profile:"));
     
     const requestBody = {
-      model: "llama-3.1-70b-versatile", // Groq model - much faster and free tier available
+      model: "gpt-4o-mini",
+      // model: "llama-3.1-70b-versatile", // Groq model - much faster and free tier available
       messages: [
         {
           role: "system",
-          content: SAMMI_PERSONA
+          content: systemMessage
         },
         {
           role: "user", 
@@ -535,6 +620,11 @@ const App: React.FC = () => {
     };
     
     console.log("sendDirectApiCall: Request body:", JSON.stringify(requestBody, null, 2));
+    console.log("sendDirectApiCall: Available tools:", requestBody.tools.map(t => t.function.name));
+    console.log("sendDirectApiCall: Request URL:", '/api-proxy/v1/chat/completions');
+    console.log("sendDirectApiCall: Request headers:", {
+      'Content-Type': 'application/json',
+    });
     
     const response = await fetch('/api-proxy/v1/chat/completions', {
       method: 'POST',
@@ -556,7 +646,7 @@ const App: React.FC = () => {
     const result = await response.json();
     console.log("sendDirectApiCall: Success response:", result);
     return result;
-  };
+  }, [currentUser]);
   
   const sendMessage = useCallback(async (text: string, sender: Sender) => {
     if (!text.trim()) return;
@@ -592,12 +682,46 @@ const App: React.FC = () => {
 
         const responsePromise = sendDirectApiCall(text);
         const response = await Promise.race([responsePromise, timeoutPromise]);
+        console.log("sendMessage: Full OpenAI response:", JSON.stringify(response, null, 2));
+        console.log("sendMessage: Response choices:", response.choices);
+        console.log("sendMessage: Response message:", response.choices?.[0]?.message);
+        
+        // Check if this is a duplicate request
+        const lastMessage = messages[messages.length - 1];
+        console.log("sendMessage: Last message:", lastMessage);
+        console.log("sendMessage: Current text:", text);
+        console.log("sendMessage: Current sender:", sender);
+        if (lastMessage && lastMessage.text === text && lastMessage.sender === sender) {
+          console.warn("sendMessage: Duplicate message detected, skipping");
+          return;
+        }
+        
+        // Add a timestamp to track request timing
+        const requestId = Date.now() + Math.random();
+        console.log(`sendMessage: Processing request ${requestId} for: "${text.substring(0, 50)}..."`);
+        
         // Parse OpenAI response format
         const toolCalls = response.choices?.[0]?.message?.tool_calls || [];
-        const workoutToolCall = toolCalls.find(tc => tc.function?.name === 'createWorkoutPlan');
-        const videoToolCall = toolCalls.find(tc => tc.function?.name === 'findBoxingVideo');
-        const videoLibraryToolCall = toolCalls.find(tc => tc.function?.name === 'showVideoLibrary');
-        const nutritionToolCall = toolCalls.find(tc => tc.function?.name === 'createNutritionPlan');
+        console.log("sendMessage: Tool calls found:", toolCalls.length);
+        console.log("sendMessage: Tool call names:", toolCalls.map(tc => tc.function?.name));
+        
+        // Check for duplicate tool calls
+        const uniqueToolCalls = toolCalls.filter((tc, index, self) => 
+          index === self.findIndex(t => t.function?.name === tc.function?.name)
+        );
+        if (toolCalls.length !== uniqueToolCalls.length) {
+          console.warn("sendMessage: Duplicate tool calls detected!", {
+            original: toolCalls.length,
+            unique: uniqueToolCalls.length
+          });
+        }
+        
+        // Use only unique tool calls to prevent duplicate processing
+        const finalToolCalls = uniqueToolCalls;
+        const workoutToolCall = finalToolCalls.find(tc => tc.function?.name === 'createWorkoutPlan');
+        const videoToolCall = finalToolCalls.find(tc => tc.function?.name === 'findBoxingVideo');
+        const videoLibraryToolCall = finalToolCalls.find(tc => tc.function?.name === 'showVideoLibrary');
+        const nutritionToolCall = finalToolCalls.find(tc => tc.function?.name === 'createNutritionPlan');
 
 
         if (nutritionToolCall) {
@@ -616,27 +740,32 @@ const App: React.FC = () => {
                     timestamp: Date.now(),
                 };
                 
+                console.log("sendMessage: Adding nutrition response to messages");
                 setMessages(prev => [...prev, sammiResponse]);
 
             } catch (e) {
                 console.error("Nutrition plan generation from tool call failed:", e);
-                const errorMessage = "My bad, champ. Got my signals crossed on that meal plan. Let's try that again.";
+                const errorMessage = "I'm having trouble creating your meal plan right now. Let's try that again in a moment.";
                 setError(errorMessage);
                 const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
                 setMessages(prev => [...prev, errorResponse]);
             }
         } else if (workoutToolCall) {
+            console.log("sendMessage: Processing workout tool call");
             setIsGeneratingWorkout(true);
             try {
                 const args = JSON.parse(workoutToolCall.function.arguments);
                 const duration = args.duration as string | undefined;
+                console.log("sendMessage: Workout tool call args:", args);
                 
                 const lastCompletedWorkoutMessage = messages
                   .slice()
                   .reverse()
                   .find(msg => msg.workoutPlan && msg.isWorkoutCompleted);
 
+                console.log("sendMessage: Calling generateWorkoutPlan with duration:", duration);
                 const workoutPlan = await generateWorkoutPlan({ duration, lastWorkoutMessage: lastCompletedWorkoutMessage, userInfo: currentUser?.profile, journalEntries });
+                console.log("sendMessage: Generated workout plan:", workoutPlan);
                 
                 const sammiResponse: Message = {
                     id: (Date.now() + 1).toString(),
@@ -646,11 +775,12 @@ const App: React.FC = () => {
                     timestamp: Date.now(),
                 };
                 
+                console.log("sendMessage: Adding workout response to messages:", sammiResponse);
                 setMessages(prev => [...prev, sammiResponse]);
 
             } catch (e) {
                 console.error("Workout generation from tool call failed:", e);
-                const errorMessage = "Sorry, champ. I hit a snag putting that workout together. My wires must've gotten crossed. Let's try that again.";
+                const errorMessage = "I'm having trouble creating your workout right now. Let's try that again in a moment.";
                 setError(errorMessage);
                 const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
                 setMessages(prev => [...prev, errorResponse]);
@@ -668,24 +798,26 @@ const App: React.FC = () => {
                     setActiveVideo(foundVideo);
                     const sammiResponse: Message = {
                         id: (Date.now() + 1).toString(),
-                        text: `Alright, I found a solid video on "${topic}". I've pulled it up for you. Give it a watch and let's get those reps in! Stay sharp!`,
+                        text: `I found a great video on "${topic}". I've pulled it up for you. Give it a watch and let's get moving!`,
                         sender: 'sammi',
                         timestamp: Date.now(),
                     };
-                    setMessages(prev => [...prev, sammiResponse]);
+                    console.log("sendMessage: Adding video response to messages");
+                setMessages(prev => [...prev, sammiResponse]);
 
                 } else {
                     const sammiResponse: Message = {
                         id: (Date.now() + 1).toString(),
-                        text: `Looks like my usual go-to for "${topic}" isn't pulling up a direct hit right now, but don't sweat it! We can try searching for something else, or I can walk you through it. Let's keep those hands up!`,
+                        text: `I'm having trouble finding a specific video for "${topic}" right now, but that's okay! We can try searching for something else, or I can guide you through it step by step.`,
                         sender: 'sammi',
                         timestamp: Date.now(),
                     };
-                    setMessages(prev => [...prev, sammiResponse]);
+                    console.log("sendMessage: Adding video response to messages");
+                setMessages(prev => [...prev, sammiResponse]);
                 }
             } catch (e) {
                 console.error("Video search from tool call failed:", e);
-                const errorMessage = "I couldn't look up that video for you, champ. The connection must be on the ropes. Let's try again in a sec.";
+                const errorMessage = "I'm having trouble finding that video right now. Let's try again in a moment.";
                 const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
                 setMessages(prev => [...prev, errorResponse]);
             }
@@ -693,10 +825,11 @@ const App: React.FC = () => {
             setShowVideoLibrary(true);
             const sammiResponse: Message = {
                 id: (Date.now() + 1).toString(),
-                text: "Okay, champ. I've pulled up the video library for you. Pick a drill and let's get to work!",
+                text: "I've pulled up the video library for you. Choose what interests you and let's get moving!",
                 sender: 'sammi',
                 timestamp: Date.now(),
             };
+            console.log("sendMessage: Adding video library response to messages");
             setMessages(prev => [...prev, sammiResponse]);
         } else {
             // Handle regular text response from OpenAI
@@ -714,6 +847,7 @@ const App: React.FC = () => {
                 sammiResponse.workoutPlan = workoutPlan;
             }
             
+            console.log("sendMessage: Adding text response to messages");
             setMessages(prev => [...prev, sammiResponse]);
         }
 
@@ -726,7 +860,7 @@ const App: React.FC = () => {
         userAgent: navigator.userAgent
       });
       
-      let errorMessage = "Sorry, champ. I'm having a bit of trouble connecting. Let's take a quick breather and try again in a moment.";
+      let errorMessage = "I'm having a bit of trouble connecting right now. Let's take a moment and try again.";
       
       // Provide more specific error messages for mobile users
       if (e.message?.includes('fetch')) {
@@ -760,7 +894,7 @@ const App: React.FC = () => {
 
     const updatedUser = { ...currentUser, profile: data };
     setCurrentUser(updatedUser);
-    localStorage.setItem('soulGoodBoxingUser', JSON.stringify(updatedUser));
+    localStorage.setItem('soulGoodFitnessUser', JSON.stringify(updatedUser));
     
     setIsOnboarding(false);
     setMessages([]);
@@ -791,7 +925,7 @@ const App: React.FC = () => {
 
     } catch (e) {
       console.error("Failed to fetch welcome message:", e);
-      const errorMessage = "Sorry, champ. I'm having a bit of trouble connecting. Let's take a quick breather and try again in a moment.";
+      const errorMessage = "I'm having a bit of trouble connecting right now. Let's take a moment and try again.";
       setError(errorMessage);
        const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
       setMessages(prev => [...prev, errorResponse]);
@@ -906,7 +1040,7 @@ const App: React.FC = () => {
                     />
                     <TopicButton
                         topic="🥗 Nutritional Tips"
-                        onClick={() => sendMessage("Can you give me a quick nutritional tip for boxing?", 'user')}
+                        onClick={() => sendMessage("Can you give me a quick nutritional tip for fitness?", 'user')}
                         disabled={isLoading}
                     />
                     <TopicButton

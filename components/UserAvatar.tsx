@@ -68,16 +68,16 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8' }) => {
     console.log(`Avatar loaded successfully for user: ${user.name} using service ${currentServiceIndex}`);
   };
   
-  console.log("UserAvatar Debug:", {
-    userId: user.id,
-    userName: user.name,
-    currentAvatarUrl,
-    currentServiceIndex,
-    initials,
-    imageError,
-    isMobileSafari,
-    userAgent: navigator.userAgent
-  });
+  // console.log("UserAvatar Debug:", {
+  //   userId: user.id,
+  //   userName: user.name,
+  //   currentAvatarUrl,
+  //   currentServiceIndex,
+  //   initials,
+  //   imageError,
+  //   isMobileSafari,
+  //   userAgent: navigator.userAgent
+  // });
 
   return (
     <div className={`${size} rounded-full p-0.5 bg-gradient-to-tr from-fuchsia-500 to-pink-500 flex-shrink-0`} title={`Avatar for ${user.name}`}>
