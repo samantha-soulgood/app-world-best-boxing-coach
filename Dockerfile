@@ -9,7 +9,7 @@ COPY package.json package-lock.json* ./
 # Install dependencies
 RUN npm install
 
-# Copy source code
+# Copy source code (including server files)
 COPY . ./
 
 # Build the frontend
@@ -17,11 +17,7 @@ RUN npm run build
 
 # Install server dependencies
 WORKDIR /app/server
-COPY server/package.json ./
 RUN npm install
-
-# Copy server source code (including public folder with placeholder.html)
-COPY server/ ./
 
 # Go back to app root
 WORKDIR /app
