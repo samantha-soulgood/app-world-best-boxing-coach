@@ -524,6 +524,10 @@ const App: React.FC = () => {
 
     console.log("Sending message:", { text: text.trim(), sender, timestamp: Date.now() });
     console.log("User agent:", navigator.userAgent);
+    console.log("API Key available:", !!process.env.API_KEY);
+    console.log("API Key length:", process.env.API_KEY?.length || 0);
+    console.log("Connection type:", navigator.connection?.effectiveType || 'unknown');
+    console.log("Online status:", navigator.onLine);
 
     const userMessage: Message = { id: Date.now().toString(), text, sender, timestamp: Date.now() };
     setMessages(prev => [...prev, userMessage]);
@@ -533,7 +537,14 @@ const App: React.FC = () => {
     try {
         if (!chatRef.current) throw new Error("Chat session not initialized.");
 
-        const response = await chatRef.current.sendMessage({ message: text });
+        // Add timeout for mobile Safari
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Request timeout - mobile Safari may have network restrictions')), 30000);
+        });
+
+        const responsePromise = chatRef.current.sendMessage({ message: text });
+        
+        const response = await Promise.race([responsePromise, timeoutPromise]);
         const workoutToolCall = response.functionCalls?.find(fc => fc.name === 'createWorkoutPlan');
         const videoToolCall = response.functionCalls?.find(fc => fc.name === 'findBoxingVideo');
         const videoLibraryToolCall = response.functionCalls?.find(fc => fc.name === 'showVideoLibrary');
@@ -669,6 +680,12 @@ const App: React.FC = () => {
         errorMessage = "API configuration issue. Please refresh the page and try again.";
       } else if (e.message?.includes('CORS')) {
         errorMessage = "Browser security issue. Please try refreshing the page.";
+      } else if (e.message?.includes('Failed to fetch') || e.message?.includes('network')) {
+        errorMessage = "Network error: " + e.message;
+      } else if (e.message?.includes('timeout')) {
+        errorMessage = "Request timed out. Please try again.";
+      } else {
+        errorMessage = `Connection error: ${e.message || 'Unknown error'}`;
       }
       
       setError(errorMessage);
