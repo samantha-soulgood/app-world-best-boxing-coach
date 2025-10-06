@@ -401,7 +401,7 @@ const App: React.FC = () => {
     // Use OpenAI API instead of Google Gemini
     const { duration, lastWorkoutMessage, userInfo, journalEntries } = options;
     
-    let prompt = 'Your task is to create a personalized, fitness-focused workout plan.\n\n';
+    let prompt = 'Your task is to create a FUN and CHALLENGING workout plan that feels like an exciting adventure!\n\n';
 
     // User Profile Section
     prompt += '## User Profile\n';
@@ -448,6 +448,15 @@ const App: React.FC = () => {
     if (duration) {
         prompt += `- Target Duration: ${duration}\n`;
     }
+
+    // Fun & Challenge Requirements
+    prompt += '\n## Workout Requirements\n';
+    prompt += '- Make this workout FUN and EXCITING - use creative exercise names and playful challenges\n';
+    prompt += '- Make it CHALLENGING - push the user to their next level with progressive difficulty\n';
+    prompt += '- Include variety in intensity - mix high-energy bursts with focused strength work\n';
+    prompt += '- Use motivational, energetic language that makes exercises feel exciting\n';
+    prompt += '- Add achievement moments that make the user feel strong and accomplished\n';
+    prompt += '- Create fun exercise combinations or mini-circuits\n';
 
     // Instructions and Constraints Section
     prompt += '\n## Instructions & Constraints\n';
