@@ -198,7 +198,21 @@ const App: React.FC = () => {
       }
       if (!aiRef.current) {
         console.log("Initializing GoogleGenAI with API key length:", process.env.API_KEY.length);
-        aiRef.current = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        
+        // Check if we're on mobile Safari and configure accordingly
+        const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
+        
+        const config: any = { 
+          apiKey: process.env.API_KEY 
+        };
+        
+        // For mobile Safari, disable streaming to avoid ReadableStream issues
+        if (isMobileSafari) {
+          console.log("Mobile Safari detected - configuring non-streaming mode");
+          config.dangerouslyAllowBrowser = true;
+        }
+        
+        aiRef.current = new GoogleGenAI(config);
       }
       const history = historyMessages.map(msg => ({
           role: msg.sender === 'user' ? 'user' : 'model' as const,
@@ -212,14 +226,24 @@ const App: React.FC = () => {
       }
 
 
-      chatRef.current = aiRef.current.chats.create({
+      const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
+      
+      const chatConfig: any = {
         model: 'gemini-2.5-flash',
         config: {
           systemInstruction: systemInstruction,
           tools: [{ functionDeclarations: [createWorkoutPlanFunction, findBoxingVideoFunction, showVideoLibraryFunction, createNutritionPlanFunction] }]
         },
         history: history,
-      });
+      };
+      
+      // For mobile Safari, configure non-streaming mode
+      if (isMobileSafari) {
+        chatConfig.config.streaming = false;
+        console.log("Configuring chat for non-streaming mode (mobile Safari)");
+      }
+      
+      chatRef.current = aiRef.current.chats.create(chatConfig);
       setError(null);
     } catch (e) {
       console.error(e);
