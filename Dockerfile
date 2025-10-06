@@ -12,9 +12,7 @@ RUN npm install
 # Copy source code
 COPY . ./
 
-# Create environment file
-RUN echo "API_KEY=PLACEHOLDER" > ./.env
-RUN echo "GEMINI_API_KEY=PLACEHOLDER" >> ./.env
+# Don't create placeholder env file - use actual environment variables from deployment
 
 # Debug: Show what files we have
 RUN ls -la
