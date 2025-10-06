@@ -129,6 +129,13 @@ app.use('/api-proxy', async (req, res, next) => {
         const userAgent = req.headers['user-agent'] || '';
         const isMobileSafari = /iPhone|iPad|iPod/.test(userAgent) && /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS/.test(userAgent);
         
+        console.log('Request details:', {
+            userAgent,
+            isMobileSafari,
+            method: req.method,
+            contentType: req.headers['content-type']
+        });
+        
         const axiosConfig = {
             method: req.method,
             url: apiUrl,
@@ -137,6 +144,15 @@ app.use('/api-proxy', async (req, res, next) => {
             validateStatus: function (status) {
                 return true; // Accept any status code, we'll pipe it through
             },
+            // For mobile Safari, configure axios to avoid ReadableStream in requests
+            ...(isMobileSafari && {
+                transformRequest: [(data) => {
+                    // Ensure data is properly serialized for mobile Safari
+                    return JSON.stringify(data);
+                }],
+                maxContentLength: Infinity,
+                maxBodyLength: Infinity
+            })
         };
 
         if (['POST', 'PUT', 'PATCH'].includes(req.method.toUpperCase())) {
@@ -145,7 +161,26 @@ app.use('/api-proxy', async (req, res, next) => {
         // For GET, DELETE, etc., axiosConfig.data will remain undefined,
         // and axios will not send a request body.
 
-        const apiResponse = await axios(axiosConfig);
+        let apiResponse;
+        
+        if (isMobileSafari) {
+            // Use Node.js fetch for mobile Safari to avoid ReadableStream issues
+            console.log('Using Node.js fetch for mobile Safari');
+            const fetchResponse = await fetch(apiUrl, {
+                method: req.method,
+                headers: outgoingHeaders,
+                body: req.body ? JSON.stringify(req.body) : undefined
+            });
+            
+            apiResponse = {
+                status: fetchResponse.status,
+                headers: Object.fromEntries(fetchResponse.headers.entries()),
+                data: await fetchResponse.json()
+            };
+        } else {
+            // Use axios for other browsers
+            apiResponse = await axios(axiosConfig);
+        }
 
         // Pass through response headers from Gemini API to the client
         for (const header in apiResponse.headers) {
