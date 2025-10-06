@@ -20,7 +20,7 @@ WORKDIR /app/server
 COPY server/package.json ./
 RUN npm install
 
-# Copy server source code
+# Copy server source code (including public folder with placeholder.html)
 COPY server/ ./
 
 # Go back to app root
