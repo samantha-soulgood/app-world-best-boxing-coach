@@ -8,6 +8,5 @@ README.md
 coverage
 .nyc_output
 .coverage
-dist
 .DS_Store
 *.log
