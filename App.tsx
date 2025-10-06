@@ -439,6 +439,7 @@ const App: React.FC = () => {
             .filter(name => name !== 'rest'); // Don't include 'Rest' in the list
         const uniqueLastExercises = [...new Set(lastWorkoutExercises)];
         prompt += `- Exercises from last workout to vary from: ${uniqueLastExercises.join(', ')}\n`;
+        prompt += `- IMPORTANT: Do NOT repeat more than 50% of exercises from the previous workout. Mix in new exercises and variations to keep workouts fresh and engaging.\n`;
 
     } else {
         prompt += `This is the user's first workout. Create a plan based on their profile.\n`;
