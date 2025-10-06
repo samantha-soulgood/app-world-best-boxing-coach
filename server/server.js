@@ -15,7 +15,7 @@ const { URLSearchParams, URL } = require('url');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 // Support both OpenAI and Groq APIs
 const externalApiBaseUrl = process.env.GROQ_API_KEY ? 'https://api.groq.com' : 'https://api.openai.com';
 const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY || process.env.API_KEY;
@@ -58,6 +58,16 @@ const proxyLimiter = rateLimit({
         console.warn(`Rate limit exceeded for IP: ${req.ip}. Path: ${req.path}`);
         res.status(options.statusCode).send(options.message);
     }
+});
+
+// Health check endpoint
+app.get('/api-proxy/health', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        apiKey: apiKey ? 'configured' : 'missing',
+        externalApiBaseUrl: externalApiBaseUrl,
+        timestamp: new Date().toISOString()
+    });
 });
 
 // Apply the rate limiter to the /api-proxy route before the main proxy logic
