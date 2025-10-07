@@ -300,26 +300,27 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   const isLastExerciseOverall = currentExerciseOverallIndex === totalExercises - 1;
 
   return (
-    <div className="fixed inset-0 bg-zinc-900 z-50 flex flex-col p-4 md:p-8 font-sans">
+    <div className="fixed inset-0 bg-zinc-900 z-50 flex flex-col font-sans overflow-hidden">
       {/* Header */}
-      <header className="flex items-center justify-between mb-4">
-        <div>
-            <h1 className="text-2xl md:text-3xl font-display font-bold text-white tracking-wider uppercase">{currentPhase.name}</h1>
-            <p className="text-fuchsia-400 font-semibold">{`Exercise ${currentExerciseOverallIndex + 1} of ${totalExercises}`}</p>
+      <header className="flex items-center justify-between p-4 md:p-8 flex-shrink-0">
+        <div className="flex-1 min-w-0">
+            <h1 className="text-xl md:text-3xl font-display font-bold text-white tracking-wider uppercase truncate">{currentPhase.name}</h1>
+            <p className="text-fuchsia-400 font-semibold text-sm md:text-base">{`Exercise ${currentExerciseOverallIndex + 1} of ${totalExercises}`}</p>
             {circuitRepetitions > 0 && currentPhase.name === 'Main Workout' && (
-              <div className="text-yellow-400 font-semibold text-sm">
+              <div className="text-yellow-400 font-semibold text-xs md:text-sm">
                 <p>{`Set ${getCurrentSetNumber()} - Round ${currentCircuitRound} of ${circuitRepetitions}`}</p>
                 <p className="text-xs text-yellow-300">{`Set ${getCurrentSetNumber()} of ${getTotalSets()} (each repeats ${circuitRepetitions} times)`}</p>
               </div>
             )}
         </div>
-        <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
+        <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors flex-shrink-0 ml-2">
           <CloseIcon />
         </button>
       </header>
 
-      {/* Main Content */}
-      <div className="relative flex-1 flex flex-col items-center justify-center text-center">
+      {/* Main Content - Scrollable */}
+      <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-4">
+        <div className="relative flex flex-col items-center justify-center text-center min-h-full">
          {isWorkoutPaused && (
             <div className="absolute inset-0 bg-zinc-900/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl animate-fade-in">
                 <h3 className="text-4xl font-display font-bold text-white tracking-wider">PAUSED</h3>
@@ -344,9 +345,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
             </div>
           )}
         <div className="bg-zinc-800 p-4 sm:p-6 md:p-8 rounded-2xl w-full max-w-lg mb-4 sm:mb-8 border border-zinc-700">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white mb-2">{currentExercise.name}</h2>
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-4">{`${currentExercise.sets} sets x ${currentExercise.reps} reps`}</p>
-            {currentExercise.notes && <p className="text-md text-gray-400">{currentExercise.notes}</p>}
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white mb-2 break-words leading-tight">{currentExercise.name}</h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-4">{`${currentExercise.sets} sets x ${currentExercise.reps} reps`}</p>
+            {currentExercise.notes && <p className="text-sm text-gray-400 break-words">{currentExercise.notes}</p>}
         </div>
         
         {exerciseDurationInSeconds > 0 ? (
