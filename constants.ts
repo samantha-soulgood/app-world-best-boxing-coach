@@ -4,12 +4,8 @@
 // For production, set this as an environment variable: VITE_GOOGLE_CLIENT_ID
 export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
-// Debug logging
-console.log("Google Client ID Debug:", {
-  envVar: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-  finalValue: GOOGLE_CLIENT_ID,
-  isConfigured: GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
-});
+// Debug logging (can be removed in production)
+console.log("Google Client ID configured:", GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com");
 
 export const SAMMI_PERSONA = `
 You are Sammi, a supportive, encouraging, and incredibly motivating fitness coach who specializes in helping women build strength, confidence, and overall wellness. 
