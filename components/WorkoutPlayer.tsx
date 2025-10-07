@@ -374,18 +374,28 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
         <button
             onClick={handlePrevExercise}
             disabled={isFirstExerciseOverall}
-            className="flex items-center gap-2 p-3 bg-zinc-800 rounded-lg text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-700 transition-colors"
+            className="flex items-center justify-center p-2 sm:p-3 bg-zinc-800 rounded-lg text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-700 transition-colors relative group"
+            title="Previous Exercise"
         >
             <PrevIcon />
-            <span className="hidden sm:inline">Previous</span>
+            <span className="hidden sm:inline ml-2">Previous</span>
+            {/* Mobile tooltip */}
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none sm:hidden">
+                Previous
+            </div>
         </button>
 
         <button
             onClick={handleSkipExercise}
-            className="flex items-center gap-2 p-3 bg-zinc-800 rounded-lg text-white font-semibold hover:bg-zinc-700 transition-colors"
+            className="flex items-center justify-center p-2 sm:p-3 bg-zinc-800 rounded-lg text-white font-semibold hover:bg-zinc-700 transition-colors relative group"
+            title={isLastExerciseOverall ? 'Finish Workout' : (isRestPeriod ? 'Skip Rest' : 'Skip Exercise')}
         >
-            <span className="hidden sm:inline">{isLastExerciseOverall ? 'Finish' : (isRestPeriod ? 'Skip Rest' : 'Skip')}</span>
+            <span className="hidden sm:inline mr-2">{isLastExerciseOverall ? 'Finish' : (isRestPeriod ? 'Skip Rest' : 'Skip')}</span>
             <NextIcon />
+            {/* Mobile tooltip */}
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none sm:hidden">
+                {isLastExerciseOverall ? 'Finish' : (isRestPeriod ? 'Skip Rest' : 'Skip')}
+            </div>
         </button>
       </footer>
     </div>

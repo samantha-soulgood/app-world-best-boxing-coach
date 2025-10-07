@@ -1161,9 +1161,14 @@ const App: React.FC = () => {
                         onClick={() => setIsTopicsVisible(!isTopicsVisible)}
                         disabled={isLoading}
                         aria-label={isTopicsVisible ? 'Hide topics' : 'Show topics'}
-                        className="flex-shrink-0 p-4 bg-zinc-800/80 border border-zinc-700 rounded-xl text-fuchsia-300 hover:bg-zinc-700 hover:text-fuchsia-200 transition-all duration-200 disabled:opacity-50"
+                        className="flex-shrink-0 p-2 sm:p-4 bg-zinc-800/80 border border-zinc-700 rounded-xl text-fuchsia-300 hover:bg-zinc-700 hover:text-fuchsia-200 transition-all duration-200 disabled:opacity-50 relative group"
+                        title={isTopicsVisible ? 'Hide topics' : 'Show topics'}
                     >
                        {isTopicsVisible ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                       {/* Mobile tooltip */}
+                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none sm:hidden whitespace-nowrap">
+                           {isTopicsVisible ? 'Hide topics' : 'Show topics'}
+                       </div>
                     </button>
               </div>
           </div>
