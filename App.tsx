@@ -1173,14 +1173,6 @@ const App: React.FC = () => {
                         }}
                         disabled={isLoading}
                     />
-                    <TopicButton
-                        topic="🏃‍♀️ Show Video Drills"
-                        onClick={() => {
-                            sendMessage("Show me the video library.", 'user');
-                            scrollToEnd();
-                        }}
-                        disabled={isLoading}
-                    />
                   </div>
               </div>
               <div className="flex items-start gap-2">

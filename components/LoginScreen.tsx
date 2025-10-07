@@ -41,6 +41,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   // Check if Google Client ID is configured.
   const isGoogleConfigured = GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
+  // Debug logging for mobile
+  console.log("LoginScreen Debug:", {
+    isGoogleConfigured,
+    GOOGLE_CLIENT_ID,
+    userAgent: navigator.userAgent,
+    isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
+    windowGoogle: !!window.google
+  });
+
   // Default to username login if Google is not configured to avoid showing a broken button.
   const [showFightNameLogin, setShowFightNameLogin] = useState(!isGoogleConfigured);
 

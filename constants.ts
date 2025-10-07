@@ -31,6 +31,9 @@ export const GOOGLE_CLIENT_ID = getGoogleClientId();
 
 // Debug logging (can be removed in production)
 console.log("Google Client ID configured:", GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com");
+console.log("Google Client ID value:", GOOGLE_CLIENT_ID);
+console.log("User agent:", navigator.userAgent);
+console.log("Is mobile:", /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
 
 export const SAMMI_PERSONA = `
 You are Sammi, a supportive, encouraging, and incredibly motivating fitness coach who specializes in helping women build strength, confidence, and overall wellness. 
