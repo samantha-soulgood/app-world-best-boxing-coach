@@ -63,8 +63,7 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
         setCircuitRepetitions(repeatCount);
         setCurrentCircuitRound(1);
         console.log(`Set setup: ${repeatCount} repetitions detected for current exercise`);
-      } else if (circuitRepetitions === 0) {
-        // Only reset if we haven't already detected repetitions for this set
+      } else {
         // Look for any exercise in the current set that has repetition instructions
         const currentSetStart = findSetStartIndex();
         const currentSetEnd = findSetEndIndex();
@@ -81,8 +80,12 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
           }
         }
       }
+    } else {
+      // Reset when not in Main Workout phase
+      setCircuitRepetitions(0);
+      setCurrentCircuitRound(1);
     }
-  }, [currentPhaseIndex, currentExerciseIndex, workout, circuitRepetitions]);
+  }, [currentPhaseIndex, currentExerciseIndex, workout]);
 
 
   const startRestPeriod = (duration: number, message: string) => {
@@ -103,6 +106,14 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   const advanceToNextExercise = () => {
     // Check if we're in the Main Workout phase and need to repeat the circuit
     const isMainWorkoutPhase = currentPhase?.name === 'Main Workout';
+    
+    console.log('advanceToNextExercise called:', {
+      isMainWorkoutPhase,
+      currentExerciseIndex,
+      totalExercises: currentPhase?.exercises.length,
+      circuitRepetitions,
+      currentCircuitRound
+    });
     
     if (currentExerciseIndex < (currentPhase?.exercises.length || 0) - 1) {
       console.log('Moving to next exercise in same phase');
