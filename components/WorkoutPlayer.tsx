@@ -61,17 +61,38 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
         setCircuitRepetitions(repeatCount);
         setCurrentCircuitRound(1);
         console.log(`Set setup: ${repeatCount} repetitions detected for current exercise`);
-      } else {
-        // Reset if we're not at a set repetition point
-        setCircuitRepetitions(0);
-        setCurrentCircuitRound(1);
+      } else if (circuitRepetitions === 0) {
+        // Only reset if we haven't already detected repetitions for this set
+        // Look for any exercise in the current set that has repetition instructions
+        const currentSetStart = findSetStartIndex();
+        const currentSetEnd = findSetEndIndex();
+        
+        for (let i = currentSetStart; i <= currentSetEnd; i++) {
+          const exercise = currentPhase.exercises[i];
+          const setRepeatMatch = exercise?.notes?.match(/Repeat this set (\d+) times?/i);
+          if (setRepeatMatch) {
+            const repeatCount = parseInt(setRepeatMatch[1]);
+            setCircuitRepetitions(repeatCount);
+            setCurrentCircuitRound(1);
+            console.log(`Set setup: ${repeatCount} repetitions detected from set exercise at index ${i}`);
+            break;
+          }
+        }
       }
     }
-  }, [currentPhaseIndex, currentExerciseIndex, workout]);
+  }, [currentPhaseIndex, currentExerciseIndex, workout, circuitRepetitions]);
 
 
   const handleNextExercise = () => {
     console.log('handleNextExercise called - advancing to next exercise');
+    console.log('Current state:', {
+      currentPhaseIndex,
+      currentExerciseIndex,
+      phaseName: currentPhase?.name,
+      totalExercises: currentPhase?.exercises.length,
+      circuitRepetitions,
+      currentCircuitRound
+    });
     
     // Check if we're in the Main Workout phase and need to repeat the circuit
     const isMainWorkoutPhase = currentPhase?.name === 'Main Workout';
@@ -81,11 +102,13 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       setCurrentExerciseIndex(prev => prev + 1);
     } else if (isMainWorkoutPhase && circuitRepetitions > 0) {
       // We're at the end of a set in Main Workout phase
+      console.log(`At end of set. Current round: ${currentCircuitRound}, Total repetitions: ${circuitRepetitions}`);
       if (currentCircuitRound < circuitRepetitions) {
         console.log(`Repeating set: Round ${currentCircuitRound + 1} of ${circuitRepetitions}`);
         setCurrentCircuitRound(prev => prev + 1);
         // Find the start of this set and reset to it
         const setStartIndex = findSetStartIndex();
+        console.log(`Resetting to set start index: ${setStartIndex}`);
         setCurrentExerciseIndex(setStartIndex);
       } else {
         console.log('Set completed, moving to next phase');
@@ -123,6 +146,22 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
     }
     // If no previous set found, this is the first set
     return 0;
+  };
+
+  // Helper function to find the end index of the current set
+  const findSetEndIndex = () => {
+    if (!currentPhase) return (currentPhase.exercises.length || 0) - 1;
+    
+    // Look forwards from current exercise to find the end of this set
+    for (let i = currentExerciseIndex; i < (currentPhase.exercises.length || 0); i++) {
+      const exercise = currentPhase.exercises[i];
+      if (exercise.notes?.match(/Repeat this set (\d+) times?/i)) {
+        // Found the end of this set
+        return i;
+      }
+    }
+    // If no set end found, this is the last set
+    return (currentPhase.exercises.length || 0) - 1;
   };
 
   const handlePrevExercise = () => {

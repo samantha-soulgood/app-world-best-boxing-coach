@@ -462,11 +462,12 @@ const App: React.FC = () => {
     prompt += '\n## Workout Structure\n';
     prompt += `Create a ${duration || '30-minute'} workout with 4 phases:\n`;
     prompt += '1. **Warm-up**: 3-4 dynamic exercises (30s-1min each)\n';
-    prompt += '2. **Main Workout Sets**: Create 2-3 different sets of 3-4 exercises each (45s-1min each) + Rest (15s) after each exercise. For each set, add "Repeat this set X times" in the last exercise notes. Calculate X based on duration: 15min=1x, 20min=2x, 30min=3x, 45min=4x, 60min=5x, 90min=8x, 120min=12x, 180min=18x, 240min=24x, 360min=36x. Example: Set 1 has 4 exercises, last exercise notes say "Repeat this set 3 times". Set 2 has 3 exercises, last exercise notes say "Repeat this set 3 times".\n';
+    prompt += '2. **Main Workout Sets**: Create 2-3 different sets of 3-4 exercises each (45s-1min each) + Rest (15s) after each exercise. For each set, add "Repeat this set X times" in the last exercise notes. Calculate X based on duration: 15min=1x, 20min=2x, 30min=3x, 45min=4x, 60min=5x, 90min=8x, 120min=12x, 180min=18x, 240min=24x, 360min=36x.\n\n**MANDATORY EXAMPLE FORMAT:**\nSet 1: Exercise 1 (45 seconds), Exercise 2 (45 seconds), Exercise 3 (45 seconds), Exercise 4 (45 seconds, notes: "Repeat this set 5 times")\nSet 2: Exercise 5 (45 seconds), Exercise 6 (45 seconds), Exercise 7 (45 seconds, notes: "Repeat this set 5 times")\nSet 3: Exercise 8 (45 seconds), Exercise 9 (45 seconds), Exercise 10 (45 seconds, notes: "Repeat this set 5 times")\n\n**CRITICAL: Every set must have "Repeat this set X times" in the last exercise notes - this is REQUIRED!**\n';
     prompt += '3. **Core Finisher**: 3-4 core exercises (30-45s each)\n';
     prompt += '4. **Cool-down**: 3-4 static stretches (30s each)\n\n';
     prompt += '## Key Requirements\n';
     prompt += '- All exercises need `duration` string (e.g., "45 seconds")\n';
+    prompt += '- **MANDATORY: Each set\'s last exercise must have notes: "Repeat this set X times"**\n';
     prompt += '- Adapt to injuries: modify or avoid affected areas\n';
     prompt += '- Vary 50%+ exercises from last workout\n';
     prompt += '- Progress difficulty based on last RPE/feedback\n';
