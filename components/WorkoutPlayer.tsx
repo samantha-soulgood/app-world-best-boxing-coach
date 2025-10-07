@@ -52,16 +52,16 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   useEffect(() => {
     const currentPhase = workout.workout.phases[currentPhaseIndex];
     if (currentPhase?.name === 'Main Workout') {
-      // Look for "Repeat this circuit X times" in any exercise notes
+      // Look for "Repeat this set X times" in any exercise notes
       const repeatMatch = currentPhase.exercises
-        .map(ex => ex.notes?.match(/Repeat this circuit (\d+) times?/i))
+        .map(ex => ex.notes?.match(/Repeat this set (\d+) times?/i))
         .find(match => match);
       
       if (repeatMatch) {
         const repeatCount = parseInt(repeatMatch[1]);
         setCircuitRepetitions(repeatCount);
         setCurrentCircuitRound(1);
-        console.log(`Circuit setup: ${repeatCount} repetitions detected`);
+        console.log(`Set setup: ${repeatCount} repetitions detected`);
       }
     }
   }, [currentPhaseIndex, workout]);
@@ -77,13 +77,13 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       console.log('Moving to next exercise in same phase');
       setCurrentExerciseIndex(prev => prev + 1);
     } else if (isMainWorkoutPhase && circuitRepetitions > 0) {
-      // We're at the end of a circuit in Main Workout phase
+      // We're at the end of a set in Main Workout phase
       if (currentCircuitRound < circuitRepetitions) {
-        console.log(`Repeating circuit: Round ${currentCircuitRound + 1} of ${circuitRepetitions}`);
+        console.log(`Repeating set: Round ${currentCircuitRound + 1} of ${circuitRepetitions}`);
         setCurrentCircuitRound(prev => prev + 1);
-        setCurrentExerciseIndex(0); // Start over with first exercise in circuit
+        setCurrentExerciseIndex(0); // Start over with first exercise in set
       } else {
-        console.log('Circuit completed, moving to next phase');
+        console.log('Set completed, moving to next phase');
         // Circuit is complete, move to next phase
         if (currentPhaseIndex < workout.workout.phases.length - 1) {
           setCurrentPhaseIndex(prev => prev + 1);
@@ -144,7 +144,7 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
             <h1 className="text-2xl md:text-3xl font-display font-bold text-white tracking-wider uppercase">{currentPhase.name}</h1>
             <p className="text-fuchsia-400 font-semibold">{`Exercise ${currentExerciseOverallIndex + 1} of ${totalExercises}`}</p>
             {circuitRepetitions > 0 && currentPhase.name === 'Main Workout' && (
-              <p className="text-yellow-400 font-semibold text-sm">{`Circuit Round ${currentCircuitRound} of ${circuitRepetitions}`}</p>
+              <p className="text-yellow-400 font-semibold text-sm">{`Set Round ${currentCircuitRound} of ${circuitRepetitions}`}</p>
             )}
         </div>
         <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
