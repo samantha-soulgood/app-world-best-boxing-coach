@@ -464,7 +464,7 @@ const App: React.FC = () => {
     prompt += "2.  **Adapt to Requests & Injuries:**\n    - If the user's request is specific (e.g., 'upper body workout'), the 'Main Workout' phase MUST reflect this focus.\n    - Adapt intelligently to injuries. If an upper body injury is noted, create a lower-body and core-focused workout. If a lower body injury is noted, create an upper-body and core-focused workout. The goal is to train around the injury safely.\n";
     prompt += "3.  **Workout Structure (Adapt to Time Limit):** The workout MUST respect the user's requested duration. Structure the workout with these phases:\n    - A 'Warm-up' phase with 3-4 dynamic exercises (30 seconds to 1 minute each) - allocate 3-4 minutes\n    - A 'Main Workout' circuit of exactly 4 exercises (45 seconds to 1 minute each, with 15-second breaks between exercises)\n    - A 'Core Finisher' circuit with 3-4 core exercises (30-45 seconds each) - allocate 2-3 minutes if time permits\n    - A 'Cool-down' phase with 3-4 static stretches (30 seconds each) - allocate 2-3 minutes\n    **IMPORTANT: The Main Workout circuit repetition is handled by the circuit format instructions below.**\n";
     prompt += "4.  **Duration is Mandatory:** EVERY exercise, including warm-ups, main exercises, core work, and cool-down stretches, MUST have a valid `duration` string (e.g., \"45 seconds\", \"1 minute\"). For exercises based on repetitions (e.g., '10 reps'), provide a reasonable estimated duration. For exercises that are purely timed (like planks), `reps` should be 'N/A' and `sets` should be 1. For rest periods, use name 'Rest' and duration '15 seconds'.\n";
-    prompt += "5.  **CRITICAL: Main Workout Circuit Format:** The 'Main Workout' phase MUST be structured as a circuit. Create exactly this sequence:\n    - Exercise 1 (45s-1min) → Rest (15s) → Exercise 2 (45s-1min) → Rest (15s) → Exercise 3 (45s-1min) → Rest (15s) → Exercise 4 (45s-1min)\n    - In the LAST exercise's notes field, add: 'Repeat this circuit X times' where X = 1 for 15min, X = 2 for 20min, X = 3 for 30+min workouts\n    - Each Rest exercise: name='Rest', duration='15 seconds', reps='N/A', sets=1, notes='Take a quick breather!'\n    - DO NOT repeat exercises in the JSON - the app will handle circuit repetition automatically\n    - EXAMPLE: For a 30-minute workout, the last exercise notes should say 'Repeat this circuit 3 times'\n";
+    prompt += "5.  **CRITICAL: Main Workout Circuit Format:** The 'Main Workout' phase MUST be structured as a circuit. Create exactly this sequence:\n    - Exercise 1 (45s-1min) → Rest (15s) → Exercise 2 (45s-1min) → Rest (15s) → Exercise 3 (45s-1min) → Rest (15s) → Exercise 4 (45s-1min)\n    - In the LAST exercise's notes field, add: 'Repeat this circuit X times' where X = 1 for 15min, X = 2 for 20min, X = 3 for 30+min workouts\n    - Each Rest exercise: name='Rest', duration='15 seconds', reps='N/A', sets=1, notes='Take a quick breather!'\n    - DO NOT repeat exercises in the JSON - the app will handle circuit repetition automatically\n    - EXAMPLE: For a 30-minute workout, the last exercise notes should say 'Repeat this circuit 3 times'\n    - EXAMPLE JSON structure: [{\"name\":\"Squats\",\"duration\":\"45 seconds\",\"notes\":\"\"},{\"name\":\"Rest\",\"duration\":\"15 seconds\",\"notes\":\"Take a quick breather!\"},{\"name\":\"Push-ups\",\"duration\":\"1 minute\",\"notes\":\"\"},{\"name\":\"Rest\",\"duration\":\"15 seconds\",\"notes\":\"Take a quick breather!\"},{\"name\":\"Lunges\",\"duration\":\"45 seconds\",\"notes\":\"\"},{\"name\":\"Rest\",\"duration\":\"15 seconds\",\"notes\":\"Take a quick breather!\"},{\"name\":\"Plank\",\"duration\":\"1 minute\",\"notes\":\"Repeat this circuit 3 times\"}]\n";
     prompt += "6.  **Exercise Variety:** To keep workouts engaging, you MUST ensure variety. For the 'Warm-up', 'Main Workout', and 'Core Finisher' phases, at least 50% of the exercises MUST be different from the exercises in the user's last workout (provided in the 'Workout Request' section). You can reuse foundational exercises like 'Jumping Jacks' or 'Plank' but should prioritize introducing new movements or variations.\n";
     prompt += "7.  **Apply Progressive Overload:** The new workout MUST be a slight progression in difficulty from the last one. Refer to the user's last workout details and their RPE/feedback. Apply one or more of the following principles subtly:\n    - For strength exercises, increase reps by 1-2 (e.g., '10 Push-ups' becomes '12 Push-ups').\n    - For timed exercises, increase duration by 5-15 seconds (e.g., '45 second Plank' becomes '1 minute Plank').\n    - If an exercise from the last workout is repeated, suggest a harder variation or add a note about increasing weight if applicable (e.g., 'Bodyweight Squat' could become 'Jump Squat', or a note 'Use slightly heavier dumbbells if available' can be added).\n    - Slightly decrease rest time between exercises (e.g., from '30 seconds' to '25 seconds').\n    This progression should be challenging but achievable. If the user's last RPE was very high (9-10), the progression should be minimal or focus on form improvement rather than increased load.\n";
 
@@ -475,7 +475,7 @@ const App: React.FC = () => {
       messages: [
         {
           role: "system",
-          content: `${SAMMI_PERSONA}\n\nYou must respond with valid JSON that matches this schema: ${JSON.stringify(workoutSchema)}`
+          content: `${SAMMI_PERSONA}\n\nYou must respond with valid JSON that matches this schema: ${JSON.stringify(workoutSchema)}\n\nCRITICAL REMINDER: The Main Workout phase MUST be structured as a circuit with exactly 4 exercises plus rest periods, and the last exercise must have notes saying "Repeat this circuit X times" where X is based on duration.`
         },
         {
           role: "user", 
@@ -510,6 +510,16 @@ const App: React.FC = () => {
     console.log("generateWorkoutPlan: Parsing workout JSON:", workoutJsonString);
     const parsedWorkout = JSON.parse(workoutJsonString);
     console.log("generateWorkoutPlan: Parsed workout:", parsedWorkout);
+    
+    // Debug: Check if Main Workout phase exists and has circuit format
+    const mainWorkoutPhase = parsedWorkout.workout?.phases?.find((phase: any) => phase.name === 'Main Workout');
+    if (mainWorkoutPhase) {
+      console.log("Main Workout phase found with exercises:", mainWorkoutPhase.exercises.length);
+      console.log("Main Workout exercises:", mainWorkoutPhase.exercises.map((ex: any) => ({ name: ex.name, notes: ex.notes })));
+    } else {
+      console.log("No Main Workout phase found! Available phases:", parsedWorkout.workout?.phases?.map((p: any) => p.name));
+    }
+    
     return parsedWorkout;
   }, []);
 
