@@ -470,6 +470,11 @@ const App: React.FC = () => {
 
 
     // Use OpenAI API call with JSON mode
+    // Adjust max_tokens based on workout duration - longer workouts need more tokens
+    const durationMinutes = duration ? parseInt(duration.replace(/\D/g, '')) || 30 : 30;
+    const maxTokens = durationMinutes >= 45 ? 6144 : durationMinutes >= 30 ? 4096 : 2048;
+    console.log(`Workout generation: Duration=${durationMinutes} minutes, Max tokens=${maxTokens}`);
+    
     const requestBody = {
       model: "gpt-4o-mini",
       messages: [
@@ -483,7 +488,7 @@ const App: React.FC = () => {
         }
       ],
       temperature: 0.9,
-      max_tokens: 2048,
+      max_tokens: maxTokens,
       response_format: { type: "json_object" }
     };
 
