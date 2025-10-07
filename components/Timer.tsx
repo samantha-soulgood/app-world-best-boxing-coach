@@ -67,20 +67,7 @@ const Timer: React.FC<TimerProps> = ({ initialSeconds, onComplete, autoStart = f
         isVeryLowTime ? 'bg-red-500/30' : isLowTime ? 'bg-orange-500/20' : 'bg-fuchsia-500/20'
       }`} />
       
-      {/* Outer ring */}
-      <div className="absolute inset-2 rounded-full border border-zinc-800/50" />
-      
-      <svg className="absolute w-full h-full transform -rotate-90 drop-shadow-lg">
-        {/* Background circle */}
-        <circle
-          className="text-zinc-800/60"
-          stroke="currentColor"
-          strokeWidth="3"
-          fill="transparent"
-          r={radius}
-          cx="50%"
-          cy="50%"
-        />
+      <svg className="absolute w-full h-full transform -rotate-90">
         {/* Progress circle with gradient */}
         <defs>
           <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -90,7 +77,7 @@ const Timer: React.FC<TimerProps> = ({ initialSeconds, onComplete, autoStart = f
         </defs>
         <circle
           stroke="url(#progressGradient)"
-          strokeWidth="4"
+          strokeWidth="6"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset()}
           strokeLinecap="round"
@@ -98,41 +85,24 @@ const Timer: React.FC<TimerProps> = ({ initialSeconds, onComplete, autoStart = f
           r={radius}
           cx="50%"
           cy="50%"
-          className="transition-all duration-1000 ease-out drop-shadow-lg"
-          style={{
-            filter: isVeryLowTime ? 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.6))' : 
-                   isLowTime ? 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.4))' :
-                   'drop-shadow(0 0 4px rgba(168, 85, 247, 0.3))'
-          }}
+          className="transition-all duration-1000 ease-out"
         />
       </svg>
       
       {/* Center content */}
       <div className="z-10 flex flex-col items-center justify-center">
-        <div className="relative">
-          {/* Time display with enhanced typography */}
-          <span className={`text-[2.2rem] sm:text-[2.8rem] leading-none font-mono font-bold tracking-tight transition-all duration-500 ${
-            isVeryLowTime ? 'text-red-400 animate-pulse' : 
-            isLowTime ? 'text-orange-400' : 'text-white'
-          }`}>
-            {formatTime(seconds)}
-          </span>
-          
-          {/* Progress percentage (optional, can be removed) */}
-          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
-            <div className={`text-[0.6rem] font-mono transition-colors duration-500 ${
-              isVeryLowTime ? 'text-red-400/70' : 
-              isLowTime ? 'text-orange-400/70' : 'text-zinc-500'
-            }`}>
-              {Math.round(progressPercentage)}%
-            </div>
-          </div>
-        </div>
+        {/* Time display */}
+        <span className={`text-[2.2rem] sm:text-[2.8rem] leading-none font-mono font-bold tracking-tight transition-all duration-500 ${
+          isVeryLowTime ? 'text-red-400 animate-pulse' : 
+          isLowTime ? 'text-orange-400' : 'text-white'
+        }`}>
+          {formatTime(seconds)}
+        </span>
         
-        {/* Control button with modern styling */}
+        {/* Control button */}
         <button 
           onClick={toggle} 
-          className={`mt-3 p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${
+          className={`mt-4 p-3 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${
             isActive && !isPaused 
               ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300' 
               : 'bg-fuchsia-500/20 hover:bg-fuchsia-500/30 text-fuchsia-400 hover:text-fuchsia-300'
@@ -140,9 +110,9 @@ const Timer: React.FC<TimerProps> = ({ initialSeconds, onComplete, autoStart = f
           aria-label={isActive ? 'Pause timer' : 'Start timer'}
         >
           {isActive && !isPaused ? (
-            <PauseIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            <PauseIcon className="w-6 h-6 sm:w-7 sm:h-7" />
           ) : (
-            <PlayIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            <PlayIcon className="w-6 h-6 sm:w-7 sm:h-7" />
           )}
         </button>
       </div>
