@@ -1,0 +1,16 @@
+/* Basic styles for the app */
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #18181b; /* zinc-900 */
+  color: #fafafa; /* zinc-50 */
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Ensure proper styling for the app */
+* {
+  box-sizing: border-box;
+}
