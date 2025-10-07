@@ -314,7 +314,7 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
           )}
           
           {isRestPeriod && (
-            <div className="absolute inset-0 bg-green-900/20 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl animate-fade-in">
+            <div className="absolute inset-0 bg-green-900/80 backdrop-blur-md z-20 flex flex-col items-center justify-center rounded-2xl animate-fade-in">
                 <h3 className="text-4xl font-display font-bold text-green-400 tracking-wider">REST TIME</h3>
                 <p className="text-green-300 text-lg mt-2">Take a break and prepare for the next exercise</p>
                 <Timer 
