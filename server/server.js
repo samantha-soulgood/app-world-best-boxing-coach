@@ -225,9 +225,17 @@ app.use('/api-proxy', async (req, res, next) => {
             console.log('Request body type for mobile Safari:', typeof req.body);
             console.log('Request body has model for mobile Safari:', req.body?.model);
             
+            // Ensure Content-Type is set for mobile Safari
+            const mobileSafariHeaders = {
+                ...outgoingHeaders,
+                'Content-Type': 'application/json'
+            };
+            
+            console.log('Mobile Safari headers being sent:', mobileSafariHeaders);
+            
             const fetchResponse = await fetch(apiUrl, {
                 method: req.method,
-                headers: outgoingHeaders,
+                headers: mobileSafariHeaders,
                 body: req.body ? JSON.stringify(req.body) : undefined
             });
             
