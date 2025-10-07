@@ -103,10 +103,12 @@ app.use('/api-proxy', async (req, res, next) => {
     if (req.body) { // Only log body if it exists
         console.log("  Request Body (from frontend):", req.body);
     }
+    
+    // Construct the target URL by taking the part of the path after /api-proxy/
+    const targetPath = req.url.replace('/api-proxy', '');
+    const apiUrl = `${externalApiBaseUrl}${targetPath}`;
+    
     try {
-        // Construct the target URL by taking the part of the path after /api-proxy/
-        const targetPath = req.url.replace('/api-proxy', '');
-        const apiUrl = `${externalApiBaseUrl}${targetPath}`;
         console.log(`HTTP Proxy: Forwarding request to ${apiUrl}`);
         console.log(`HTTP Proxy: Target path: ${targetPath}`);
         console.log(`HTTP Proxy: External API base URL: ${externalApiBaseUrl}`);
@@ -122,7 +124,9 @@ app.use('/api-proxy', async (req, res, next) => {
         }
 
         // Set the actual API key in the appropriate header for OpenAI
-        outgoingHeaders['Authorization'] = `Bearer ${apiKey}`;
+        // Clean the API key to remove any invalid characters
+        const cleanApiKey = apiKey.trim().replace(/[\r\n\t]/g, '');
+        outgoingHeaders['Authorization'] = `Bearer ${cleanApiKey}`;
 
         // Set Content-Type from original request if present (for relevant methods)
         if (req.headers['content-type'] && ['POST', 'PUT', 'PATCH'].includes(req.method.toUpperCase())) {
