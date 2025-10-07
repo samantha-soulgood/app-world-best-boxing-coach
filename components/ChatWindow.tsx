@@ -15,13 +15,14 @@ interface ChatWindowProps {
   isGeneratingWorkout?: boolean;
   onStartWorkout: (plan: WorkoutPlan, messageId: string) => void;
   currentUser: User | null;
+  onFindVideo?: (exerciseName: string) => Promise<Video | null>;
 }
 
 export interface ChatWindowRef {
   scrollToEnd: () => void;
 }
 
-const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoading, isGeneratingWorkout, onStartWorkout, currentUser }, ref) => {
+const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoading, isGeneratingWorkout, onStartWorkout, currentUser, onFindVideo }, ref) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -108,7 +109,7 @@ const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoa
       return (
         <>
           <div className="prose" dangerouslySetInnerHTML={summaryHtml} />
-          <WorkoutDisplay plan={message.workoutPlan} />
+          <WorkoutDisplay plan={message.workoutPlan} onFindVideo={onFindVideo} />
         </>
       );
     }

@@ -1,11 +1,13 @@
 import React from 'react';
-import type { WorkoutPlan } from '../types';
+import type { WorkoutPlan, Video } from '../types';
+import ExerciseVideoButton from './ExerciseVideoButton';
 
 interface WorkoutDisplayProps {
   plan: WorkoutPlan;
+  onFindVideo?: (exerciseName: string) => Promise<Video | null>;
 }
 
-const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan }) => {
+const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) => {
   if (!plan.workout || !plan.workout.phases) {
     return null;
   }
@@ -66,30 +68,42 @@ const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan }) => {
               const isNextExerciseRest = nextExercise && nextExercise.name.toLowerCase() === 'rest';
 
               return (
-                <li key={exerciseIndex}>
-                  <strong className="text-white font-medium">{exercise.name}</strong>
-                  <div className="text-gray-300 pl-2">
-                    {/* The prompt ensures timed exercises have N/A reps, this makes the display cleaner */}
-                    {exercise.reps !== 'N/A' 
-                        ? <span>{exercise.sets} sets x {exercise.reps} reps</span>
-                        : null
-                    }
-                    {exercise.duration && 
-                        <span className="text-gray-400 italic ml-2">
-                            ({exercise.duration}
-                            {isNextExerciseRest ? ` + ${nextExercise.duration} rest` : ''})
-                        </span>
-                    }
+                <li key={exerciseIndex} className="mb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <strong className="text-white font-medium">{exercise.name}</strong>
+                      <div className="text-gray-300 pl-2">
+                        {/* The prompt ensures timed exercises have N/A reps, this makes the display cleaner */}
+                        {exercise.reps !== 'N/A' 
+                            ? <span>{exercise.sets} sets x {exercise.reps} reps</span>
+                            : null
+                        }
+                        {exercise.duration && 
+                            <span className="text-gray-400 italic ml-2">
+                                ({exercise.duration}
+                                {isNextExerciseRest ? ` + ${nextExercise.duration} rest` : ''})
+                            </span>
+                        }
+                      </div>
+                      {exercise.notes && (
+                        <p className={`text-xs mt-1 pl-2 border-l-2 border-zinc-600 italic ${
+                          exercise.notes.includes('Repeat this set') 
+                            ? 'text-yellow-400 font-semibold' 
+                            : 'text-gray-400/90'
+                        }`}>
+                          {exercise.notes}
+                        </p>
+                      )}
+                    </div>
+                    {onFindVideo && (
+                      <div className="ml-3 flex-shrink-0">
+                        <ExerciseVideoButton
+                          exerciseName={exercise.name}
+                          onFindVideo={onFindVideo}
+                        />
+                      </div>
+                    )}
                   </div>
-                  {exercise.notes && (
-                    <p className={`text-xs mt-1 pl-2 border-l-2 border-zinc-600 italic ${
-                      exercise.notes.includes('Repeat this set') 
-                        ? 'text-yellow-400 font-semibold' 
-                        : 'text-gray-400/90'
-                    }`}>
-                      {exercise.notes}
-                    </p>
-                  )}
                 </li>
               );
             })}

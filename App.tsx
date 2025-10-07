@@ -480,6 +480,7 @@ const App: React.FC = () => {
     prompt += '## Key Requirements\n';
     prompt += '- All exercises need `duration` string (e.g., "45 seconds")\n';
     prompt += '- **MANDATORY: Each set\'s last exercise must have notes: "Repeat this set X times"**\n';
+    prompt += '- **BOXING FOCUS: Include 1-2 boxing exercises in each main workout set (e.g., shadowboxing, jab-cross combinations, uppercuts, hooks, boxing footwork, etc.)**\n';
     prompt += '- Adapt to injuries: modify or avoid affected areas\n';
     prompt += '- Vary 50%+ exercises from last workout\n';
     prompt += '- Progress difficulty based on last RPE/feedback\n';
@@ -621,12 +622,297 @@ const App: React.FC = () => {
             id: 'g_tea8ZNk5A',
             title: 'Full Body Stretching Routine',
             watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'squats': {
+            id: 'YaXPRqUwItQ',
+            title: 'How to do a Perfect Squat - Proper Form Tutorial',
+            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
+          },
+          'push-ups': {
+            id: 'IODxDxX7oi4',
+            title: 'How to do Push-Ups - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
+          },
+          'push ups': {
+            id: 'IODxDxX7oi4',
+            title: 'How to do Push-Ups - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
+          },
+          'lunges': {
+            id: 'QOVaHwm-Q6U',
+            title: 'How to do Lunges - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
+          },
+          'burpees': {
+            id: 'TU8QYVCh0TI',
+            title: 'How to do Burpees - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
+          },
+          'jumping jacks': {
+            id: 'iSSAk4XCsRA',
+            title: 'How to do Jumping Jacks - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA'
+          },
+          'mountain climbers': {
+            id: 'nmwgirgXLYM',
+            title: 'How to do Mountain Climbers - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=nmwgirgXLYM'
+          },
+          'stretching': {
+            id: 'g_tea8ZNk5A',
+            title: 'Full Body Stretching Routine',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'warm up': {
+            id: 'g_tea8ZNk5A',
+            title: 'Full Body Stretching Routine',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'jump squat': {
+            id: 'YaXPRqUwItQ',
+            title: 'Jump Squats - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
+          },
+          'jump squats': {
+            id: 'YaXPRqUwItQ',
+            title: 'Jump Squats - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
+          },
+          // Core exercises
+          'crunch': {
+            id: 'Xyd_fa5zoEU',
+            title: 'How to do Crunches - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=Xyd_fa5zoEU'
+          },
+          'crunches': {
+            id: 'Xyd_fa5zoEU',
+            title: 'How to do Crunches - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=Xyd_fa5zoEU'
+          },
+          'sit up': {
+            id: '1fbU_MkV7NE',
+            title: 'How to do Sit-ups - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
+          },
+          'sit-ups': {
+            id: '1fbU_MkV7NE',
+            title: 'How to do Sit-ups - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
+          },
+          'sit ups': {
+            id: '1fbU_MkV7NE',
+            title: 'How to do Sit-ups - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
+          },
+          'russian twist': {
+            id: 'wkD8rjkodUI',
+            title: 'Russian Twists - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=wkD8rjkodUI'
+          },
+          'russian twists': {
+            id: 'wkD8rjkodUI',
+            title: 'Russian Twists - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=wkD8rjkodUI'
+          },
+          'bicycle crunch': {
+            id: '9AjkUyX0rVw',
+            title: 'Bicycle Crunches - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=9AjkUyX0rVw'
+          },
+          'bicycle crunches': {
+            id: '9AjkUyX0rVw',
+            title: 'Bicycle Crunches - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=9AjkUyX0rVw'
+          },
+          'leg raise': {
+            id: 'JB2oyawG9KI',
+            title: 'Leg Raises - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=JB2oyawG9KI'
+          },
+          'leg raises': {
+            id: 'JB2oyawG9KI',
+            title: 'Leg Raises - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=JB2oyawG9KI'
+          },
+          // Cardio exercises
+          'high knees': {
+            id: 'ml6cT4AZdqI',
+            title: 'High Knees Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
+          },
+          'butt kicks': {
+            id: 'ml6cT4AZdqI',
+            title: 'Butt Kicks Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
+          },
+          'butt kick': {
+            id: 'ml6cT4AZdqI',
+            title: 'Butt Kicks Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
+          },
+          'marching': {
+            id: 'ml6cT4AZdqI',
+            title: 'Marching in Place',
+            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
+          },
+          'march': {
+            id: 'ml6cT4AZdqI',
+            title: 'Marching in Place',
+            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
+          },
+          // Upper body exercises
+          'tricep dip': {
+            id: '6kALZikXxLc',
+            title: 'Tricep Dips - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
+          },
+          'tricep dips': {
+            id: '6kALZikXxLc',
+            title: 'Tricep Dips - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
+          },
+          'dip': {
+            id: '6kALZikXxLc',
+            title: 'Tricep Dips - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
+          },
+          'dips': {
+            id: '6kALZikXxLc',
+            title: 'Tricep Dips - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
+          },
+          'wall sit': {
+            id: 'y-wV4Venusw',
+            title: 'Wall Sit - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=y-wV4Venusw'
+          },
+          'wall sits': {
+            id: 'y-wV4Venusw',
+            title: 'Wall Sit - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=y-wV4Venusw'
+          },
+          // Stretching and mobility
+          'hip circle': {
+            id: 'g_tea8ZNk5A',
+            title: 'Hip Circles - Mobility Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'hip circles': {
+            id: 'g_tea8ZNk5A',
+            title: 'Hip Circles - Mobility Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'arm circle': {
+            id: 'g_tea8ZNk5A',
+            title: 'Arm Circles - Warm-up Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'arm circles': {
+            id: 'g_tea8ZNk5A',
+            title: 'Arm Circles - Warm-up Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'shoulder roll': {
+            id: 'g_tea8ZNk5A',
+            title: 'Shoulder Rolls - Mobility Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'shoulder rolls': {
+            id: 'g_tea8ZNk5A',
+            title: 'Shoulder Rolls - Mobility Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'neck roll': {
+            id: 'g_tea8ZNk5A',
+            title: 'Neck Rolls - Mobility Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'neck rolls': {
+            id: 'g_tea8ZNk5A',
+            title: 'Neck Rolls - Mobility Exercise',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          // Boxing exercises
+          'shadowboxing': {
+            id: 'g_tea8ZNk5A',
+            title: 'Shadowboxing Basics - Boxing Fundamentals',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'shadow boxing': {
+            id: 'g_tea8ZNk5A',
+            title: 'Shadowboxing Basics - Boxing Fundamentals',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'jab': {
+            id: 'g_tea8ZNk5A',
+            title: 'How to Throw a Jab - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'jabs': {
+            id: 'g_tea8ZNk5A',
+            title: 'How to Throw a Jab - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'cross': {
+            id: 'g_tea8ZNk5A',
+            title: 'How to Throw a Cross - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'hook': {
+            id: 'g_tea8ZNk5A',
+            title: 'How to Throw a Hook - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'hooks': {
+            id: 'g_tea8ZNk5A',
+            title: 'How to Throw a Hook - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'uppercut': {
+            id: 'g_tea8ZNk5A',
+            title: 'How to Throw an Uppercut - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'uppercuts': {
+            id: 'g_tea8ZNk5A',
+            title: 'How to Throw an Uppercut - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'jab cross': {
+            id: 'g_tea8ZNk5A',
+            title: 'Jab-Cross Combination - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'jab-cross': {
+            id: 'g_tea8ZNk5A',
+            title: 'Jab-Cross Combination - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'boxing footwork': {
+            id: 'g_tea8ZNk5A',
+            title: 'Boxing Footwork Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'boxing stance': {
+            id: 'g_tea8ZNk5A',
+            title: 'Boxing Stance - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'punching': {
+            id: 'g_tea8ZNk5A',
+            title: 'Basic Punching Techniques - Boxing',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'punching bag': {
+            id: 'g_tea8ZNk5A',
+            title: 'Heavy Bag Workout - Boxing',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
           }
         };
         
         // Find the best matching video with more precise matching
         const lowerTopic = topic.toLowerCase().trim();
-        let selectedVideo = videoLibrary['cardio']; // default
+        let selectedVideo = null; // No default - only return video if we find a match
         let bestMatch = '';
         let matchScore = 0;
         
@@ -638,15 +924,18 @@ const App: React.FC = () => {
           const keyWords = key.split(' ');
           let currentScore = 0;
           
-          for (const word of keyWords) {
-            if (lowerTopic.includes(word)) {
-              currentScore += 1;
+          // Check for exact phrase match first (highest priority)
+          if (lowerTopic === key) {
+            currentScore = 10; // Highest score for exact match
+          } else if (lowerTopic.includes(key)) {
+            currentScore = 5; // High score for partial phrase match
+          } else {
+            // Check individual words
+            for (const word of keyWords) {
+              if (lowerTopic.includes(word)) {
+                currentScore += 1;
+              }
             }
-          }
-          
-          // Bonus for exact phrase match
-          if (lowerTopic.includes(key)) {
-            currentScore += 2;
           }
           
           console.log(`handleFindVideo: Key "${key}" score: ${currentScore}`);
@@ -660,7 +949,14 @@ const App: React.FC = () => {
         
         console.log("handleFindVideo: Best match:", bestMatch, "with score:", matchScore);
         console.log("handleFindVideo: Selected video:", selectedVideo);
-        return selectedVideo;
+        
+        // Only return video if we have a reasonable match (score >= 1)
+        if (matchScore >= 1) {
+          return selectedVideo;
+        } else {
+          console.log("handleFindVideo: No good match found, returning null");
+          return null;
+        }
 
       } catch (error) {
           console.error("Error finding video with Google Search:", error);
@@ -1121,6 +1417,7 @@ const App: React.FC = () => {
             isGeneratingWorkout={isGeneratingWorkout}
             onStartWorkout={handleStartWorkout}
             currentUser={currentUser}
+            onFindVideo={handleFindVideo}
           />
           <div className="flex-shrink-0 pt-4">
               <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isTopicsVisible ? 'max-h-48' : 'max-h-0'}`}>
