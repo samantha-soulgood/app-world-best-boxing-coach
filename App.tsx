@@ -1047,11 +1047,11 @@ const App: React.FC = () => {
       );
       
       // Add a celebration message instead of sending feedback to AI
-      const celebrationMessage = {
+      const celebrationMessage: Message = {
         id: `celebration-${Date.now()}`,
         text: `🎉 Amazing work completing your workout! You rated it ${rpe}/10. ${text ? 'Your feedback: "' + text + '"' : "Great job pushing through!"} Keep up the fantastic work! 💪`,
-        sender: 'sammi' as const,
-        timestamp: new Date().toISOString()
+        sender: 'sammi',
+        timestamp: Date.now()
       };
       
       setMessages(prev => [...prev, celebrationMessage]);
