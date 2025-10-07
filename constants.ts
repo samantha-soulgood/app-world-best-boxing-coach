@@ -2,7 +2,32 @@
 // IMPORTANT: Replace this with your actual Google Client ID from the Google Cloud Console.
 // You can get one here: https://console.cloud.google.com/apis/credentials
 // For production, set this as an environment variable: VITE_GOOGLE_CLIENT_ID
-export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+// Try multiple environment variable sources for maximum compatibility
+const getGoogleClientId = () => {
+  // Try VITE_ prefixed first (standard Vite)
+  if (import.meta.env.VITE_GOOGLE_CLIENT_ID) {
+    return import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  }
+  
+  // Try non-prefixed (some platforms)
+  if (import.meta.env.GOOGLE_CLIENT_ID) {
+    return import.meta.env.GOOGLE_CLIENT_ID;
+  }
+  
+  // Try REACT_APP_ prefixed (Create React App style)
+  if (import.meta.env.REACT_APP_GOOGLE_CLIENT_ID) {
+    return import.meta.env.REACT_APP_GOOGLE_CLIENT_ID;
+  }
+  
+  // Fallback for production - you can hardcode this temporarily for testing
+  if (import.meta.env.PROD) {
+    return "366829936631-k6n6ef6ua5ltcbk4m6oc62r2grvi19d8.apps.googleusercontent.com";
+  }
+  
+  return "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+};
+
+export const GOOGLE_CLIENT_ID = getGoogleClientId();
 
 // Debug logging (can be removed in production)
 console.log("Google Client ID configured:", GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com");
