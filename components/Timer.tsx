@@ -13,6 +13,7 @@ const Timer: React.FC<TimerProps> = ({ initialSeconds, onComplete, autoStart = f
   const [isActive, setIsActive] = useState(autoStart);
 
   useEffect(() => {
+    console.log('Timer resetting: new initialSeconds =', initialSeconds, 'autoStart =', autoStart);
     setSeconds(initialSeconds);
     setIsActive(autoStart);
   }, [initialSeconds, autoStart]);

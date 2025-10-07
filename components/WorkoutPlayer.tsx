@@ -35,7 +35,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   const currentExercise: WorkoutPlan_Exercise | undefined = currentPhase?.exercises[currentExerciseIndex];
 
   const exerciseDurationInSeconds = useMemo(() => {
-    return currentExercise?.duration ? parseDurationToSeconds(currentExercise.duration) : 0;
+    const duration = currentExercise?.duration ? parseDurationToSeconds(currentExercise.duration) : 0;
+    console.log('Exercise changed:', currentExercise?.name, 'Duration:', currentExercise?.duration, 'Seconds:', duration);
+    return duration;
   }, [currentExercise]);
   
   useEffect(() => {
@@ -46,13 +48,17 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
 
 
   const handleNextExercise = () => {
+    console.log('handleNextExercise called - advancing to next exercise');
     if (currentExerciseIndex < (currentPhase?.exercises.length || 0) - 1) {
+      console.log('Moving to next exercise in same phase');
       setCurrentExerciseIndex(prev => prev + 1);
     } else if (currentPhaseIndex < workout.workout.phases.length - 1) {
+      console.log('Moving to next phase');
       // Move to next phase
       setCurrentPhaseIndex(prev => prev + 1);
       setCurrentExerciseIndex(0);
     } else {
+      console.log('Workout completed');
       // Last exercise of last phase, trigger completion screen
       setIsComplete(true);
     }
