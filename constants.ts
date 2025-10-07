@@ -1,7 +1,8 @@
 
 // IMPORTANT: Replace this with your actual Google Client ID from the Google Cloud Console.
 // You can get one here: https://console.cloud.google.com/apis/credentials
-export const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+// For production, set this as an environment variable: VITE_GOOGLE_CLIENT_ID
+export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
 export const SAMMI_PERSONA = `
 You are Sammi, a supportive, encouraging, and incredibly motivating fitness coach who specializes in helping women build strength, confidence, and overall wellness. 
