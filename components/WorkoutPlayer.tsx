@@ -48,23 +48,26 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
     }
   }, [isComplete, onComplete]);
 
-  // Detect circuit repetitions when entering Main Workout phase
+  // Detect set repetitions when entering Main Workout phase
   useEffect(() => {
     const currentPhase = workout.workout.phases[currentPhaseIndex];
     if (currentPhase?.name === 'Main Workout') {
-      // Look for "Repeat this set X times" in any exercise notes
-      const repeatMatch = currentPhase.exercises
-        .map(ex => ex.notes?.match(/Repeat this set (\d+) times?/i))
-        .find(match => match);
+      // Look for "Repeat this set X times" in the current exercise's notes
+      const currentExercise = currentPhase.exercises[currentExerciseIndex];
+      const repeatMatch = currentExercise?.notes?.match(/Repeat this set (\d+) times?/i);
       
       if (repeatMatch) {
         const repeatCount = parseInt(repeatMatch[1]);
         setCircuitRepetitions(repeatCount);
         setCurrentCircuitRound(1);
-        console.log(`Set setup: ${repeatCount} repetitions detected`);
+        console.log(`Set setup: ${repeatCount} repetitions detected for current exercise`);
+      } else {
+        // Reset if we're not at a set repetition point
+        setCircuitRepetitions(0);
+        setCurrentCircuitRound(1);
       }
     }
-  }, [currentPhaseIndex, workout]);
+  }, [currentPhaseIndex, currentExerciseIndex, workout]);
 
 
   const handleNextExercise = () => {
@@ -81,7 +84,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       if (currentCircuitRound < circuitRepetitions) {
         console.log(`Repeating set: Round ${currentCircuitRound + 1} of ${circuitRepetitions}`);
         setCurrentCircuitRound(prev => prev + 1);
-        setCurrentExerciseIndex(0); // Start over with first exercise in set
+        // Find the start of this set and reset to it
+        const setStartIndex = findSetStartIndex();
+        setCurrentExerciseIndex(setStartIndex);
       } else {
         console.log('Set completed, moving to next phase');
         // Circuit is complete, move to next phase
@@ -102,6 +107,22 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       // Last exercise of last phase, trigger completion screen
       setIsComplete(true);
     }
+  };
+
+  // Helper function to find the start index of the current set
+  const findSetStartIndex = () => {
+    if (!currentPhase) return 0;
+    
+    // Look backwards from current exercise to find the start of this set
+    for (let i = currentExerciseIndex - 1; i >= 0; i--) {
+      const exercise = currentPhase.exercises[i];
+      if (exercise.notes?.match(/Repeat this set (\d+) times?/i)) {
+        // Found the end of the previous set, so this set starts at i + 1
+        return i + 1;
+      }
+    }
+    // If no previous set found, this is the first set
+    return 0;
   };
 
   const handlePrevExercise = () => {

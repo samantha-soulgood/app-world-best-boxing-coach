@@ -462,7 +462,7 @@ const App: React.FC = () => {
     prompt += '\n## Workout Structure\n';
     prompt += `Create a ${duration || '30-minute'} workout with 4 phases:\n`;
     prompt += '1. **Warm-up**: 3-4 dynamic exercises (30s-1min each)\n';
-    prompt += '2. **Main Workout Sets**: Create 3-4 exercises per set (45s-1min each) + Rest (15s) after each exercise. Add "Repeat this set X times" in last exercise notes. Calculate X based on duration: 15min=1x, 20min=2x, 30min=3x, 45min=4x, 60min=5x, 90min=8x, 120min=12x, 180min=18x, 240min=24x, 360min=36x\n';
+    prompt += '2. **Main Workout Sets**: Create 2-3 different sets of 3-4 exercises each (45s-1min each) + Rest (15s) after each exercise. For each set, add "Repeat this set X times" in the last exercise notes. Calculate X based on duration: 15min=1x, 20min=2x, 30min=3x, 45min=4x, 60min=5x, 90min=8x, 120min=12x, 180min=18x, 240min=24x, 360min=36x. Example: Set 1 has 4 exercises, last exercise notes say "Repeat this set 3 times". Set 2 has 3 exercises, last exercise notes say "Repeat this set 3 times".\n';
     prompt += '3. **Core Finisher**: 3-4 core exercises (30-45s each)\n';
     prompt += '4. **Cool-down**: 3-4 static stretches (30s each)\n\n';
     prompt += '## Key Requirements\n';
@@ -478,7 +478,7 @@ const App: React.FC = () => {
       messages: [
         {
           role: "system",
-          content: `${SAMMI_PERSONA}\n\nRespond with valid JSON matching this schema: ${JSON.stringify(workoutSchema)}\n\nMain Workout = set format: 3-4 exercises with Rest (15s) between. Last exercise notes must say "Repeat this set X times" where X scales with duration (up to 360min).`
+          content: `${SAMMI_PERSONA}\n\nRespond with valid JSON matching this schema: ${JSON.stringify(workoutSchema)}\n\nCRITICAL: Main Workout = 2-3 different sets of 3-4 exercises each. Each set's last exercise notes MUST say "Repeat this set X times" where X scales with duration. This is MANDATORY - the workout player depends on this instruction.`
         },
         {
           role: "user", 
