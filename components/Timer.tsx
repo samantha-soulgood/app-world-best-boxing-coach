@@ -56,22 +56,41 @@ const Timer: React.FC<TimerProps> = ({ initialSeconds, onComplete, autoStart = f
     return circumference - (seconds / initialSeconds) * circumference;
   };
 
+  const progressPercentage = initialSeconds > 0 ? (seconds / initialSeconds) * 100 : 100;
+  const isLowTime = progressPercentage <= 20;
+  const isVeryLowTime = progressPercentage <= 10;
+
   return (
-    <div className="relative w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center">
-      <svg className="absolute w-full h-full transform -rotate-90">
+    <div className="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center">
+      {/* Background glow effect */}
+      <div className={`absolute inset-0 rounded-full blur-xl transition-all duration-1000 ${
+        isVeryLowTime ? 'bg-red-500/30' : isLowTime ? 'bg-orange-500/20' : 'bg-fuchsia-500/20'
+      }`} />
+      
+      {/* Outer ring */}
+      <div className="absolute inset-2 rounded-full border border-zinc-800/50" />
+      
+      <svg className="absolute w-full h-full transform -rotate-90 drop-shadow-lg">
+        {/* Background circle */}
         <circle
-          className="text-zinc-700"
+          className="text-zinc-800/60"
           stroke="currentColor"
-          strokeWidth="8"
+          strokeWidth="3"
           fill="transparent"
           r={radius}
           cx="50%"
           cy="50%"
         />
+        {/* Progress circle with gradient */}
+        <defs>
+          <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={isVeryLowTime ? '#ef4444' : isLowTime ? '#f97316' : '#a855f7'} />
+            <stop offset="100%" stopColor={isVeryLowTime ? '#dc2626' : isLowTime ? '#ea580c' : '#9333ea'} />
+          </linearGradient>
+        </defs>
         <circle
-          className="text-fuchsia-500 transition-all duration-1000 linear"
-          stroke="currentColor"
-          strokeWidth="8"
+          stroke="url(#progressGradient)"
+          strokeWidth="4"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset()}
           strokeLinecap="round"
@@ -79,14 +98,52 @@ const Timer: React.FC<TimerProps> = ({ initialSeconds, onComplete, autoStart = f
           r={radius}
           cx="50%"
           cy="50%"
+          className="transition-all duration-1000 ease-out drop-shadow-lg"
+          style={{
+            filter: isVeryLowTime ? 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.6))' : 
+                   isLowTime ? 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.4))' :
+                   'drop-shadow(0 0 4px rgba(168, 85, 247, 0.3))'
+          }}
         />
       </svg>
+      
+      {/* Center content */}
       <div className="z-10 flex flex-col items-center justify-center">
-        <span className="text-[2rem] sm:text-[2.5rem] leading-none font-display font-bold text-white tracking-tighter">
-          {formatTime(seconds)}
-        </span>
-        <button onClick={toggle} className="mt-1 text-white/80 hover:text-white transition-colors" aria-label={isActive ? 'Pause timer' : 'Start timer'}>
-          {isActive && !isPaused ? <PauseIcon className="w-6 h-6 sm:w-8 sm:h-8" /> : <PlayIcon className="w-6 h-6 sm:w-8 sm:h-8" />}
+        <div className="relative">
+          {/* Time display with enhanced typography */}
+          <span className={`text-[2.2rem] sm:text-[2.8rem] leading-none font-mono font-bold tracking-tight transition-all duration-500 ${
+            isVeryLowTime ? 'text-red-400 animate-pulse' : 
+            isLowTime ? 'text-orange-400' : 'text-white'
+          }`}>
+            {formatTime(seconds)}
+          </span>
+          
+          {/* Progress percentage (optional, can be removed) */}
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
+            <div className={`text-[0.6rem] font-mono transition-colors duration-500 ${
+              isVeryLowTime ? 'text-red-400/70' : 
+              isLowTime ? 'text-orange-400/70' : 'text-zinc-500'
+            }`}>
+              {Math.round(progressPercentage)}%
+            </div>
+          </div>
+        </div>
+        
+        {/* Control button with modern styling */}
+        <button 
+          onClick={toggle} 
+          className={`mt-3 p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${
+            isActive && !isPaused 
+              ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300' 
+              : 'bg-fuchsia-500/20 hover:bg-fuchsia-500/30 text-fuchsia-400 hover:text-fuchsia-300'
+          } backdrop-blur-sm border border-white/10`} 
+          aria-label={isActive ? 'Pause timer' : 'Start timer'}
+        >
+          {isActive && !isPaused ? (
+            <PauseIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+          ) : (
+            <PlayIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+          )}
         </button>
       </div>
     </div>
