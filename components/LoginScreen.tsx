@@ -37,6 +37,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const googleButtonRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [fightName, setFightName] = useState('');
+  const [googleLoaded, setGoogleLoaded] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Check if Google Client ID is configured.
   const isGoogleConfigured = GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
@@ -47,7 +49,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     GOOGLE_CLIENT_ID,
     userAgent: navigator.userAgent,
     isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
-    windowGoogle: !!window.google
+    windowGoogle: !!window.google,
+    googleLoaded,
+    retryCount
   });
 
   // Default to username login if Google is not configured to avoid showing a broken button.
@@ -90,26 +94,58 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         return;
     }
 
+    // Check if Google is loaded
+    if (window.google && !googleLoaded) {
+      setGoogleLoaded(true);
+      console.log("Google API loaded successfully");
+    }
+
     // Only attempt to initialize and render the Google button if it's configured and active.
-    if (window.google && !showFightNameLogin) {
+    if (window.google && !showFightNameLogin && googleButtonRef.current) {
       try {
+        // Clear any existing button first
+        if (googleButtonRef.current) {
+          googleButtonRef.current.innerHTML = '';
+        }
+
         window.google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: handleCredentialResponse,
         });
 
-        if (googleButtonRef.current) {
-          window.google.accounts.id.renderButton(
-            googleButtonRef.current,
-            { theme: 'outline', size: 'large', type: 'standard', text: 'signin_with' }
-          );
-        }
+        window.google.accounts.id.renderButton(
+          googleButtonRef.current,
+          { theme: 'outline', size: 'large', type: 'standard', text: 'signin_with' }
+        );
+        
+        console.log("Google Sign-In button rendered successfully");
       } catch (e) {
         console.error("Google GSI error:", e);
         setError("Could not initialize Google Sign-In.");
       }
     }
-  }, [isGoogleConfigured, showFightNameLogin]);
+  }, [isGoogleConfigured, showFightNameLogin, googleLoaded]);
+
+  // Retry mechanism for Google loading
+  useEffect(() => {
+    if (!isGoogleConfigured || googleLoaded) return;
+
+    const checkGoogle = () => {
+      if (window.google) {
+        setGoogleLoaded(true);
+        console.log("Google API loaded on retry");
+      } else if (retryCount < 10) {
+        setRetryCount(prev => prev + 1);
+        setTimeout(checkGoogle, 500);
+      } else {
+        console.error("Google API failed to load after 10 retries");
+        setError("Google Sign-In is taking too long to load. Please use Fight Name login.");
+      }
+    };
+
+    const timer = setTimeout(checkGoogle, 100);
+    return () => clearTimeout(timer);
+  }, [isGoogleConfigured, googleLoaded, retryCount]);
   
   const inputStyles = "block w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-gray-200 focus:ring-2 focus:ring-fuchsia-500 focus:outline-none transition-all duration-200";
   const labelStyles = "block text-sm font-medium text-gray-300 mb-2";
@@ -163,7 +199,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             fightNameForm
         ) : (
              <div className="flex flex-col items-center justify-center space-y-4 pt-4">
-                <div ref={googleButtonRef}></div>
+                {!googleLoaded && retryCount < 10 ? (
+                  <div className="flex items-center space-x-2 text-zinc-400">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-fuchsia-500"></div>
+                    <span className="text-sm">Loading Google Sign-In...</span>
+                  </div>
+                ) : (
+                  <div ref={googleButtonRef}></div>
+                )}
                 <div className="inline-flex items-center justify-center w-full">
                     <hr className="w-full h-px my-4 bg-zinc-600 border-0" />
                     <span className="absolute px-3 font-medium text-zinc-400 -translate-x-1/2 bg-zinc-800 left-1/2">OR</span>
