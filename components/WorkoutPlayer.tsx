@@ -19,6 +19,8 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   const [isWorkoutPaused, setIsWorkoutPaused] = useState(false);
   const [circuitRepetitions, setCircuitRepetitions] = useState(0);
   const [currentCircuitRound, setCurrentCircuitRound] = useState(1);
+  const [isRestPeriod, setIsRestPeriod] = useState(false);
+  const [restDuration, setRestDuration] = useState(0);
 
 
   const allExercises = useMemo(() => workout.workout.phases.flatMap(p => p.exercises), [workout]);
@@ -83,17 +85,21 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   }, [currentPhaseIndex, currentExerciseIndex, workout, circuitRepetitions]);
 
 
-  const handleNextExercise = () => {
-    console.log('handleNextExercise called - advancing to next exercise');
-    console.log('Current state:', {
-      currentPhaseIndex,
-      currentExerciseIndex,
-      phaseName: currentPhase?.name,
-      totalExercises: currentPhase?.exercises.length,
-      circuitRepetitions,
-      currentCircuitRound
-    });
-    
+  const startRestPeriod = (duration: number, message: string) => {
+    console.log(`Starting rest period: ${duration} seconds - ${message}`);
+    setIsRestPeriod(true);
+    setRestDuration(duration);
+  };
+
+  const handleRestComplete = () => {
+    console.log('Rest period completed, moving to next exercise');
+    setIsRestPeriod(false);
+    setRestDuration(0);
+    // Continue with the original exercise advancement logic
+    advanceToNextExercise();
+  };
+
+  const advanceToNextExercise = () => {
     // Check if we're in the Main Workout phase and need to repeat the circuit
     const isMainWorkoutPhase = currentPhase?.name === 'Main Workout';
     
@@ -129,6 +135,33 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       console.log('Workout completed');
       // Last exercise of last phase, trigger completion screen
       setIsComplete(true);
+    }
+  };
+
+  const handleNextExercise = () => {
+    console.log('handleNextExercise called - advancing to next exercise');
+    console.log('Current state:', {
+      currentPhaseIndex,
+      currentExerciseIndex,
+      phaseName: currentPhase?.name,
+      totalExercises: currentPhase?.exercises.length,
+      circuitRepetitions,
+      currentCircuitRound,
+      isMainWorkoutPhase: currentPhase?.name === 'Main Workout'
+    });
+    
+    const isMainWorkoutPhase = currentPhase?.name === 'Main Workout';
+    
+    // Determine rest duration based on context
+    if (currentExerciseIndex < (currentPhase?.exercises.length || 0) - 1) {
+      // Moving to next exercise in same phase - 15 second break
+      startRestPeriod(15, 'Break between exercises');
+    } else if (isMainWorkoutPhase && circuitRepetitions > 0 && currentCircuitRound < circuitRepetitions) {
+      // Moving to next set round - 1 minute break
+      startRestPeriod(60, 'Break between sets');
+    } else {
+      // Moving to next phase or completing workout - no break needed
+      advanceToNextExercise();
     }
   };
 
@@ -193,15 +226,40 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   };
 
   const handlePrevExercise = () => {
+    // If we're in a rest period, cancel it and stay on current exercise
+    if (isRestPeriod) {
+      console.log('Cancelling rest period');
+      setIsRestPeriod(false);
+      setRestDuration(0);
+      return;
+    }
+    
+    // Normal previous exercise logic
     if (currentExerciseIndex > 0) {
+      console.log('Moving to previous exercise in same phase');
       setCurrentExerciseIndex(prev => prev - 1);
     } else if (currentPhaseIndex > 0) {
-        // Move to previous phase, last exercise
-        const prevPhaseIndex = currentPhaseIndex - 1;
-        const prevPhase = workout.workout.phases[prevPhaseIndex];
-        setCurrentPhaseIndex(prevPhaseIndex);
-        setCurrentExerciseIndex(prevPhase.exercises.length - 1);
+      console.log('Moving to previous phase');
+      // Move to previous phase, last exercise
+      const prevPhaseIndex = currentPhaseIndex - 1;
+      const prevPhase = workout.workout.phases[prevPhaseIndex];
+      setCurrentPhaseIndex(prevPhaseIndex);
+      setCurrentExerciseIndex(prevPhase.exercises.length - 1);
     }
+  };
+
+  const handleSkipExercise = () => {
+    // If we're in a rest period, skip the rest and advance immediately
+    if (isRestPeriod) {
+      console.log('Skipping rest period');
+      setIsRestPeriod(false);
+      setRestDuration(0);
+      advanceToNextExercise();
+      return;
+    }
+    
+    // Normal skip logic - go to next exercise with rest period
+    handleNextExercise();
   };
 
   const toggleWorkoutPause = () => {
@@ -254,6 +312,20 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
                 </button>
             </div>
           )}
+          
+          {isRestPeriod && (
+            <div className="absolute inset-0 bg-green-900/20 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl animate-fade-in">
+                <h3 className="text-4xl font-display font-bold text-green-400 tracking-wider">REST TIME</h3>
+                <p className="text-green-300 text-lg mt-2">Take a break and prepare for the next exercise</p>
+                <Timer 
+                    key={`rest-${restDuration}`}
+                    initialSeconds={restDuration} 
+                    onComplete={handleRestComplete}
+                    autoStart={true}
+                    isPaused={isWorkoutPaused}
+                />
+            </div>
+          )}
         <div className="bg-zinc-800 p-4 sm:p-6 md:p-8 rounded-2xl w-full max-w-lg mb-4 sm:mb-8 border border-zinc-700">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white mb-2">{currentExercise.name}</h2>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-4">{`${currentExercise.sets} sets x ${currentExercise.reps} reps`}</p>
@@ -298,10 +370,10 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
         </button>
 
         <button
-            onClick={handleNextExercise}
+            onClick={handleSkipExercise}
             className="flex items-center gap-2 p-3 bg-zinc-800 rounded-lg text-white font-semibold hover:bg-zinc-700 transition-colors"
         >
-            <span className="hidden sm:inline">{isLastExerciseOverall ? 'Finish' : 'Skip'}</span>
+            <span className="hidden sm:inline">{isLastExerciseOverall ? 'Finish' : (isRestPeriod ? 'Skip Rest' : 'Skip')}</span>
             <NextIcon />
         </button>
       </footer>
