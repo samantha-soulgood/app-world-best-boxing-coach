@@ -25,6 +25,8 @@ export interface OnboardingData {
   injuries: string;
   equipment: string;
   activityLevel: string;
+  dietaryPreferences?: string;
+  foodAllergies?: string;
 }
 
 export interface WorkoutPlan_Exercise {

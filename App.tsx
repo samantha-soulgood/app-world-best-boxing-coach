@@ -315,6 +315,12 @@ const App: React.FC = () => {
       if (userInfo) {
           prompt += `- Primary Goal: ${userInfo.goals || 'Not specified'}\n`;
           prompt += `- Activity Level: ${userInfo.activityLevel || 'Not specified'}\n`;
+          if (userInfo.dietaryPreferences) {
+              prompt += `- Dietary Preferences: ${userInfo.dietaryPreferences}\n`;
+          }
+          if (userInfo.foodAllergies) {
+              prompt += `- Food Allergies/Restrictions: ${userInfo.foodAllergies}\n`;
+          }
       } else {
           prompt += '- No user profile data available. Create a general nutrition plan.\n\n';
       }
@@ -346,15 +352,17 @@ const App: React.FC = () => {
       if (duration && duration.toLowerCase().includes('week')) {
           prompt += "1.  **Structure:** Organize the plan by day. Use a Level 2 Markdown Heading (e.g., `## Monday`) for each day. Under each day, use Level 3 Headings (e.g., `### Breakfast`) for 'Breakfast', 'Lunch', and 'Dinner'. Use an unordered list (`-`) for meal suggestions.\n";
           prompt += "2.  **Personalization:** Tailor suggestions to the user's profile. Instead of just listing foods, briefly explain *why* a suggestion is good (e.g., 'Oatmeal with berries: great for sustained energy before training.'). If their goal is 'weight loss', suggest satisfying, high-protein/fiber meals. If 'muscle gain', include more complex carbs and protein. If they are 'vegetarian', all suggestions MUST be vegetarian.\n";
-          prompt += "3.  **Fitness Context:** Frame advice for someone who exercises. Mention things like pre-workout fuel or post-workout recovery when appropriate.\n";
-          prompt += "4.  **Tone:** Maintain Sammi's energetic, motivating, and no-nonsense voice.\n";
-          prompt += "5.  **Sign-off:** End with an encouraging, supportive sign-off like 'You've got this!' or 'Take care of yourself today.'\n";
+          prompt += "3.  **CRITICAL - Dietary Restrictions:** If the user has food allergies or dietary preferences listed in their profile, you MUST strictly adhere to these restrictions. NEVER suggest foods they are allergic to or that conflict with their dietary preferences. Always provide safe alternatives.\n";
+          prompt += "4.  **Fitness Context:** Frame advice for someone who exercises. Mention things like pre-workout fuel or post-workout recovery when appropriate.\n";
+          prompt += "5.  **Tone:** Maintain Sammi's energetic, motivating, and no-nonsense voice.\n";
+          prompt += "6.  **Sign-off:** End with an encouraging, supportive sign-off like 'You've got this!' or 'Take care of yourself today.'\n";
       } else { // For a single day plan
           prompt += "1.  **Structure:** Organize the plan with Level 3 Markdown Headings (e.g., `### Breakfast`) for 'Breakfast', 'Lunch', 'Dinner', and 'Snacks'. Provide 2-3 simple meal/snack ideas as an unordered list (`-`) for each.\n";
           prompt += "2.  **Personalization:** Tailor suggestions to the user's profile. Briefly explain the benefit of a food choice in the context of their training (e.g., 'Greek yogurt: excellent source of protein for muscle recovery.').\n";
-          prompt += "3.  **Boxing Context:** Frame advice for an athlete. Mention pre-workout fuel or post-workout recovery.\n";
-          prompt += "4.  **Tone:** Maintain Sammi's energetic, motivating, and no-nonsense voice.\n";
-          prompt += "5.  **Sign-off:** End with an encouraging, supportive sign-off like 'You've got this!' or 'Take care of yourself today.'\n";
+          prompt += "3.  **CRITICAL - Dietary Restrictions:** If the user has food allergies or dietary preferences listed in their profile, you MUST strictly adhere to these restrictions. NEVER suggest foods they are allergic to or that conflict with their dietary preferences. Always provide safe alternatives.\n";
+          prompt += "4.  **Boxing Context:** Frame advice for an athlete. Mention pre-workout fuel or post-workout recovery.\n";
+          prompt += "5.  **Tone:** Maintain Sammi's energetic, motivating, and no-nonsense voice.\n";
+          prompt += "6.  **Sign-off:** End with an encouraging, supportive sign-off like 'You've got this!' or 'Take care of yourself today.'\n";
       }
 
       // Use OpenAI API call

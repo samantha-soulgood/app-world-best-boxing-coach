@@ -13,11 +13,13 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
   const [injuries, setInjuries] = useState('');
   const [equipment, setEquipment] = useState('');
   const [activityLevel, setActivityLevel] = useState('');
+  const [dietaryPreferences, setDietaryPreferences] = useState('');
+  const [foodAllergies, setFoodAllergies] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (activityLevel) { // Ensure an activity level is selected
-        onSubmit({ pronouns, age, goals, injuries, equipment, activityLevel });
+        onSubmit({ pronouns, age, goals, injuries, equipment, activityLevel, dietaryPreferences, foodAllergies });
     }
   };
 
@@ -124,6 +126,32 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
               className={`${inputStyles} resize-none`}
               placeholder="e.g., Dumbbells, jump rope, heavy bag, treadmill..."
               rows={3}
+            />
+          </div>
+          <div>
+            <label htmlFor="dietaryPreferences" className={labelStyles}>
+              Dietary preferences (optional)
+            </label>
+            <textarea
+              id="dietaryPreferences"
+              value={dietaryPreferences}
+              onChange={(e) => setDietaryPreferences(e.target.value)}
+              className={`${inputStyles} resize-none`}
+              placeholder="e.g., Vegetarian, Mediterranean diet, low-carb, etc."
+              rows={2}
+            />
+          </div>
+          <div>
+            <label htmlFor="foodAllergies" className={labelStyles}>
+              Food allergies or restrictions (optional)
+            </label>
+            <textarea
+              id="foodAllergies"
+              value={foodAllergies}
+              onChange={(e) => setFoodAllergies(e.target.value)}
+              className={`${inputStyles} resize-none`}
+              placeholder="e.g., Nuts, dairy, gluten, shellfish, etc."
+              rows={2}
             />
           </div>
           <button
