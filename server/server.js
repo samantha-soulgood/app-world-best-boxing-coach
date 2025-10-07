@@ -218,42 +218,12 @@ app.use('/api-proxy', async (req, res, next) => {
 
         let apiResponse;
         
-        if (isMobileSafari) {
-            // Use Node.js fetch for mobile Safari to avoid ReadableStream issues
-            console.log('Using Node.js fetch for mobile Safari');
-            console.log('Request body for mobile Safari:', JSON.stringify(req.body, null, 2));
-            console.log('Request body type for mobile Safari:', typeof req.body);
-            console.log('Request body has model for mobile Safari:', req.body?.model);
-            
-            // Ensure Content-Type is set for mobile Safari
-            const mobileSafariHeaders = {
-                ...outgoingHeaders,
-                'Content-Type': 'application/json'
-            };
-            
-            console.log('Mobile Safari headers being sent:', mobileSafariHeaders);
-            
-            const fetchResponse = await fetch(apiUrl, {
-                method: req.method,
-                headers: mobileSafariHeaders,
-                body: req.body ? JSON.stringify(req.body) : undefined
-            });
-            
-            const responseData = await fetchResponse.json();
-            console.log('Mobile Safari fetch response:', {
-                status: fetchResponse.status,
-                data: responseData
-            });
-            
-            apiResponse = {
-                status: fetchResponse.status,
-                headers: Object.fromEntries(fetchResponse.headers.entries()),
-                data: responseData
-            };
-        } else {
-            // Use axios for other browsers
-            apiResponse = await axios(axiosConfig);
-        }
+        // Use axios for all browsers (including mobile Safari)
+        console.log('Using axios for request');
+        console.log('Request body:', JSON.stringify(req.body, null, 2));
+        console.log('Request body has model:', req.body?.model);
+        
+        apiResponse = await axios(axiosConfig);
 
         // Pass through response headers from Gemini API to the client
         for (const header in apiResponse.headers) {
