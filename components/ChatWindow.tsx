@@ -19,11 +19,21 @@ interface ChatWindowProps {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGeneratingWorkout, onStartWorkout, currentUser }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
+  const isNearBottom = () => {
+    const el = containerRef.current;
+    if (!el) return true;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    return distanceFromBottom < 200; // only autoscroll if user is near bottom
+  };
+
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading]);
+    if (isNearBottom()) {
+      scrollRef.current?.scrollIntoView({ behavior: 'auto' });
+    }
+  }, [messages.length, isLoading]);
 
   const createMarkup = (text: string) => {
     // Use marked from the window object to parse markdown.
@@ -161,7 +171,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-2 py-4 sm:px-4 space-y-6">
+    <div ref={containerRef} className="flex-1 overflow-y-auto px-2 py-4 sm:px-4 space-y-6">
       {messages.map((message) => {
         return (
           <div

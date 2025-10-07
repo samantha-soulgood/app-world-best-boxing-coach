@@ -17,7 +17,7 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 const port = process.env.PORT || 3001;
     console.log('Server starting on port:', port);
-    console.log('PORT environment variable:', process.env.PORT);
+    console.log('PORT environmentean variable:', process.env.PORT);
     console.log('Server version: 1.0.2 - Fixed API key null check and debugging');
 // Support both OpenAI and Groq APIs
 const externalApiBaseUrl = process.env.GROQ_API_KEY ? 'https://api.groq.com' : 'https://api.openai.com';
