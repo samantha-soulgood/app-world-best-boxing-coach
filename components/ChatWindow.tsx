@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useImperativeHandle, forwardRef } from 'react';
 import type { Message, WorkoutPlan, User, Video } from '../types';
 import { LoadingIcon, PlayIcon } from './Icons';
 import WorkoutDisplay from './WorkoutDisplay';
@@ -17,10 +17,22 @@ interface ChatWindowProps {
   currentUser: User | null;
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGeneratingWorkout, onStartWorkout, currentUser }) => {
+export interface ChatWindowRef {
+  scrollToEnd: () => void;
+}
+
+const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoading, isGeneratingWorkout, onStartWorkout, currentUser }, ref) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+
+  const scrollToEnd = () => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useImperativeHandle(ref, () => ({
+    scrollToEnd
+  }));
 
   const isNearBottom = () => {
     const el = containerRef.current;
@@ -194,7 +206,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, isGenerati
       )}
     </div>
   );
-};
+});
 
 interface MemoMessageProps {
   message: Message;
@@ -248,3 +260,4 @@ const MemoMessage: React.FC<MemoMessageProps> = React.memo(({ message, currentUs
 });
 
 export default ChatWindow;
+export type { ChatWindowRef };

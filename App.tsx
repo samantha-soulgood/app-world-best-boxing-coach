@@ -1,10 +1,10 @@
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 // OpenAI integration - no client library needed, using direct API calls
 import type { Message, Sender, OnboardingData, User, WorkoutPlan, Video, JournalEntry } from './types';
 import { SAMMI_PERSONA } from './constants';
 import Header from './components/Header';
-import ChatWindow from './components/ChatWindow';
+import ChatWindow, { type ChatWindowRef } from './components/ChatWindow';
 import MessageInput from './components/MessageInput';
 import LoginScreen from './components/LoginScreen';
 import OnboardingScreen from './components/OnboardingScreen';
@@ -185,6 +185,11 @@ const App: React.FC = () => {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [showJournal, setShowJournal] = useState<boolean>(false);
   const [isTopicsVisible, setIsTopicsVisible] = useState(true);
+  const chatWindowRef = useRef<ChatWindowRef>(null);
+
+  const scrollToEnd = () => {
+    chatWindowRef.current?.scrollToEnd();
+  };
 
   const displayedMessages = useMemo(() => {
     return pruneHistoryToLast24Hours(messages);
@@ -758,6 +763,9 @@ const App: React.FC = () => {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
     setError(null);
+    
+    // Scroll to end when user sends a message
+    setTimeout(() => scrollToEnd(), 100);
 
     try {
         const isMobileSafari = /iPhone|iPad|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|CriOS|FxiOS/.test(navigator.userAgent);
@@ -1107,6 +1115,7 @@ const App: React.FC = () => {
         <Header currentUser={currentUser} onLogout={handleLogout} />
         <div className="flex-1 flex flex-col max-w-4xl w-full mx-auto px-4 sm:px-6 pb-4 overflow-hidden">
           <ChatWindow
+            ref={chatWindowRef}
             messages={displayedMessages}
             isLoading={isLoading}
             isGeneratingWorkout={isGeneratingWorkout}
@@ -1118,37 +1127,58 @@ const App: React.FC = () => {
                 <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
                     <TopicButton
                         topic="🥊 Workout of the Day"
-                        onClick={() => sendMessage("Give me a workout of the day, based on my profile.", 'user')}
+                        onClick={() => {
+                            sendMessage("Give me a workout of the day, based on my profile.", 'user');
+                            scrollToEnd();
+                        }}
                         disabled={isLoading}
                     />
                     <TopicButton
                         topic="🥗 Nutritional Tips"
-                        onClick={() => sendMessage("Can you give me a quick nutritional tip for fitness?", 'user')}
+                        onClick={() => {
+                            sendMessage("Can you give me a quick nutritional tip for fitness?", 'user');
+                            scrollToEnd();
+                        }}
                         disabled={isLoading}
                     />
                     <TopicButton
                         topic="☀️ Day's Review"
-                        onClick={handleDayReview}
+                        onClick={() => {
+                            handleDayReview();
+                            scrollToEnd();
+                        }}
                         disabled={isLoading}
                     />
                     <TopicButton
                         topic="📓 My Journal"
-                        onClick={() => setShowJournal(true)}
+                        onClick={() => {
+                            setShowJournal(true);
+                            scrollToEnd();
+                        }}
                         disabled={isLoading}
                     />
                     <TopicButton
                         topic="🍱 Today's Meal Plan"
-                        onClick={() => sendMessage("Show me my meal plan for today. If a weekly plan was recently made, use that. Otherwise, create a new one for today.", 'user')}
+                        onClick={() => {
+                            sendMessage("Show me my meal plan for today. If a weekly plan was recently made, use that. Otherwise, create a new one for today.", 'user');
+                            scrollToEnd();
+                        }}
                         disabled={isLoading}
                     />
                     <TopicButton
                         topic="📅 Weekly Meal Plan"
-                        onClick={() => sendMessage("Create a meal plan for the week.", 'user')}
+                        onClick={() => {
+                            sendMessage("Create a meal plan for the week.", 'user');
+                            scrollToEnd();
+                        }}
                         disabled={isLoading}
                     />
                     <TopicButton
                         topic="🏃‍♀️ Show Video Drills"
-                        onClick={() => sendMessage("Show me the video library.", 'user')}
+                        onClick={() => {
+                            sendMessage("Show me the video library.", 'user');
+                            scrollToEnd();
+                        }}
                         disabled={isLoading}
                     />
                   </div>
