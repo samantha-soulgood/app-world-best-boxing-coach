@@ -18,7 +18,7 @@ const app = express();
 const port = process.env.PORT || 3001;
     console.log('Server starting on port:', port);
     console.log('PORT environment variable:', process.env.PORT);
-    console.log('Server version: 1.0.1 - Fixed API key cleaning and error handling');
+    console.log('Server version: 1.0.2 - Fixed API key null check and debugging');
 // Support both OpenAI and Groq APIs
 const externalApiBaseUrl = process.env.GROQ_API_KEY ? 'https://api.groq.com' : 'https://api.openai.com';
 const apiKey = process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY || process.env.API_KEY;
@@ -125,7 +125,13 @@ app.use('/api-proxy', async (req, res, next) => {
         }
 
         // Set the actual API key in the appropriate header for OpenAI
-        // Debug the API key before cleaning
+        // Check if API key exists first
+        if (!apiKey) {
+            console.error('API key is not configured');
+            return res.status(500).json({ error: 'API key not configured' });
+        }
+        
+        // Debug the API key before cleaning (with safety checks)
         console.log('Raw API key type:', typeof apiKey);
         console.log('Raw API key length:', apiKey ? apiKey.length : 'undefined');
         console.log('Raw API key first 10 chars:', apiKey ? apiKey.substring(0, 10) : 'undefined');
