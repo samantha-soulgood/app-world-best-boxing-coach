@@ -70,10 +70,10 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
         console.log(`Exercise ${i}: "${exercise.name}" - Notes: "${exercise.notes}"`);
         const setRepeatMatch = exercise?.notes?.match(/Repeat this set (\d+) times?/i);
         if (setRepeatMatch) {
-          const repeatCount = parseInt(setRepeatMatch[1]);
+          const repeatCount = Math.min(parseInt(setRepeatMatch[1]), 3); // Cap at 3 repetitions
           setCircuitRepetitions(repeatCount);
           setCurrentCircuitRound(1);
-          console.log(`✅ Set setup: ${repeatCount} repetitions detected from exercise at index ${i}`);
+          console.log(`✅ Set setup: ${repeatCount} repetitions detected from exercise at index ${i} (capped at 3)`);
           foundRepetitions = true;
           break;
         }
