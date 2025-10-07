@@ -263,6 +263,7 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
         {exerciseDurationInSeconds > 0 ? (
             <>
                 <Timer 
+                    key={`${currentPhaseIndex}-${currentExerciseIndex}`}
                     initialSeconds={exerciseDurationInSeconds} 
                     onComplete={handleNextExercise}
                     autoStart={true}

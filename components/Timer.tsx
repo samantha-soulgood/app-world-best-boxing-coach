@@ -27,6 +27,7 @@ const Timer: React.FC<TimerProps> = ({ initialSeconds, onComplete, autoStart = f
         setSeconds(s => s - 1);
       }, 1000);
     } else if (seconds === 0 && isActive) {
+      console.log('Timer completed! Calling onComplete callback');
       setIsActive(false);
       if (onComplete) {
         onComplete();
