@@ -8,6 +8,8 @@ interface WorkoutDisplayProps {
 }
 
 const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) => {
+  console.log("WorkoutDisplay: onFindVideo prop:", !!onFindVideo);
+  
   if (!plan.workout || !plan.workout.phases) {
     return null;
   }

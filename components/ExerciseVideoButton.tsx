@@ -13,6 +13,9 @@ const ExerciseVideoButton: React.FC<ExerciseVideoButtonProps> = ({
   onFindVideo, 
   disabled = false 
 }) => {
+  console.log("ExerciseVideoButton: Rendering for exercise:", exerciseName);
+  console.log("ExerciseVideoButton: onFindVideo prop:", !!onFindVideo);
+  
   const [isLoading, setIsLoading] = useState(false);
   const [video, setVideo] = useState<Video | null>(null);
   const [showPlayer, setShowPlayer] = useState(false);
@@ -44,6 +47,9 @@ const ExerciseVideoButton: React.FC<ExerciseVideoButtonProps> = ({
     }
   };
 
+  console.log("ExerciseVideoButton: About to render button for:", exerciseName);
+  console.log("ExerciseVideoButton: isLoading:", isLoading, "noVideoFound:", noVideoFound);
+  
   return (
     <>
       <button

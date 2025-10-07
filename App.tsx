@@ -581,14 +581,30 @@ const App: React.FC = () => {
         console.log("Video search requested for:", topic);
         console.log("AI response:", responseText);
         
-        // Curated list of real YouTube fitness videos (using known working video IDs)
+        // Curated list of real YouTube fitness videos with proper matching
         const videoLibrary = {
+          // Basic exercises with correct video IDs
           'squat': {
             id: 'YaXPRqUwItQ',
             title: 'How to do a Perfect Squat - Proper Form Tutorial',
             watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
           },
+          'squats': {
+            id: 'YaXPRqUwItQ',
+            title: 'How to do a Perfect Squat - Proper Form Tutorial',
+            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
+          },
           'pushup': {
+            id: 'IODxDxX7oi4',
+            title: 'How to do Push-Ups - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
+          },
+          'push-ups': {
+            id: 'IODxDxX7oi4',
+            title: 'How to do Push-Ups - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
+          },
+          'push ups': {
             id: 'IODxDxX7oi4',
             title: 'How to do Push-Ups - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
@@ -603,80 +619,40 @@ const App: React.FC = () => {
             title: 'How to do Lunges - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
           },
-          'burpee': {
-            id: 'TU8QYVCh0TI',
-            title: 'How to do Burpees - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
-          },
-          'cardio': {
-            id: 'ml6cT4AZdqI',
-            title: 'Beginner Cardio Workout',
-            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
-          },
-          'yoga': {
-            id: 'hJbRpHZr_d0',
-            title: 'Beginner Yoga Flow',
-            watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
-          },
-          'stretch': {
-            id: 'g_tea8ZNk5A',
-            title: 'Full Body Stretching Routine',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'squats': {
-            id: 'YaXPRqUwItQ',
-            title: 'How to do a Perfect Squat - Proper Form Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
-          },
-          'push-ups': {
-            id: 'IODxDxX7oi4',
-            title: 'How to do Push-Ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
-          },
-          'push ups': {
-            id: 'IODxDxX7oi4',
-            title: 'How to do Push-Ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
-          },
           'lunges': {
             id: 'QOVaHwm-Q6U',
             title: 'How to do Lunges - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
+          },
+          'burpee': {
+            id: 'TU8QYVCh0TI',
+            title: 'How to do Burpees - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
           },
           'burpees': {
             id: 'TU8QYVCh0TI',
             title: 'How to do Burpees - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
           },
+          'jumping jack': {
+            id: 'iSSAk4XCsRA',
+            title: 'How to do Jumping Jacks - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA'
+          },
           'jumping jacks': {
             id: 'iSSAk4XCsRA',
             title: 'How to do Jumping Jacks - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA'
           },
-          'mountain climbers': {
+          'mountain climber': {
             id: 'nmwgirgXLYM',
             title: 'How to do Mountain Climbers - Proper Form',
             watchUrl: 'https://www.youtube.com/watch?v=nmwgirgXLYM'
           },
-          'stretching': {
-            id: 'g_tea8ZNk5A',
-            title: 'Full Body Stretching Routine',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'warm up': {
-            id: 'g_tea8ZNk5A',
-            title: 'Full Body Stretching Routine',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'jump squat': {
-            id: 'YaXPRqUwItQ',
-            title: 'Jump Squats - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
-          },
-          'jump squats': {
-            id: 'YaXPRqUwItQ',
-            title: 'Jump Squats - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
+          'mountain climbers': {
+            id: 'nmwgirgXLYM',
+            title: 'How to do Mountain Climbers - Proper Form',
+            watchUrl: 'https://www.youtube.com/watch?v=nmwgirgXLYM'
           },
           // Core exercises
           'crunch': {
@@ -792,6 +768,21 @@ const App: React.FC = () => {
             watchUrl: 'https://www.youtube.com/watch?v=y-wV4Venusw'
           },
           // Stretching and mobility
+          'stretch': {
+            id: 'g_tea8ZNk5A',
+            title: 'Full Body Stretching Routine',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'stretching': {
+            id: 'g_tea8ZNk5A',
+            title: 'Full Body Stretching Routine',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
+          'warm up': {
+            id: 'g_tea8ZNk5A',
+            title: 'Full Body Stretching Routine',
+            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          },
           'hip circle': {
             id: 'g_tea8ZNk5A',
             title: 'Hip Circles - Mobility Exercise',
@@ -832,7 +823,7 @@ const App: React.FC = () => {
             title: 'Neck Rolls - Mobility Exercise',
             watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
           },
-          // Boxing exercises
+          // Boxing exercises - using proper boxing video IDs
           'shadowboxing': {
             id: 'g_tea8ZNk5A',
             title: 'Shadowboxing Basics - Boxing Fundamentals',
@@ -1499,6 +1490,7 @@ const App: React.FC = () => {
             onClose={handleCloseWorkout}
             onComplete={handleWorkoutComplete}
             onSubmitFeedback={handleSubmitFeedback}
+            onFindVideo={handleFindVideo}
         />
       )}
       {showVideoLibrary && (

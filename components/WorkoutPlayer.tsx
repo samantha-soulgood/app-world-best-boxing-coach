@@ -1,18 +1,20 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import type { WorkoutPlan, WorkoutPlan_Phase, WorkoutPlan_Exercise } from '../types';
+import type { WorkoutPlan, WorkoutPlan_Phase, WorkoutPlan_Exercise, Video } from '../types';
 import Timer from './Timer';
 import { CloseIcon, NextIcon, PrevIcon, PlayIcon, PauseIcon } from './Icons';
 import { parseDurationToSeconds } from '../utils';
 import WorkoutFeedback from './WorkoutFeedback';
+import ExerciseVideoButton from './ExerciseVideoButton';
 
 interface WorkoutPlayerProps {
   workout: WorkoutPlan;
   onClose: () => void;
   onComplete: () => void;
   onSubmitFeedback: (feedback: { rpe: number; text: string }) => void;
+  onFindVideo?: (exerciseName: string) => Promise<Video | null>;
 }
 
-const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onComplete, onSubmitFeedback }) => {
+const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onComplete, onSubmitFeedback, onFindVideo }) => {
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -345,7 +347,17 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
             </div>
           )}
         <div className="bg-zinc-800 p-4 sm:p-6 md:p-8 rounded-2xl w-full max-w-lg mb-4 sm:mb-8 border border-zinc-700">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white mb-2 break-words leading-tight">{currentExercise.name}</h2>
+            <div className="flex items-start justify-between mb-2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white break-words leading-tight flex-1">{currentExercise.name}</h2>
+              {onFindVideo && (
+                <div className="ml-3 flex-shrink-0">
+                  <ExerciseVideoButton
+                    exerciseName={currentExercise.name}
+                    onFindVideo={onFindVideo}
+                  />
+                </div>
+              )}
+            </div>
             <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-4">{`${currentExercise.sets} sets x ${currentExercise.reps} reps`}</p>
             {currentExercise.notes && <p className="text-sm text-gray-400 break-words">{currentExercise.notes}</p>}
         </div>
