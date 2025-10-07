@@ -125,8 +125,10 @@ app.use('/api-proxy', async (req, res, next) => {
         }
 
         // Set the actual API key in the appropriate header for OpenAI
-        // Clean the API key to remove any invalid characters
-        const cleanApiKey = apiKey.trim().replace(/[\r\n\t]/g, '');
+        // Clean the API key to remove any invalid characters for HTTP headers
+        // Remove all control characters, quotes, backslashes, and other problematic chars
+        const cleanApiKey = apiKey.trim().replace(/[\r\n\t\x00-\x1f\x7f-\x9f"\\]/g, '');
+        console.log('API Key cleaning - Original length:', apiKey.length, 'Cleaned length:', cleanApiKey.length);
         outgoingHeaders['Authorization'] = `Bearer ${cleanApiKey}`;
 
         // Set Content-Type from original request if present (for relevant methods)
