@@ -164,6 +164,34 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
     return (currentPhase.exercises.length || 0) - 1;
   };
 
+  // Helper function to get the current set number (1, 2, 3, etc.)
+  const getCurrentSetNumber = () => {
+    if (!currentPhase || currentPhase.name !== 'Main Workout') return 0;
+    
+    let setNumber = 1;
+    for (let i = 0; i < currentExerciseIndex; i++) {
+      const exercise = currentPhase.exercises[i];
+      if (exercise.notes?.match(/Repeat this set (\d+) times?/i)) {
+        setNumber++;
+      }
+    }
+    return setNumber;
+  };
+
+  // Helper function to get total number of sets
+  const getTotalSets = () => {
+    if (!currentPhase || currentPhase.name !== 'Main Workout') return 0;
+    
+    let totalSets = 1;
+    for (let i = 0; i < (currentPhase.exercises.length || 0); i++) {
+      const exercise = currentPhase.exercises[i];
+      if (exercise.notes?.match(/Repeat this set (\d+) times?/i)) {
+        totalSets++;
+      }
+    }
+    return totalSets;
+  };
+
   const handlePrevExercise = () => {
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(prev => prev - 1);
@@ -204,7 +232,10 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
             <h1 className="text-2xl md:text-3xl font-display font-bold text-white tracking-wider uppercase">{currentPhase.name}</h1>
             <p className="text-fuchsia-400 font-semibold">{`Exercise ${currentExerciseOverallIndex + 1} of ${totalExercises}`}</p>
             {circuitRepetitions > 0 && currentPhase.name === 'Main Workout' && (
-              <p className="text-yellow-400 font-semibold text-sm">{`Set Round ${currentCircuitRound} of ${circuitRepetitions}`}</p>
+              <div className="text-yellow-400 font-semibold text-sm">
+                <p>{`Set ${getCurrentSetNumber()} - Round ${currentCircuitRound} of ${circuitRepetitions}`}</p>
+                <p className="text-xs text-yellow-300">{`Set ${getCurrentSetNumber()} of ${getTotalSets()} (each repeats ${circuitRepetitions} times)`}</p>
+              </div>
             )}
         </div>
         <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
