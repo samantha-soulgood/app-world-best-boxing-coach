@@ -125,11 +125,28 @@ app.use('/api-proxy', async (req, res, next) => {
         }
 
         // Set the actual API key in the appropriate header for OpenAI
-        // Clean the API key to remove any invalid characters for HTTP headers
-        // Remove all control characters, quotes, backslashes, and other problematic chars
-        const cleanApiKey = apiKey.trim().replace(/[\r\n\t\x00-\x1f\x7f-\x9f"\\]/g, '');
-        console.log('API Key cleaning - Original length:', apiKey.length, 'Cleaned length:', cleanApiKey.length);
+        // Debug the API key before cleaning
+        console.log('Raw API key type:', typeof apiKey);
+        console.log('Raw API key length:', apiKey ? apiKey.length : 'undefined');
+        console.log('Raw API key first 10 chars:', apiKey ? apiKey.substring(0, 10) : 'undefined');
+        console.log('Raw API key last 10 chars:', apiKey ? apiKey.substring(apiKey.length - 10) : 'undefined');
+        
+        // More aggressive cleaning - remove ALL non-printable characters except spaces
+        const cleanApiKey = apiKey.trim().replace(/[^\x20-\x7E]/g, '');
+        console.log('Cleaned API key length:', cleanApiKey.length);
+        console.log('Cleaned API key first 10 chars:', cleanApiKey.substring(0, 10));
+        
+        // Validate the cleaned API key
+        if (!cleanApiKey || cleanApiKey.length < 10) {
+            console.error('API key is invalid after cleaning:', cleanApiKey);
+            return res.status(500).json({ error: 'Invalid API key configuration' });
+        }
+        
         outgoingHeaders['Authorization'] = `Bearer ${cleanApiKey}`;
+        
+        // Debug the headers being sent
+        console.log('Outgoing headers:', Object.keys(outgoingHeaders));
+        console.log('Authorization header length:', outgoingHeaders['Authorization'] ? outgoingHeaders['Authorization'].length : 'undefined');
 
         // Set Content-Type from original request if present (for relevant methods)
         if (req.headers['content-type'] && ['POST', 'PUT', 'PATCH'].includes(req.method.toUpperCase())) {
