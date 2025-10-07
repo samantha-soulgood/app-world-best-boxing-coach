@@ -219,16 +219,23 @@ app.use('/api-proxy', async (req, res, next) => {
         if (isMobileSafari) {
             // Use Node.js fetch for mobile Safari to avoid ReadableStream issues
             console.log('Using Node.js fetch for mobile Safari');
+            console.log('Request body for mobile Safari:', JSON.stringify(req.body, null, 2));
             const fetchResponse = await fetch(apiUrl, {
                 method: req.method,
                 headers: outgoingHeaders,
                 body: req.body ? JSON.stringify(req.body) : undefined
             });
             
+            const responseData = await fetchResponse.json();
+            console.log('Mobile Safari fetch response:', {
+                status: fetchResponse.status,
+                data: responseData
+            });
+            
             apiResponse = {
                 status: fetchResponse.status,
                 headers: Object.fromEntries(fetchResponse.headers.entries()),
-                data: await fetchResponse.json()
+                data: responseData
             };
         } else {
             // Use axios for other browsers
