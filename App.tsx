@@ -464,17 +464,12 @@ const App: React.FC = () => {
     prompt += "2.  **Adapt to Requests & Injuries:**\n    - If the user's request is specific (e.g., 'upper body workout'), the 'Main Workout' phase MUST reflect this focus.\n    - Adapt intelligently to injuries. If an upper body injury is noted, create a lower-body and core-focused workout. If a lower body injury is noted, create an upper-body and core-focused workout. The goal is to train around the injury safely.\n";
     prompt += "3.  **Workout Structure (Adapt to Time Limit):** The workout MUST respect the user's requested duration. Structure the workout with these phases, adjusting repetitions based on available time:\n    - A 'Warm-up' phase with 3-4 dynamic exercises (30 seconds to 1 minute each) - allocate 3-4 minutes\n    - A 'Main Workout' circuit of 3-4 exercises (45 seconds to 1 minute each, with 15-second breaks between exercises) - repeat the circuit 1-3 times based on remaining time\n    - A 'Core Finisher' circuit with 3-4 core exercises (30-45 seconds each) - allocate 2-3 minutes if time permits\n    - A 'Cool-down' phase with 3-4 static stretches (30 seconds each) - allocate 2-3 minutes\n    **IMPORTANT: Calculate the total time needed and adjust circuit repetitions to fit within the user's requested duration.**\n";
     prompt += "4.  **Duration is Mandatory:** EVERY exercise, including warm-ups, main exercises, core work, and cool-down stretches, MUST have a valid `duration` string (e.g., \"45 seconds\", \"1 minute\"). For exercises based on repetitions (e.g., '10 reps'), provide a reasonable estimated duration. For exercises that are purely timed (like planks), `reps` should be 'N/A' and `sets` should be 1. For rest periods, use name 'Rest' and duration '15 seconds'.\n";
-    prompt += "5.  **Main Workout Circuit Structure (Time-Adaptive):** The 'Main Workout' phase must be structured as a circuit of 3-4 exercises that is repeated 1-3 times based on the user's requested duration. Each exercise should be 45 seconds to 1 minute, with 15-second rest periods between exercises. IMPORTANT: You must include 'Rest' as separate exercise objects with duration '15 seconds' between each work exercise. Calculate the time needed: Warm-up (3-4 min) + Main Workout (circuit time × repetitions) + Core Finisher (2-3 min) + Cool-down (2-3 min) = Total. Adjust circuit repetitions to fit within the requested duration. Examples: 15-minute workout = 1 circuit repetition, 20-minute workout = 2 circuit repetitions, 30+ minute workout = 3 circuit repetitions. Each 'Rest' exercise should have name 'Rest', duration '15 seconds', reps 'N/A', sets 1, and notes 'Take a quick breather before the next exercise!'.\n";
+    prompt += "5.  **Circuit Format (Token-Efficient):** For the 'Main Workout' phase, create a circuit of 3-4 exercises and specify how many times to repeat it. Use this format: Create 4 exercises with 'Rest' exercises between them, then in the exercise notes, specify 'Repeat this circuit X times' where X is based on duration (15min=1x, 20min=2x, 30+min=3x). This avoids repeating the same exercises multiple times in the JSON. Each 'Rest' exercise: name 'Rest', duration '15 seconds', reps 'N/A', sets 1, notes 'Take a quick breather!'.\n";
     prompt += "6.  **Exercise Variety:** To keep workouts engaging, you MUST ensure variety. For the 'Warm-up', 'Main Workout', and 'Core Finisher' phases, at least 50% of the exercises MUST be different from the exercises in the user's last workout (provided in the 'Workout Request' section). You can reuse foundational exercises like 'Jumping Jacks' or 'Plank' but should prioritize introducing new movements or variations.\n";
     prompt += "7.  **Apply Progressive Overload:** The new workout MUST be a slight progression in difficulty from the last one. Refer to the user's last workout details and their RPE/feedback. Apply one or more of the following principles subtly:\n    - For strength exercises, increase reps by 1-2 (e.g., '10 Push-ups' becomes '12 Push-ups').\n    - For timed exercises, increase duration by 5-15 seconds (e.g., '45 second Plank' becomes '1 minute Plank').\n    - If an exercise from the last workout is repeated, suggest a harder variation or add a note about increasing weight if applicable (e.g., 'Bodyweight Squat' could become 'Jump Squat', or a note 'Use slightly heavier dumbbells if available' can be added).\n    - Slightly decrease rest time between exercises (e.g., from '30 seconds' to '25 seconds').\n    This progression should be challenging but achievable. If the user's last RPE was very high (9-10), the progression should be minimal or focus on form improvement rather than increased load.\n";
 
 
     // Use OpenAI API call with JSON mode
-    // Adjust max_tokens based on workout duration - longer workouts need more tokens
-    const durationMinutes = duration ? parseInt(duration.replace(/\D/g, '')) || 30 : 30;
-    const maxTokens = durationMinutes >= 45 ? 6144 : durationMinutes >= 30 ? 4096 : 2048;
-    console.log(`Workout generation: Duration=${durationMinutes} minutes, Max tokens=${maxTokens}`);
-    
     const requestBody = {
       model: "gpt-4o-mini",
       messages: [
@@ -488,7 +483,7 @@ const App: React.FC = () => {
         }
       ],
       temperature: 0.9,
-      max_tokens: maxTokens,
+      max_tokens: 2048,
       response_format: { type: "json_object" }
     };
 
