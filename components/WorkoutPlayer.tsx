@@ -87,6 +87,7 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
 
   const startRestPeriod = (duration: number, message: string) => {
     console.log(`Starting rest period: ${duration} seconds - ${message}`);
+    console.log('Current phase:', currentPhase?.name, 'Exercise index:', currentExerciseIndex, 'Total exercises:', currentPhase?.exercises.length);
     setIsRestPeriod(true);
     setRestDuration(duration);
   };
@@ -154,7 +155,7 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
     
     // Determine rest duration based on context
     if (currentExerciseIndex < (currentPhase?.exercises.length || 0) - 1) {
-      // Moving to next exercise in same phase - 15 second break
+      // Moving to next exercise in same phase - 15 second break for all phases
       startRestPeriod(15, 'Break between exercises');
     } else if (isMainWorkoutPhase && circuitRepetitions > 0 && currentCircuitRound < circuitRepetitions) {
       // Moving to next set round - 1 minute break
