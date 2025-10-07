@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && cd server && npm install",
+    "build:render": "VITE_GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID vite build && cd server && npm install",
     "preview": "vite preview",
     "start": "node server/server.js",
     "install-server": "cd server && npm install"

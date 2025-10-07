@@ -2,7 +2,7 @@
 // IMPORTANT: Replace this with your actual Google Client ID from the Google Cloud Console.
 // You can get one here: https://console.cloud.google.com/apis/credentials
 // For production, set this as an environment variable: VITE_GOOGLE_CLIENT_ID
-export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
 // Debug logging (can be removed in production)
 console.log("Google Client ID configured:", GOOGLE_CLIENT_ID !== "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com");
