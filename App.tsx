@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 // OpenAI integration - no client library needed, using direct API calls
 import type { Message, Sender, OnboardingData, User, WorkoutPlan, Video, JournalEntry } from './types';
 import { SAMMI_PERSONA } from './constants';
@@ -295,7 +295,6 @@ const App: React.FC = () => {
     setCurrentUser(null);
     setMessages([]);
     setJournalEntries([]);
-    chatRef.current = null;
     setIsOnboarding(false);
   };
   
@@ -744,7 +743,7 @@ const App: React.FC = () => {
     console.log("User agent:", navigator.userAgent);
     console.log("API Key available:", !!process.env.API_KEY);
     console.log("API Key length:", process.env.API_KEY?.length || 0);
-    console.log("Connection type:", navigator.connection?.effectiveType || 'unknown');
+    console.log("Connection type:", (navigator as any).connection?.effectiveType || 'unknown');
     console.log("Online status:", navigator.onLine);
 
     const userMessage: Message = { id: Date.now().toString(), text, sender, timestamp: Date.now() };
@@ -992,35 +991,16 @@ const App: React.FC = () => {
     // Initialize the chat with the new profile.
     initChat([], updatedUser.profile);
 
-    try {
-        if (!chatRef.current) throw new Error("Chat session not initialized.");
-        
-        // This internal prompt is sent to the AI but not displayed to the user.
-        // It instructs the AI to generate a personalized welcome message.
-        const internalPrompt = `INTERNAL SYSTEM PROMPT: You are Sammi. The user (${updatedUser.name}) just finished their onboarding. Their profile details are now in your system instructions. Your task is to craft a welcome message. Greet them by name, briefly and naturally acknowledge theirmain goal or experience level, and ask what they want to do first. This is your first interaction with them.`;
-        
-        const response = await chatRef.current.sendMessage({ message: internalPrompt });
-        
-        const sammiMessage: Message = {
-            id: `welcome-${Date.now()}`,
-            text: response.text,
-            sender: 'sammi',
-            timestamp: Date.now(),
-        };
-        
-        // The chat history for the AI now includes the internal prompt and its response.
-        // We only display the response to the user.
-        setMessages([sammiMessage]);
-
-    } catch (e) {
-      console.error("Failed to fetch welcome message:", e);
-      const errorMessage = "I'm having a bit of trouble connecting right now. Let's take a moment and try again.";
-      setError(errorMessage);
-       const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
-      setMessages(prev => [...prev, errorResponse]);
-    } finally {
-        setIsLoading(false);
-    }
+    // Add a welcome message
+    const welcomeMessage: Message = {
+        id: `welcome-${Date.now()}`,
+        text: `Welcome to Soul Good Fitness, ${updatedUser.name}! I'm Sammi, your personal fitness coach. I'm here to help you reach your goals. What would you like to work on today?`,
+        sender: 'sammi',
+        timestamp: Date.now(),
+    };
+    
+    setMessages([welcomeMessage]);
+    setIsLoading(false);
   };
 
   const handleStartWorkout = (plan: WorkoutPlan, messageId: string) => {
@@ -1058,13 +1038,19 @@ const App: React.FC = () => {
           )
       );
       
-      // Create a new follow-up message from the user to send to the AI
-      const feedbackMessageText = `My feedback for the last workout (rated ${rpe}/10): ${text || "No additional comments."}`;
-      sendMessage(feedbackMessageText, 'user');
+      // Add a celebration message instead of sending feedback to AI
+      const celebrationMessage = {
+        id: `celebration-${Date.now()}`,
+        text: `🎉 Amazing work completing your workout! You rated it ${rpe}/10. ${text ? 'Your feedback: "' + text + '"' : "Great job pushing through!"} Keep up the fantastic work! 💪`,
+        sender: 'sammi' as const,
+        timestamp: new Date().toISOString()
+      };
+      
+      setMessages(prev => [...prev, celebrationMessage]);
 
       // Close the workout player UI
       handleCloseWorkout();
-  }, [activeWorkoutInfo, sendMessage]);
+  }, [activeWorkoutInfo]);
 
   const handleSelectVideo = (video: Video) => {
     setShowVideoLibrary(false);

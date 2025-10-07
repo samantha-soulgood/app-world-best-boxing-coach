@@ -319,8 +319,8 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       </header>
 
       {/* Main Content - Scrollable */}
-      <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-4">
-        <div className="relative flex flex-col items-center justify-center text-center min-h-full">
+      <div className="flex-1 overflow-y-auto px-4 md:px-8">
+        <div className="relative flex flex-col items-center text-center py-8">
          {isWorkoutPaused && (
             <div className="absolute inset-0 bg-zinc-900/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl animate-fade-in">
                 <h3 className="text-4xl font-display font-bold text-white tracking-wider">PAUSED</h3>
@@ -366,10 +366,11 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
                 <p className="text-center text-gray-400 max-w-xs">No timer for this exercise. Complete the sets & reps, then hit 'Skip' when you're ready.</p>
             </div>
         )}
+        </div>
       </div>
 
-      {/* Footer / Navigation */}
-      <footer className="flex items-center justify-between">
+      {/* Footer / Navigation - Fixed at bottom */}
+      <footer className="flex items-center justify-between p-4 md:p-8 bg-zinc-900 border-t border-zinc-700 flex-shrink-0">
         <button
             onClick={handlePrevExercise}
             disabled={isFirstExerciseOverall}
@@ -387,7 +388,6 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
             <NextIcon />
         </button>
       </footer>
-      </div>
     </div>
   );
 };
