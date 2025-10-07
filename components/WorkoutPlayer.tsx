@@ -54,34 +54,39 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   useEffect(() => {
     const currentPhase = workout.workout.phases[currentPhaseIndex];
     if (currentPhase?.name === 'Main Workout') {
-      // Look for "Repeat this set X times" in the current exercise's notes
-      const currentExercise = currentPhase.exercises[currentExerciseIndex];
-      const repeatMatch = currentExercise?.notes?.match(/Repeat this set (\d+) times?/i);
+      console.log('=== MAIN WORKOUT DETECTION ===');
+      console.log('Current exercise:', currentExercise?.name);
+      console.log('Current exercise notes:', currentExercise?.notes);
       
-      if (repeatMatch) {
-        const repeatCount = parseInt(repeatMatch[1]);
-        setCircuitRepetitions(repeatCount);
-        setCurrentCircuitRound(1);
-        console.log(`Set setup: ${repeatCount} repetitions detected for current exercise`);
-      } else {
-        // Look for any exercise in the current set that has repetition instructions
-        const currentSetStart = findSetStartIndex();
-        const currentSetEnd = findSetEndIndex();
-        
-        for (let i = currentSetStart; i <= currentSetEnd; i++) {
-          const exercise = currentPhase.exercises[i];
-          const setRepeatMatch = exercise?.notes?.match(/Repeat this set (\d+) times?/i);
-          if (setRepeatMatch) {
-            const repeatCount = parseInt(setRepeatMatch[1]);
-            setCircuitRepetitions(repeatCount);
-            setCurrentCircuitRound(1);
-            console.log(`Set setup: ${repeatCount} repetitions detected from set exercise at index ${i}`);
-            break;
-          }
+      // Always look for repetition instructions in the current set
+      const currentSetStart = findSetStartIndex();
+      const currentSetEnd = findSetEndIndex();
+      
+      console.log(`Looking for repetition instructions in set range ${currentSetStart}-${currentSetEnd}`);
+      
+      let foundRepetitions = false;
+      for (let i = currentSetStart; i <= currentSetEnd; i++) {
+        const exercise = currentPhase.exercises[i];
+        console.log(`Exercise ${i}: "${exercise.name}" - Notes: "${exercise.notes}"`);
+        const setRepeatMatch = exercise?.notes?.match(/Repeat this set (\d+) times?/i);
+        if (setRepeatMatch) {
+          const repeatCount = parseInt(setRepeatMatch[1]);
+          setCircuitRepetitions(repeatCount);
+          setCurrentCircuitRound(1);
+          console.log(`✅ Set setup: ${repeatCount} repetitions detected from exercise at index ${i}`);
+          foundRepetitions = true;
+          break;
         }
+      }
+      
+      if (!foundRepetitions) {
+        console.log('❌ No repetition instructions found in current set');
+        setCircuitRepetitions(0);
+        setCurrentCircuitRound(1);
       }
     } else {
       // Reset when not in Main Workout phase
+      console.log('Not in Main Workout phase, resetting repetitions');
       setCircuitRepetitions(0);
       setCurrentCircuitRound(1);
     }
@@ -120,9 +125,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       setCurrentExerciseIndex(prev => prev + 1);
     } else if (isMainWorkoutPhase && circuitRepetitions > 0) {
       // We're at the end of a set in Main Workout phase
-      console.log(`At end of set. Current round: ${currentCircuitRound}, Total repetitions: ${circuitRepetitions}`);
+      console.log(`🎯 At end of set. Current round: ${currentCircuitRound}, Total repetitions: ${circuitRepetitions}`);
       if (currentCircuitRound < circuitRepetitions) {
-        console.log(`Repeating set: Round ${currentCircuitRound + 1} of ${circuitRepetitions}`);
+        console.log(`🔄 Repeating set: Round ${currentCircuitRound + 1} of ${circuitRepetitions}`);
         setCurrentCircuitRound(prev => prev + 1);
         // Find the start of this set and reset to it
         const setStartIndex = findSetStartIndex();
@@ -172,8 +177,8 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       // Moving to next set round - 1 minute break
       startRestPeriod(60, 'Break between sets');
     } else {
-      // Moving to next phase or completing workout - no break needed
-      advanceToNextExercise();
+      // Moving to next phase or completing workout - add a break between phases
+      startRestPeriod(30, 'Break between phases');
     }
   };
 
