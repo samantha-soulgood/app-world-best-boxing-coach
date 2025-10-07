@@ -101,9 +101,11 @@ app.use('/api-proxy', async (req, res, next) => {
         return res.sendStatus(200);
     }
 
-    if (req.body) { // Only log body if it exists
-        console.log("  Request Body (from frontend):", req.body);
-    }
+        if (req.body) { // Only log body if it exists
+            console.log("  Request Body (from frontend):", req.body);
+            console.log("  Request Body type:", typeof req.body);
+            console.log("  Request Body has model:", req.body.model);
+        }
     
     // Construct the target URL by taking the part of the path after /api-proxy/
     const targetPath = req.url.replace('/api-proxy', '');
@@ -220,6 +222,9 @@ app.use('/api-proxy', async (req, res, next) => {
             // Use Node.js fetch for mobile Safari to avoid ReadableStream issues
             console.log('Using Node.js fetch for mobile Safari');
             console.log('Request body for mobile Safari:', JSON.stringify(req.body, null, 2));
+            console.log('Request body type for mobile Safari:', typeof req.body);
+            console.log('Request body has model for mobile Safari:', req.body?.model);
+            
             const fetchResponse = await fetch(apiUrl, {
                 method: req.method,
                 headers: outgoingHeaders,
