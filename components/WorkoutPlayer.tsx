@@ -387,6 +387,8 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
             <NextIcon />
         </button>
       </footer>
+        </div>
+      </div>
     </div>
   );
 };
