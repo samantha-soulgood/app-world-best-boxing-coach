@@ -362,14 +362,6 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
         </button>
 
         <button
-            onClick={toggleWorkoutPause}
-            className="p-4 bg-fuchsia-600 rounded-full text-white font-bold hover:bg-fuchsia-500 transition-colors"
-            aria-label={isWorkoutPaused ? 'Resume' : 'Stop'}
-        >
-            {isWorkoutPaused ? <PlayIcon /> : <PauseIcon />}
-        </button>
-
-        <button
             onClick={handleSkipExercise}
             className="flex items-center gap-2 p-3 bg-zinc-800 rounded-lg text-white font-semibold hover:bg-zinc-700 transition-colors"
         >
