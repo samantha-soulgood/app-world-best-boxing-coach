@@ -17,8 +17,8 @@ const WorkoutFeedback: React.FC<WorkoutFeedbackProps> = ({ onSubmit }) => {
 
   return (
     <div className="fixed inset-0 bg-zinc-900 z-50 flex flex-col items-center justify-center text-center p-4 animate-fade-in">
-      <h1 className="text-4xl font-display font-bold text-fuchsia-400 mb-2 tracking-wider">WORKOUT COMPLETE!</h1>
-      <p className="text-lg text-white max-w-md mb-6">Great job! Let me know how that felt so I can adjust your next session.</p>
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-fuchsia-400 mb-2 tracking-wider">WORKOUT COMPLETE!</h1>
+      <p className="text-base sm:text-lg text-white max-w-md mb-6">Great job! Let me know how that felt so I can adjust your next session.</p>
       
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
         <div>
@@ -29,7 +29,7 @@ const WorkoutFeedback: React.FC<WorkoutFeedbackProps> = ({ onSubmit }) => {
                 type="button"
                 key={num}
                 onClick={() => setRpe(num)}
-                className={`w-10 h-10 rounded-full font-bold text-lg transition-all duration-200 border-2 ${
+                className={`w-10 h-10 rounded-full font-bold text-lg transition-all duration-200 border ${
                   rpe === num
                     ? 'bg-fuchsia-500 border-fuchsia-400 text-white'
                     : 'bg-zinc-700 border-zinc-600 text-gray-300 hover:bg-zinc-600 hover:border-zinc-500'

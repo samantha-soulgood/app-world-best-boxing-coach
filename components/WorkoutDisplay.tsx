@@ -41,7 +41,7 @@ const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) =>
   };
 
   return (
-    <div className="mt-4 p-5 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 border-2 border-orange-200 rounded-lg">
+    <div className="mt-4 p-5 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 border border-orange-200 rounded-lg">
       <div className="mb-4 text-center">
         <h3 className="text-lg font-bold text-gray-900 tracking-tight">🎯 Your Workout Plan</h3>
       </div>
@@ -59,7 +59,7 @@ const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) =>
               </span>
             </div>
             {setInfo && (
-              <div className="mb-3 p-3 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 text-xs rounded-lg">
+              <div className="mb-3 p-3 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-xs rounded-lg">
                 <p className="text-amber-900 font-bold">
                   🔁 Set Structure: {setInfo.repetitionCount} sets, each repeated {setInfo.repeatTimes} times
                 </p>
@@ -90,7 +90,7 @@ const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) =>
               const isNextExerciseRest = nextExercise && nextExercise.name.toLowerCase() === 'rest';
 
               return (
-                <li key={exerciseIndex} className="group p-4 bg-white border-2 border-orange-200 hover:border-orange-300 transition-all duration-200 rounded-lg">
+                <li key={exerciseIndex} className="group p-4 bg-white border border-orange-200 hover:border-orange-300 transition-all duration-200 rounded-lg">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -116,7 +116,7 @@ const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) =>
                       {exercise.notes && (
                         <p className={`text-xs mt-3 p-2.5 rounded-lg ${
                           exercise.notes.includes('Repeat this set') 
-                            ? 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 font-bold border-2 border-amber-300' 
+                            ? 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 font-bold border border-amber-300' 
                             : 'bg-gray-50 text-gray-700 italic border border-gray-200'
                         }`}>
                           {exercise.notes.includes('Repeat this set') ? '🔁 ' : '💡 '}

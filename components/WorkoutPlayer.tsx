@@ -119,15 +119,17 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       currentExerciseIndex,
       totalExercises: currentPhase?.exercises.length,
       circuitRepetitions,
-      currentCircuitRound
+      currentCircuitRound,
+      currentExerciseNotes: currentExercise?.notes
     });
     
-    if (currentExerciseIndex < (currentPhase?.exercises.length || 0) - 1) {
-      console.log('Moving to next exercise in same phase');
-      setCurrentExerciseIndex(prev => prev + 1);
-    } else if (isMainWorkoutPhase && circuitRepetitions > 0) {
-      // We're at the end of a set in Main Workout phase
+    // Check if the current exercise marks the end of a set (has "Repeat this set X times")
+    const isEndOfSet = currentExercise?.notes?.match(/Repeat this set (\d+) times?/i);
+    
+    if (isEndOfSet && isMainWorkoutPhase) {
+      // We're at the end of a set that should be repeated
       console.log(`🎯 At end of set. Current round: ${currentCircuitRound}, Total repetitions: ${circuitRepetitions}`);
+      
       if (currentCircuitRound < circuitRepetitions) {
         console.log(`🔄 Repeating set: Round ${currentCircuitRound + 1} of ${circuitRepetitions}`);
         setCurrentCircuitRound(prev => prev + 1);
@@ -136,15 +138,26 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
         console.log(`Resetting to set start index: ${setStartIndex}`);
         setCurrentExerciseIndex(setStartIndex);
       } else {
-        console.log('Set completed, moving to next phase');
-        // Circuit is complete, move to next phase
-        if (currentPhaseIndex < workout.workout.phases.length - 1) {
-          setCurrentPhaseIndex(prev => prev + 1);
-          setCurrentExerciseIndex(0);
+        console.log('Set repetitions completed, moving to next exercise');
+        // Set repetitions are complete, move to next exercise
+        setCurrentCircuitRound(1); // Reset for next set
+        setCircuitRepetitions(0); // Clear current set repetitions
+        
+        if (currentExerciseIndex < (currentPhase?.exercises.length || 0) - 1) {
+          setCurrentExerciseIndex(prev => prev + 1);
         } else {
-          setIsComplete(true);
+          // End of phase
+          if (currentPhaseIndex < workout.workout.phases.length - 1) {
+            setCurrentPhaseIndex(prev => prev + 1);
+            setCurrentExerciseIndex(0);
+          } else {
+            setIsComplete(true);
+          }
         }
       }
+    } else if (currentExerciseIndex < (currentPhase?.exercises.length || 0) - 1) {
+      console.log('Moving to next exercise in same phase');
+      setCurrentExerciseIndex(prev => prev + 1);
     } else if (currentPhaseIndex < workout.workout.phases.length - 1) {
       console.log('Moving to next phase');
       // Move to next phase
@@ -166,20 +179,22 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       totalExercises: currentPhase?.exercises.length,
       circuitRepetitions,
       currentCircuitRound,
-      isMainWorkoutPhase: currentPhase?.name === 'Main Workout'
+      isMainWorkoutPhase: currentPhase?.name === 'Main Workout',
+      currentExerciseNotes: currentExercise?.notes
     });
     
     const isMainWorkoutPhase = currentPhase?.name === 'Main Workout';
+    const isEndOfSet = currentExercise?.notes?.match(/Repeat this set (\d+) times?/i);
     
     // Determine rest duration based on context
-    if (currentExerciseIndex < (currentPhase?.exercises.length || 0) - 1) {
-      // Moving to next exercise in same phase - 15 second break for all phases
+    if (isEndOfSet && isMainWorkoutPhase && currentCircuitRound < circuitRepetitions) {
+      // At end of set and need to repeat - 1 minute break between set rounds
+      startRestPeriod(60, 'Break between set rounds');
+    } else if (currentExerciseIndex < (currentPhase?.exercises.length || 0) - 1) {
+      // Moving to next exercise in same phase - 15 second break
       startRestPeriod(15, 'Break between exercises');
-    } else if (isMainWorkoutPhase && circuitRepetitions > 0 && currentCircuitRound < circuitRepetitions) {
-      // Moving to next set round - 1 minute break
-      startRestPeriod(60, 'Break between sets');
     } else {
-      // Moving to next phase or completing workout - add a break between phases
+      // Moving to next phase or completing workout - 30 second break
       startRestPeriod(30, 'Break between phases');
     }
   };

@@ -25,7 +25,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
 
   const userName = currentUser?.name || 'Champ';
 
-  const inputStyles = "block w-full bg-white border-2 border-orange-200 rounded-lg p-3 text-gray-800 placeholder:text-gray-500 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 focus:outline-none transition-all duration-200";
+  const inputStyles = "block w-full bg-white border border-orange-200 rounded-lg p-3 text-gray-800 placeholder:text-gray-500 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 focus:outline-none transition-all duration-200";
   const labelStyles = "block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2";
 
   const activityLevels = [
@@ -36,10 +36,10 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white border-2 border-gray-300 rounded-lg">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white border border-gray-300 rounded-lg">
         <div className="text-center pb-4 border-b-2 border-orange-200">
-          <h1 className="text-2xl font-display font-bold text-gray-900 tracking-wider flex items-center justify-center gap-2">
-            <span className="text-2xl">✨</span>
+          <h1 className="text-xl sm:text-2xl font-display font-bold text-gray-900 tracking-wider flex items-center justify-center gap-2">
+            <span className="text-xl sm:text-2xl">✨</span>
             LET'S GET PERSONAL
           </h1>
           <p className="mt-2 text-gray-700">Tell me about yourself, {userName}!</p>
@@ -86,7 +86,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
                         type="button"
                         key={key}
                         onClick={() => setActivityLevel(label)}
-                        className={`w-full text-left p-3 border-2 transition-all duration-200 rounded-lg font-semibold ${
+                        className={`w-full text-left p-3 border transition-all duration-200 rounded-lg font-semibold ${
                             activityLevel === label
                                 ? 'bg-gradient-to-r from-orange-100 to-amber-100 border-orange-400 text-orange-900'
                                 : 'bg-white border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
@@ -170,7 +170,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
           <button
             type="submit"
             disabled={!activityLevel}
-            className="w-full p-3 font-bold text-gray-900 bg-gradient-to-r from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 border-2 border-orange-300 rounded-lg"
+            className="w-full p-3 font-bold text-gray-900 bg-gradient-to-r from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 border border-orange-300 rounded-lg"
           >
             🚀 {`Let's Go, ${userName}!`}
           </button>

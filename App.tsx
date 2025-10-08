@@ -121,7 +121,7 @@ const createWorkoutPlanFunction = {
             userRequest: {
                 type: 'string',
                 description: 'The user\'s specific workout request, extracted from their message. Examples: "upper body workout", "lower body focus", "core exercises", "cardio session", "full body", "leg day". This is CRITICAL for ensuring the workout matches their request. If not specified in the message, use "general workout".'
-            },
+        },
         },
         required: ['duration', 'userRequest'],
     },
@@ -1095,14 +1095,25 @@ const App: React.FC = () => {
     
     // Build system message with user profile
     let systemMessage = SAMMI_PERSONA;
+    
     if (currentUser?.profile) {
-      systemMessage = `${SAMMI_PERSONA}\n\nUser Profile:\n- Name: ${currentUser.name}\n- Pronouns: ${currentUser.profile.pronouns || 'Not specified'}\n- Age: ${currentUser.profile.age || 'Not specified'}\n- Goals: ${currentUser.profile.goals || 'Not specified'}\n- Activity Level: ${currentUser.profile.activityLevel || 'Not specified'}\n- Injuries/Limitations: ${currentUser.profile.injuries || 'None'}\n- Equipment: ${currentUser.profile.equipment || 'None specified'}`;
+      systemMessage = `${systemMessage}\n\nUser Profile:\n- Name: ${currentUser.name}\n- Pronouns: ${currentUser.profile.pronouns || 'Not specified'}\n- Age: ${currentUser.profile.age || 'Not specified'}\n- Goals: ${currentUser.profile.goals || 'Not specified'}\n- Activity Level: ${currentUser.profile.activityLevel || 'Not specified'}\n- Injuries/Limitations: ${currentUser.profile.injuries || 'None'}\n- Equipment: ${currentUser.profile.equipment || 'None specified'}`;
     } else if (currentUser?.name) {
-      // If user exists but no profile, include at least their name and create a general workout
-      systemMessage = `${SAMMI_PERSONA}\n\nUser: ${currentUser.name} (Profile not yet completed - create a general workout that can be adapted to their needs)`;
+      // If user exists but no profile, include at least their name
+      systemMessage = `${systemMessage}\n\nUser: ${currentUser.name} (Profile not yet completed - create a general workout that can be adapted to their needs)`;
     }
     
     console.log("sendDirectApiCall: System message includes profile:", systemMessage.includes("User Profile:"));
+    
+    // Build conversation history - last 4 rounds (8 messages: 4 user + 4 assistant)
+    const conversationHistory = messages
+      .slice(-8) // Get last 8 messages (4 rounds)
+      .map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      }));
+    
+    console.log("sendDirectApiCall: Including conversation history:", conversationHistory.length, "messages");
     
     const requestBody = {
       model: "gpt-4o-mini",
@@ -1112,6 +1123,7 @@ const App: React.FC = () => {
           role: "system",
           content: systemMessage
         },
+        ...conversationHistory, // Include conversation context
         {
           role: "user", 
           content: text
@@ -1606,7 +1618,7 @@ const App: React.FC = () => {
                         onClick={() => setIsTopicsVisible(!isTopicsVisible)}
                         disabled={isLoading}
                         aria-label={isTopicsVisible ? 'Hide topics' : 'Show topics'}
-                        className="flex-shrink-0 p-2 sm:p-4 bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 rounded-lg text-orange-700 hover:from-orange-100 hover:to-amber-100 hover:border-orange-400 transition-all duration-200 disabled:opacity-50 relative group"
+                        className="flex-shrink-0 p-2 sm:p-4 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-300 rounded-lg text-orange-700 hover:from-orange-100 hover:to-amber-100 hover:border-orange-400 transition-all duration-200 disabled:opacity-50 relative group"
                         title={isTopicsVisible ? 'Hide topics' : 'Show topics'}
                     >
                        {isTopicsVisible ? <ChevronUpIcon /> : <ChevronDownIcon />}

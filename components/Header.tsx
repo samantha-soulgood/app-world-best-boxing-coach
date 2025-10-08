@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ currentUser, onLogout }) => {
                 </div>
                 <button
                     onClick={onLogout}
-                    className="text-sm font-semibold text-orange-700 bg-white border-2 border-orange-300 px-4 py-2 hover:bg-orange-50 hover:border-orange-400 transition-all duration-200"
+                    className="text-sm font-semibold text-orange-700 bg-white border border-orange-300 px-4 py-2 hover:bg-orange-50 hover:border-orange-400 transition-all duration-200"
                 >
                     Logout
                 </button>

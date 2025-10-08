@@ -15,9 +15,12 @@ body {
   box-sizing: border-box;
 }
 
-/* Ensure prose content has good contrast */
+/* Ensure prose content has good contrast and wraps properly */
 .prose {
   color: #1f2937 !important; /* gray-800 - dark, readable */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .prose strong {
@@ -36,6 +39,7 @@ body {
 .prose a {
   color: #ea580c !important; /* orange-600 - good contrast */
   text-decoration: underline;
+  word-break: break-word;
 }
 
 .prose code {
@@ -43,4 +47,27 @@ body {
   background-color: #f3f4f6; /* gray-100 */
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
+  word-break: break-all;
+}
+
+/* Improve mobile text rendering */
+@media (max-width: 640px) {
+  /* Better text rendering on mobile */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  /* Ensure text doesn't overflow on small screens */
+  h1, h2, h3, h4, h5, h6 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Make sure long words don't break layout */
+  p, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 }

@@ -32,7 +32,7 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
         const sectionName = trimmedLine.replace('## ', '');
         formattedElements.push(
           <div key={keyCounter++} className="mt-4 mb-3">
-            <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-300 rounded-lg">
+            <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-300 rounded-lg">
               <span className="text-2xl">🎯</span>
               <h3 className="text-base font-bold text-blue-900">{sectionName}</h3>
             </div>
@@ -44,7 +44,7 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
         const achievement = trimmedLine.replace('### ', '');
         formattedElements.push(
           <div key={keyCounter++} className="mb-3">
-            <div className="p-3 bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg">
+            <div className="p-3 bg-gradient-to-r from-green-100 to-emerald-100 border border-green-300 rounded-lg">
               <h4 className="text-base font-semibold text-green-800 flex items-center gap-2">
                 <span className="text-xl">✅</span>
                 {achievement}
@@ -57,7 +57,7 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
       else if (trimmedLine.toLowerCase().includes('tomorrow') || trimmedLine.toLowerCase().includes('keep it up') || trimmedLine.toLowerCase().includes('fired up')) {
         formattedElements.push(
           <div key={keyCounter++} className="mb-3">
-            <div className="bg-gradient-to-r from-orange-100 to-amber-100 border-2 border-orange-300 p-4 rounded-lg">
+            <div className="bg-gradient-to-r from-orange-100 to-amber-100 border border-orange-300 p-4 rounded-lg">
               <p className="text-orange-900 font-semibold text-sm leading-relaxed flex items-start gap-2">
                 <span className="text-xl">🔥</span>
                 <span 
@@ -121,7 +121,7 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
   }
 
   return (
-    <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-200 rounded-lg">
+    <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border border-blue-200 rounded-lg">
       <div className="text-center mb-4">
         <div className="flex items-center justify-center gap-2 mb-2">
           <span className="text-3xl">📊</span>

@@ -16,7 +16,7 @@ const TopicButton: React.FC<TopicButtonProps> = ({ topic, onClick, disabled = fa
     <button
       onClick={onClick}
       disabled={disabled}
-      className="text-sm font-semibold text-orange-700 bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 rounded-lg px-2 py-2 sm:px-4 sm:py-2 hover:from-orange-100 hover:to-amber-100 hover:border-orange-400 transition-all duration-200 text-center disabled:opacity-50 disabled:cursor-not-allowed relative group"
+      className="text-sm font-semibold text-orange-700 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-300 rounded-lg px-2 py-2 sm:px-4 sm:py-2 hover:from-orange-100 hover:to-amber-100 hover:border-orange-400 transition-all duration-200 text-center disabled:opacity-50 disabled:cursor-not-allowed relative group"
       title={text}
     >
       <span className="text-lg sm:text-sm">{emoji}</span>

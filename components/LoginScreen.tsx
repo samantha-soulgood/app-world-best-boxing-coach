@@ -171,7 +171,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           </div>
           <button
               type="submit"
-              className="w-full p-3 font-bold text-white bg-stone-600 hover:bg-stone-700 disabled:bg-gray-300 transition-colors duration-200 border-2 border-stone-700 rounded-lg"
+              className="w-full p-3 font-bold text-white bg-stone-600 hover:bg-stone-700 disabled:bg-gray-300 transition-colors duration-200 border border-stone-700 rounded-lg"
           >
               Sign In
           </button>
@@ -187,9 +187,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
-      <div className="w-full max-w-sm p-8 space-y-6 bg-white border-2 border-gray-300 rounded-lg">
+      <div className="w-full max-w-sm p-8 space-y-6 bg-white border border-gray-300 rounded-lg">
         <div className="text-center">
-          <h1 className="text-4xl font-display font-bold text-gray-900 tracking-wider">SOUL GOOD BOXING</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-gray-900 tracking-wider">SOUL GOOD BOXING</h1>
           <p className="mt-2 text-stone-700">Log in to meet your coach, Sammi.</p>
         </div>
         
@@ -213,7 +213,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 </div>
                 <button
                     onClick={() => { setShowFightNameLogin(true); setError(null); }}
-                    className="w-full text-center font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100 transition-all duration-200"
+                    className="w-full text-center font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100 transition-all duration-200"
                 >
                     Sign in with Fight Name
                 </button>

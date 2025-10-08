@@ -68,7 +68,7 @@ const ExerciseVideoButton: React.FC<ExerciseVideoButtonProps> = ({
       
       {showPlayer && video && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 max-w-4xl w-full max-h-[90vh] overflow-auto border-2 border-gray-300 rounded-lg">
+          <div className="bg-white p-6 max-w-4xl w-full max-h-[90vh] overflow-auto border border-gray-300 rounded-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">{exerciseName}</h3>
               <button

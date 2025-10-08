@@ -120,7 +120,7 @@ const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoa
       return (
         <div className="space-y-3">
           <div className="prose" dangerouslySetInnerHTML={textHtml} />
-          <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 border-2 border-purple-200 rounded-lg">
+          <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 border border-purple-200 rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                 <span className="text-xl">🎥</span>
@@ -128,7 +128,7 @@ const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoa
               </h3>
               <button
                 onClick={() => setSelectedVideo(message.video)}
-                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-all duration-200 flex items-center gap-2 border-2 border-purple-400 rounded-lg"
+                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-all duration-200 flex items-center gap-2 border border-purple-400 rounded-lg"
               >
                 <PlayIcon className="w-4 h-4" />
                 Watch Video
@@ -193,7 +193,7 @@ const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoa
             <div className="flex-shrink-0">
               <Avatar size="w-8 h-8" />
             </div>
-            <div className="bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-orange-300 text-gray-800 p-4 inline-flex items-center justify-center gap-2 rounded-lg">
+            <div className="bg-gradient-to-r from-amber-100 to-orange-100 border border-orange-300 text-gray-800 p-4 inline-flex items-center justify-center gap-2 rounded-lg">
                 <LoadingIcon />
                 {isGeneratingWorkout && (
                   <span className="text-sm text-orange-800 font-semibold">✨ Sammi's building your workout...</span>
@@ -235,8 +235,8 @@ const MemoMessage: React.FC<MemoMessageProps> = React.memo(({ message, currentUs
         <div
           className={`max-w-[280px] sm:max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-lg ${
             message.sender === 'user'
-              ? 'bg-gradient-to-br from-orange-100 to-amber-100 text-gray-900 border-2 border-orange-300'
-              : 'bg-white border-2 border-orange-200 text-gray-800'
+              ? 'bg-gradient-to-br from-orange-100 to-amber-100 text-gray-900 border border-orange-300'
+              : 'bg-white border border-orange-200 text-gray-800'
           }`}
         >
           {renderContent(message)}
@@ -244,7 +244,7 @@ const MemoMessage: React.FC<MemoMessageProps> = React.memo(({ message, currentUs
         {message.sender === 'sammi' && message.workoutPlan && (
           <button
             onClick={() => onStartWorkout(message.workoutPlan, message.id)}
-            className="mt-3 self-start text-sm font-bold text-gray-900 bg-gradient-to-r from-orange-100 to-amber-100 px-4 py-2.5 hover:from-orange-200 hover:to-amber-200 transition-all duration-200 flex items-center justify-center gap-2 animate-fade-in border-2 border-orange-300 rounded-lg"
+            className="mt-3 self-start text-sm font-bold text-gray-900 bg-gradient-to-r from-orange-100 to-amber-100 px-4 py-2.5 hover:from-orange-200 hover:to-amber-200 transition-all duration-200 flex items-center justify-center gap-2 animate-fade-in border border-orange-300 rounded-lg"
           >
             <PlayIcon className="w-5 h-5" />
             <span>▶️ Play Workout</span>

@@ -22,7 +22,7 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
         const dayName = trimmedLine.replace('## ', '');
         formattedElements.push(
           <div key={keyCounter++} className="mt-4 mb-3">
-            <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg">
+            <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-green-100 to-emerald-100 border border-green-300 rounded-lg">
               <span className="text-2xl">📅</span>
               <h3 className="text-base font-bold text-green-900">{dayName}</h3>
             </div>
@@ -38,7 +38,7 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
                          mealName.toLowerCase().includes('snack') ? '🍎' : '🍽️';
         formattedElements.push(
           <div key={keyCounter++} className="mb-3">
-            <div className="flex items-center gap-2 p-2.5 bg-white border-2 border-green-200 rounded-lg">
+            <div className="flex items-center gap-2 p-2.5 bg-white border border-green-200 rounded-lg">
               <span className="text-xl">{mealEmoji}</span>
               <h4 className="text-base font-semibold text-gray-900">{mealName}</h4>
             </div>
@@ -89,7 +89,7 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
   };
 
   return (
-    <div className="mt-4 p-5 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-200 rounded-lg">
+    <div className="mt-4 p-5 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border border-green-200 rounded-lg">
       <div className="text-center mb-4">
         <div className="flex items-center justify-center gap-2 mb-2">
           <span className="text-3xl">🍱</span>
