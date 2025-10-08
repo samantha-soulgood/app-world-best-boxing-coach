@@ -147,8 +147,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     return () => clearTimeout(timer);
   }, [isGoogleConfigured, googleLoaded, retryCount]);
   
-  const inputStyles = "block w-full bg-white border border-gray-300 rounded-lg p-3 text-gray-800 placeholder:text-gray-500 focus:ring-2 focus:ring-stone-400 focus:border-stone-400 focus:outline-none transition-all duration-200";
-  const labelStyles = "block text-sm font-medium text-gray-700 mb-2";
+  const inputStyles = "block w-full bg-white border border-orange-200 rounded-lg p-3 text-gray-800 placeholder:text-gray-500 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 focus:outline-none transition-all duration-200";
+  const labelStyles = "block text-sm font-bold text-gray-900 mb-2";
 
   const fightNameForm = (
       <form onSubmit={handleFightNameLogin} className="space-y-4 pt-4">
@@ -171,13 +171,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           </div>
           <button
               type="submit"
-              className="w-full p-3 font-bold text-white bg-stone-600 hover:bg-stone-700 disabled:bg-gray-300 transition-colors duration-200 border border-stone-700 rounded-lg"
+              className="w-full p-3 font-bold text-gray-900 bg-gradient-to-r from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 border border-orange-300 rounded-lg"
           >
               Sign In
           </button>
            {isGoogleConfigured && (
                <p className="text-center text-sm">
-                  <button type="button" onClick={() => setShowFightNameLogin(false)} className="font-medium text-gray-700 hover:text-gray-900">
+                  <button type="button" onClick={() => setShowFightNameLogin(false)} className="font-medium text-orange-700 hover:text-orange-900">
                       Back to sign-in options
                   </button>
                </p>
@@ -188,9 +188,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
       <div className="w-full max-w-sm p-8 space-y-6 bg-white border border-gray-300 rounded-lg">
-        <div className="text-center">
+        <div className="text-center border-b border-orange-200 pb-4">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-gray-900 tracking-wider">SOUL GOOD BOXING</h1>
-          <p className="mt-2 text-stone-700">Log in to meet your coach, Sammi.</p>
+          <p className="mt-2 text-orange-700 font-semibold">Log in to meet your coach, Sammi.</p>
         </div>
         
         {error && <p className="text-rose-800 text-center font-semibold pt-2 bg-rose-50 p-3 border border-rose-200 rounded-lg">{error}</p>}
@@ -200,20 +200,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         ) : (
              <div className="flex flex-col items-center justify-center space-y-4 pt-4">
                 {!googleLoaded && retryCount < 10 ? (
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-stone-600"></div>
-                    <span className="text-sm">Loading Google Sign-In...</span>
+                  <div className="flex items-center space-x-2 text-orange-700">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+                    <span className="text-sm font-semibold">Loading Google Sign-In...</span>
                   </div>
                 ) : (
                   <div ref={googleButtonRef}></div>
                 )}
                 <div className="inline-flex items-center justify-center w-full">
-                    <hr className="w-full h-px my-4 bg-gray-200 border-0" />
-                    <span className="absolute px-3 font-medium text-gray-600 -translate-x-1/2 bg-white left-1/2">OR</span>
+                    <hr className="w-full h-px my-4 bg-orange-200 border-0" />
+                    <span className="absolute px-3 font-medium text-orange-700 -translate-x-1/2 bg-white left-1/2">OR</span>
                 </div>
                 <button
                     onClick={() => { setShowFightNameLogin(true); setError(null); }}
-                    className="w-full text-center font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100 transition-all duration-200"
+                    className="w-full text-center font-semibold text-orange-700 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-300 rounded-lg px-4 py-2 hover:from-orange-100 hover:to-amber-100 hover:border-orange-400 transition-all duration-200"
                 >
                     Sign in with Fight Name
                 </button>
