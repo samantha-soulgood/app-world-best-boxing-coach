@@ -30,15 +30,15 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoading })
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyPress}
-        placeholder="Ask Sammi anything..."
-        className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 sm:p-4 pr-12 sm:pr-16 text-gray-200 focus:ring-2 focus:ring-fuchsia-500 focus:outline-none resize-none transition-all duration-200"
+        placeholder="Ask Sammi anything... 💬"
+        className="w-full bg-white border-2 border-orange-200 rounded-lg p-3 sm:p-4 pr-12 sm:pr-16 text-gray-800 placeholder:text-gray-500 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 focus:outline-none resize-none transition-all duration-200"
         rows={1}
         disabled={isLoading}
       />
       <button
         onClick={handleSubmit}
         disabled={isLoading || !input.trim()}
-        className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 rounded-full text-white bg-fuchsia-600 hover:bg-fuchsia-500 disabled:bg-zinc-600 disabled:cursor-not-allowed transition-colors duration-200"
+        className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 text-gray-900 bg-gradient-to-r from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 border-2 border-orange-300 rounded-full"
       >
         <SendIcon />
       </button>

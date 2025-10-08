@@ -21,22 +21,27 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
       if (trimmedLine.startsWith('## ') && !trimmedLine.startsWith('### ')) {
         const dayName = trimmedLine.replace('## ', '');
         formattedElements.push(
-          <div key={keyCounter++} className="mt-6 mb-4">
-            <h3 className="text-xl font-bold text-fuchsia-400 border-b border-fuchsia-400/30 pb-2 mb-3">
-              {dayName}
-            </h3>
+          <div key={keyCounter++} className="mt-4 mb-3">
+            <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg">
+              <span className="text-2xl">📅</span>
+              <h3 className="text-base font-bold text-green-900">{dayName}</h3>
+            </div>
           </div>
         );
       }
       // Handle meal headings (### Breakfast, ### Lunch, etc.)
       else if (trimmedLine.startsWith('### ')) {
         const mealName = trimmedLine.replace('### ', '');
+        const mealEmoji = mealName.toLowerCase().includes('breakfast') ? '🌅' :
+                         mealName.toLowerCase().includes('lunch') ? '☀️' :
+                         mealName.toLowerCase().includes('dinner') ? '🌙' :
+                         mealName.toLowerCase().includes('snack') ? '🍎' : '🍽️';
         formattedElements.push(
-          <div key={keyCounter++} className="mb-4">
-            <h4 className="text-lg font-semibold text-white mb-2 flex items-center">
-              <span className="w-2 h-2 bg-fuchsia-500 rounded-full mr-3"></span>
-              {mealName}
-            </h4>
+          <div key={keyCounter++} className="mb-3">
+            <div className="flex items-center gap-2 p-2.5 bg-white border-2 border-green-200 rounded-lg">
+              <span className="text-xl">{mealEmoji}</span>
+              <h4 className="text-base font-semibold text-gray-900">{mealName}</h4>
+            </div>
           </div>
         );
       }
@@ -44,11 +49,11 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
       else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
         const mealItem = trimmedLine.replace(/^[-*] /, '');
         formattedElements.push(
-          <div key={keyCounter++} className="ml-5 mb-2">
-            <div className="flex items-start">
-              <span className="text-fuchsia-400 mr-2 mt-1">•</span>
+          <div key={keyCounter++} className="ml-3 mb-2">
+            <div className="flex items-start gap-2 p-2.5 bg-white border border-green-200 rounded-lg">
+              <span className="text-base flex-shrink-0">🥗</span>
               <span 
-                className="text-gray-200 text-sm leading-relaxed prose"
+                className="text-gray-900 text-sm leading-relaxed prose flex-1 font-medium"
                 dangerouslySetInnerHTML={{ __html: window.marked.parse(mealItem) }}
               />
             </div>
@@ -59,10 +64,10 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
       else if (/^\d+\.\s/.test(trimmedLine)) {
         const item = trimmedLine.replace(/^\d+\.\s/, '');
         formattedElements.push(
-          <div key={keyCounter++} className="ml-5 mb-2">
-            <div className="flex items-start">
-              <span className="text-fuchsia-400 mr-2 mt-1">•</span>
-              <span className="text-gray-200 text-sm leading-relaxed">{item}</span>
+          <div key={keyCounter++} className="ml-3 mb-2">
+            <div className="flex items-start gap-2 p-2.5 bg-white border border-green-200 rounded-lg">
+              <span className="text-base flex-shrink-0">🥗</span>
+              <span className="text-gray-900 text-sm leading-relaxed font-medium">{item}</span>
             </div>
           </div>
         );
@@ -72,7 +77,7 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
         formattedElements.push(
           <div key={keyCounter++} className="mb-3">
             <p 
-              className="text-gray-300 text-sm leading-relaxed prose"
+              className="text-gray-900 text-sm leading-relaxed prose font-medium"
               dangerouslySetInnerHTML={{ __html: window.marked.parse(trimmedLine) }}
             />
           </div>
@@ -84,15 +89,15 @@ const NutritionPlanDisplay: React.FC<NutritionPlanDisplayProps> = ({ planText })
   };
 
   return (
-    <div className="mt-3 border-t border-zinc-700/50 pt-4">
-      <div className="bg-zinc-800/50 rounded-lg p-3 sm:p-4 border border-zinc-700/30">
-        <div className="flex items-center mb-4">
-          <span className="text-2xl mr-2">🍱</span>
-          <h2 className="text-lg font-bold text-fuchsia-400">Your Meal Plan</h2>
+    <div className="mt-4 p-5 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-200 rounded-lg">
+      <div className="text-center mb-4">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="text-3xl">🍱</span>
+          <h2 className="text-lg font-bold text-gray-900">Your Meal Plan</h2>
         </div>
-        <div className="space-y-2">
-          {formatNutritionPlan(planText)}
-        </div>
+      </div>
+      <div className="space-y-3">
+        {formatNutritionPlan(planText)}
       </div>
     </div>
   );

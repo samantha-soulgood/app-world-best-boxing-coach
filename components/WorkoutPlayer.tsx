@@ -291,9 +291,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
 
   if (!currentPhase || !currentExercise) {
     return (
-        <div className="fixed inset-0 bg-zinc-900 bg-opacity-95 z-50 flex items-center justify-center text-white">
+        <div className="fixed inset-0 bg-gray-50 bg-opacity-95 z-50 flex items-center justify-center text-gray-900">
             <p>Workout completed or data is invalid.</p>
-            <button onClick={onClose} className="ml-4 p-2 bg-fuchsia-600 rounded-lg">Close</button>
+            <button onClick={onClose} className="ml-4 p-2 bg-stone-600 text-white rounded-lg hover:bg-stone-700 transition-colors shadow-sm">Close</button>
         </div>
     );
   }
@@ -302,20 +302,20 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   const isLastExerciseOverall = currentExerciseOverallIndex === totalExercises - 1;
 
   return (
-    <div className="fixed inset-0 bg-zinc-900 z-50 flex flex-col font-sans overflow-hidden">
+    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col font-sans overflow-hidden">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 md:p-8 flex-shrink-0">
+      <header className="flex items-center justify-between p-4 md:p-8 flex-shrink-0 border-b border-gray-200 bg-white">
         <div className="flex-1 min-w-0">
-            <h1 className="text-xl md:text-3xl font-display font-bold text-white tracking-wider uppercase truncate">{currentPhase.name}</h1>
-            <p className="text-fuchsia-400 font-semibold text-sm md:text-base">{`Exercise ${currentExerciseOverallIndex + 1} of ${totalExercises}`}</p>
+            <h1 className="text-xl md:text-3xl font-display font-bold text-gray-900 tracking-wider uppercase truncate">{currentPhase.name}</h1>
+            <p className="text-stone-700 font-semibold text-sm md:text-base">{`Exercise ${currentExerciseOverallIndex + 1} of ${totalExercises}`}</p>
             {circuitRepetitions > 0 && currentPhase.name === 'Main Workout' && (
-              <div className="text-yellow-400 font-semibold text-xs md:text-sm">
+              <div className="text-amber-600 font-semibold text-xs md:text-sm">
                 <p>{`Set ${getCurrentSetNumber()} - Round ${currentCircuitRound} of ${circuitRepetitions}`}</p>
-                <p className="text-xs text-yellow-300">{`Set ${getCurrentSetNumber()} of ${getTotalSets()} (each repeats ${circuitRepetitions} times)`}</p>
+                <p className="text-xs text-amber-500">{`Set ${getCurrentSetNumber()} of ${getTotalSets()} (each repeats ${circuitRepetitions} times)`}</p>
               </div>
             )}
         </div>
-        <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors flex-shrink-0 ml-2">
+        <button onClick={onClose} className="text-gray-600 hover:text-rose-900 transition-colors flex-shrink-0 ml-2">
           <CloseIcon />
         </button>
       </header>
@@ -324,9 +324,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       <div className="flex-1 overflow-y-auto px-4 md:px-8">
         <div className="relative flex flex-col items-center text-center py-8">
          {isWorkoutPaused && (
-            <div className="absolute inset-0 bg-zinc-900/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl animate-fade-in">
+            <div className="absolute inset-0 bg-rose-900/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-2xl animate-fade-in">
                 <h3 className="text-4xl font-display font-bold text-white tracking-wider">PAUSED</h3>
-                <button onClick={toggleWorkoutPause} className="mt-4 flex items-center gap-2 px-6 py-3 bg-green-600 rounded-lg text-white font-bold hover:bg-green-500 transition-colors">
+                <button onClick={toggleWorkoutPause} className="mt-4 flex items-center gap-2 px-6 py-3 bg-stone-600 rounded-lg text-white font-bold hover:bg-stone-700 transition-colors shadow-sm">
                     <PlayIcon className="w-6 h-6" />
                     <span>Resume</span>
                 </button>
@@ -334,9 +334,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
           )}
           
           {isRestPeriod && (
-            <div className="absolute inset-0 bg-green-900/80 backdrop-blur-md z-20 flex flex-col items-center justify-center rounded-2xl animate-fade-in">
-                <h3 className="text-4xl font-display font-bold text-green-400 tracking-wider">REST TIME</h3>
-                <p className="text-green-300 text-lg mt-2">Take a break and prepare for the next exercise</p>
+            <div className="absolute inset-0 bg-emerald-100/95 backdrop-blur-md z-20 flex flex-col items-center justify-center rounded-2xl animate-fade-in border border-emerald-300">
+                <h3 className="text-4xl font-display font-bold text-emerald-800 tracking-wider">REST TIME</h3>
+                <p className="text-emerald-700 text-lg mt-2">Take a break and prepare for the next exercise</p>
                 <Timer 
                     key={`rest-${restDuration}`}
                     initialSeconds={restDuration} 
@@ -346,9 +346,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
                 />
             </div>
           )}
-        <div className="bg-zinc-800 p-4 sm:p-6 md:p-8 rounded-2xl w-full max-w-lg mb-4 sm:mb-8 border border-zinc-700">
+        <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl w-full max-w-lg mb-4 sm:mb-8 border border-gray-200 shadow-sm">
             <div className="flex items-start justify-between mb-2">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white break-words leading-tight flex-1">{currentExercise.name}</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-gray-900 break-words leading-tight flex-1">{currentExercise.name}</h2>
               {onFindVideo && (
                 <div className="ml-3 flex-shrink-0">
                   <ExerciseVideoButton
@@ -358,8 +358,8 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
                 </div>
               )}
             </div>
-            <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-4">{`${currentExercise.sets} sets x ${currentExercise.reps} reps`}</p>
-            {currentExercise.notes && <p className="text-sm text-gray-400 break-words">{currentExercise.notes}</p>}
+            <p className="text-base sm:text-lg md:text-xl text-gray-700 mb-4">{`${currentExercise.sets} sets x ${currentExercise.reps} reps`}</p>
+            {currentExercise.notes && <p className="text-sm text-gray-600 break-words">{currentExercise.notes}</p>}
         </div>
         
         {exerciseDurationInSeconds > 0 ? (
@@ -371,41 +371,41 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
                     autoStart={true}
                     isPaused={isWorkoutPaused}
                 />
-                <p className="text-gray-500 mt-2 text-sm">Timer for <span className="font-semibold">{currentExercise.name}</span>.</p>
+                <p className="text-gray-600 mt-2 text-sm">Timer for <span className="font-semibold">{currentExercise.name}</span>.</p>
             </>
         ) : (
             <div className="h-48 flex items-center justify-center">
-                <p className="text-center text-gray-400 max-w-xs">No timer for this exercise. Complete the sets & reps, then hit 'Skip' when you're ready.</p>
+                <p className="text-center text-gray-600 max-w-xs">No timer for this exercise. Complete the sets & reps, then hit 'Skip' when you're ready.</p>
             </div>
         )}
         </div>
       </div>
 
       {/* Footer / Navigation - Fixed at bottom */}
-      <footer className="flex items-center justify-between p-4 md:p-8 bg-zinc-900 border-t border-zinc-700 flex-shrink-0">
+      <footer className="flex items-center justify-between p-4 md:p-8 bg-white border-t border-gray-200 flex-shrink-0">
         <button
             onClick={handlePrevExercise}
             disabled={isFirstExerciseOverall}
-            className="flex items-center justify-center p-2 sm:p-3 bg-zinc-800 rounded-lg text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-700 transition-colors relative group"
+            className="flex items-center justify-center p-2 sm:p-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors relative group shadow-sm"
             title="Previous Exercise"
         >
             <PrevIcon />
             <span className="hidden sm:inline ml-2">Previous</span>
             {/* Mobile tooltip */}
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none sm:hidden">
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none sm:hidden">
                 Previous
             </div>
         </button>
 
         <button
             onClick={handleSkipExercise}
-            className="flex items-center justify-center p-2 sm:p-3 bg-zinc-800 rounded-lg text-white font-semibold hover:bg-zinc-700 transition-colors relative group"
+            className="flex items-center justify-center p-2 sm:p-3 bg-stone-600 rounded-lg text-white font-semibold hover:bg-stone-700 transition-colors relative group shadow-sm"
             title={isLastExerciseOverall ? 'Finish Workout' : (isRestPeriod ? 'Skip Rest' : 'Skip Exercise')}
         >
             <span className="hidden sm:inline mr-2">{isLastExerciseOverall ? 'Finish' : (isRestPeriod ? 'Skip Rest' : 'Skip')}</span>
             <NextIcon />
             {/* Mobile tooltip */}
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none sm:hidden">
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none sm:hidden">
                 {isLastExerciseOverall ? 'Finish' : (isRestPeriod ? 'Skip Rest' : 'Skip')}
             </div>
         </button>

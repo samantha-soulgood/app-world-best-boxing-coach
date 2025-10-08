@@ -2,8 +2,8 @@
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
-  background-color: #18181b; /* zinc-900 */
-  color: #fafafa; /* zinc-50 */
+  background-color: #fafaf9; /* gray-50 */
+  color: #1f2937; /* gray-800 */
 }
 
 #root {
@@ -13,4 +13,34 @@ body {
 /* Ensure proper styling for the app */
 * {
   box-sizing: border-box;
+}
+
+/* Ensure prose content has good contrast */
+.prose {
+  color: #1f2937 !important; /* gray-800 - dark, readable */
+}
+
+.prose strong {
+  color: #111827 !important; /* gray-900 - very dark */
+  font-weight: 700;
+}
+
+.prose em {
+  color: #374151 !important; /* gray-700 */
+}
+
+.prose p {
+  color: #1f2937 !important; /* gray-800 */
+}
+
+.prose a {
+  color: #ea580c !important; /* orange-600 - good contrast */
+  text-decoration: underline;
+}
+
+.prose code {
+  color: #111827 !important; /* gray-900 */
+  background-color: #f3f4f6; /* gray-100 */
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
 }

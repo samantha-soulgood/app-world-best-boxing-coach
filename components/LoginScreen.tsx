@@ -147,8 +147,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     return () => clearTimeout(timer);
   }, [isGoogleConfigured, googleLoaded, retryCount]);
   
-  const inputStyles = "block w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-gray-200 focus:ring-2 focus:ring-fuchsia-500 focus:outline-none transition-all duration-200";
-  const labelStyles = "block text-sm font-medium text-gray-300 mb-2";
+  const inputStyles = "block w-full bg-white border border-gray-300 rounded-lg p-3 text-gray-800 placeholder:text-gray-500 focus:ring-2 focus:ring-stone-400 focus:border-stone-400 focus:outline-none transition-all duration-200";
+  const labelStyles = "block text-sm font-medium text-gray-700 mb-2";
 
   const fightNameForm = (
       <form onSubmit={handleFightNameLogin} className="space-y-4 pt-4">
@@ -171,49 +171,49 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           </div>
           <button
               type="submit"
-              className="w-full p-3 font-bold text-white bg-fuchsia-600 rounded-lg hover:bg-fuchsia-500 disabled:bg-zinc-600 transition-colors duration-200"
+              className="w-full p-3 font-bold text-white bg-stone-600 hover:bg-stone-700 disabled:bg-gray-300 transition-colors duration-200 border-2 border-stone-700 rounded-lg"
           >
               Sign In
           </button>
            {isGoogleConfigured && (
                <p className="text-center text-sm">
-                  <button type="button" onClick={() => setShowFightNameLogin(false)} className="font-medium text-fuchsia-400 hover:text-fuchsia-300">
+                  <button type="button" onClick={() => setShowFightNameLogin(false)} className="font-medium text-gray-700 hover:text-gray-900">
                       Back to sign-in options
                   </button>
-              </p>
+               </p>
            )}
       </form>
   );
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-zinc-900 p-4">
-      <div className="w-full max-w-sm p-8 space-y-6 bg-zinc-800 rounded-2xl shadow-lg border border-zinc-700">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
+      <div className="w-full max-w-sm p-8 space-y-6 bg-white border-2 border-gray-300 rounded-lg">
         <div className="text-center">
-          <h1 className="text-4xl font-display font-bold text-white tracking-wider">SOUL GOOD BOXING</h1>
-          <p className="mt-2 text-fuchsia-400">Log in to meet your coach, Sammi.</p>
+          <h1 className="text-4xl font-display font-bold text-gray-900 tracking-wider">SOUL GOOD BOXING</h1>
+          <p className="mt-2 text-stone-700">Log in to meet your coach, Sammi.</p>
         </div>
         
-        {error && <p className="text-red-400 text-center font-semibold pt-2">{error}</p>}
+        {error && <p className="text-rose-800 text-center font-semibold pt-2 bg-rose-50 p-3 border border-rose-200 rounded-lg">{error}</p>}
 
         {!isGoogleConfigured || showFightNameLogin ? (
             fightNameForm
         ) : (
              <div className="flex flex-col items-center justify-center space-y-4 pt-4">
                 {!googleLoaded && retryCount < 10 ? (
-                  <div className="flex items-center space-x-2 text-zinc-400">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-fuchsia-500"></div>
+                  <div className="flex items-center space-x-2 text-gray-600">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-stone-600"></div>
                     <span className="text-sm">Loading Google Sign-In...</span>
                   </div>
                 ) : (
                   <div ref={googleButtonRef}></div>
                 )}
                 <div className="inline-flex items-center justify-center w-full">
-                    <hr className="w-full h-px my-4 bg-zinc-600 border-0" />
-                    <span className="absolute px-3 font-medium text-zinc-400 -translate-x-1/2 bg-zinc-800 left-1/2">OR</span>
+                    <hr className="w-full h-px my-4 bg-gray-200 border-0" />
+                    <span className="absolute px-3 font-medium text-gray-600 -translate-x-1/2 bg-white left-1/2">OR</span>
                 </div>
                 <button
                     onClick={() => { setShowFightNameLogin(true); setError(null); }}
-                    className="w-full text-center font-semibold text-zinc-200 bg-zinc-700/80 border border-zinc-600 rounded-lg px-4 py-2 hover:bg-zinc-700 transition-all duration-200"
+                    className="w-full text-center font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100 transition-all duration-200"
                 >
                     Sign in with Fight Name
                 </button>

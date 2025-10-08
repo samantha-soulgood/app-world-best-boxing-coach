@@ -25,8 +25,8 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
 
   const userName = currentUser?.name || 'Champ';
 
-  const inputStyles = "block w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-gray-200 focus:ring-2 focus:ring-fuchsia-500 focus:outline-none transition-all duration-200";
-  const labelStyles = "block text-sm font-medium text-gray-300 mb-2";
+  const inputStyles = "block w-full bg-white border-2 border-orange-200 rounded-lg p-3 text-gray-800 placeholder:text-gray-500 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 focus:outline-none transition-all duration-200";
+  const labelStyles = "block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2";
 
   const activityLevels = [
     { key: 'beginner', label: 'Just starting out' },
@@ -35,16 +35,20 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
   ];
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-zinc-900 p-4">
-      <div className="w-full max-w-md p-8 space-y-8 bg-zinc-800 rounded-2xl shadow-lg border border-zinc-700">
-        <div className="text-center">
-          <h1 className="text-3xl font-display font-bold text-white tracking-wider">LET'S GET PERSONAL</h1>
-          <p className="mt-2 text-fuchsia-400">Tell me a bit about yourself so I can be the best coach for you.</p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white border-2 border-gray-300 rounded-lg">
+        <div className="text-center pb-4 border-b-2 border-orange-200">
+          <h1 className="text-2xl font-display font-bold text-gray-900 tracking-wider flex items-center justify-center gap-2">
+            <span className="text-2xl">✨</span>
+            LET'S GET PERSONAL
+          </h1>
+          <p className="mt-2 text-gray-700">Tell me about yourself, {userName}!</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label htmlFor="pronouns" className={labelStyles}>
+                    <span className="text-base">👤</span>
                     Pronouns
                 </label>
                 <input
@@ -53,11 +57,12 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
                 value={pronouns}
                 onChange={(e) => setPronouns(e.target.value)}
                 className={inputStyles}
-                placeholder="e.g., she/her, he/him, they/them"
+                placeholder="she/her, he/him, they/them"
                 />
             </div>
             <div>
                 <label htmlFor="age" className={labelStyles}>
+                    <span className="text-base">🎂</span>
                     Age
                 </label>
                 <input
@@ -66,22 +71,25 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 className={inputStyles}
-                placeholder="e.g., 28"
+                placeholder="28"
                 />
             </div>
           </div>
           <div>
-            <label className={labelStyles}>What's your current activity level? <span className="text-red-400">*</span></label>
-            <div className="grid grid-cols-1 gap-2">
+            <label className={labelStyles}>
+              <span className="text-base">🏃‍♀️</span>
+              What's your current activity level? <span className="text-orange-600">*</span>
+            </label>
+            <div className="grid grid-cols-1 gap-2 mt-2">
                 {activityLevels.map(({ key, label }) => (
                     <button
                         type="button"
                         key={key}
                         onClick={() => setActivityLevel(label)}
-                        className={`w-full text-left p-3 rounded-lg border-2 transition-all duration-200 ${
+                        className={`w-full text-left p-3 border-2 transition-all duration-200 rounded-lg font-semibold ${
                             activityLevel === label
-                                ? 'bg-fuchsia-600/30 border-fuchsia-500 text-white'
-                                : 'bg-zinc-900 border-zinc-700 text-gray-300 hover:bg-zinc-700/50 hover:border-zinc-600'
+                                ? 'bg-gradient-to-r from-orange-100 to-amber-100 border-orange-400 text-orange-900'
+                                : 'bg-white border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300'
                         }`}
                     >
                         {label}
@@ -91,6 +99,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
           </div>
           <div>
             <label htmlFor="goals" className={labelStyles}>
+              <span className="text-base">🎯</span>
               What are your main fitness goals?
             </label>
             <textarea
@@ -98,38 +107,41 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
               value={goals}
               onChange={(e) => setGoals(e.target.value)}
               className={`${inputStyles} resize-none`}
-              placeholder="e.g., Lose weight, build muscle, improve my boxing technique..."
+              placeholder="Lose weight, build muscle, improve boxing..."
               rows={3}
             />
           </div>
            <div>
             <label htmlFor="injuries" className={labelStyles}>
-              Any injuries or concerns I should know about?
+              <span className="text-base">🩹</span>
+              Any injuries or concerns?
             </label>
             <textarea
               id="injuries"
               value={injuries}
               onChange={(e) => setInjuries(e.target.value)}
               className={`${inputStyles} resize-none`}
-              placeholder="e.g., Bad knees, previous shoulder injury, etc."
+              placeholder="Bad knees, shoulder injury, etc."
               rows={3}
             />
           </div>
            <div>
             <label htmlFor="equipment" className={labelStyles}>
-              What equipment do you have access to?
+              <span className="text-base">🏋️</span>
+              What equipment do you have?
             </label>
             <textarea
               id="equipment"
               value={equipment}
               onChange={(e) => setEquipment(e.target.value)}
               className={`${inputStyles} resize-none`}
-              placeholder="e.g., Dumbbells, jump rope, heavy bag, treadmill..."
+              placeholder="Dumbbells, jump rope, heavy bag..."
               rows={3}
             />
           </div>
           <div>
             <label htmlFor="dietaryPreferences" className={labelStyles}>
+              <span className="text-base">🥗</span>
               Dietary preferences (optional)
             </label>
             <textarea
@@ -137,12 +149,13 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
               value={dietaryPreferences}
               onChange={(e) => setDietaryPreferences(e.target.value)}
               className={`${inputStyles} resize-none`}
-              placeholder="e.g., Vegetarian, Mediterranean diet, low-carb, etc."
+              placeholder="Vegetarian, Mediterranean, low-carb..."
               rows={2}
             />
           </div>
           <div>
             <label htmlFor="foodAllergies" className={labelStyles}>
+              <span className="text-base">⚠️</span>
               Food allergies or restrictions (optional)
             </label>
             <textarea
@@ -150,16 +163,16 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSubmit, currentUs
               value={foodAllergies}
               onChange={(e) => setFoodAllergies(e.target.value)}
               className={`${inputStyles} resize-none`}
-              placeholder="e.g., Nuts, dairy, gluten, shellfish, etc."
+              placeholder="Nuts, dairy, gluten, shellfish..."
               rows={2}
             />
           </div>
           <button
             type="submit"
             disabled={!activityLevel}
-            className="w-full p-3 font-bold text-white bg-fuchsia-600 rounded-lg hover:bg-fuchsia-500 disabled:bg-zinc-600 disabled:cursor-not-allowed transition-colors duration-200"
+            className="w-full p-3 font-bold text-gray-900 bg-gradient-to-r from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 border-2 border-orange-300 rounded-lg"
           >
-            {`Let's Go, ${userName}!`}
+            🚀 {`Let's Go, ${userName}!`}
           </button>
         </form>
       </div>

@@ -55,10 +55,10 @@ const ExerciseVideoButton: React.FC<ExerciseVideoButtonProps> = ({
       <button
         onClick={handleClick}
         disabled={disabled || isLoading}
-        className={`flex items-center gap-1 px-2 py-1 text-xs rounded text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+        className={`flex items-center gap-1 px-2 py-1 text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-lg ${
           noVideoFound 
-            ? 'bg-zinc-600 text-zinc-400 cursor-not-allowed' 
-            : 'bg-zinc-700 hover:bg-zinc-600'
+            ? 'bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-300' 
+            : 'bg-stone-600 text-white hover:bg-stone-700 border border-stone-700'
         }`}
         title={noVideoFound ? `No video available for ${exerciseName}` : `Watch video for ${exerciseName}`}
       >
@@ -68,12 +68,12 @@ const ExerciseVideoButton: React.FC<ExerciseVideoButtonProps> = ({
       
       {showPlayer && video && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 rounded-lg p-4 max-w-4xl w-full max-h-[90vh] overflow-auto">
+          <div className="bg-white p-6 max-w-4xl w-full max-h-[90vh] overflow-auto border-2 border-gray-300 rounded-lg">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-white">{exerciseName}</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{exerciseName}</h3>
               <button
                 onClick={() => setShowPlayer(false)}
-                className="text-zinc-400 hover:text-white text-2xl"
+                className="text-gray-600 hover:text-gray-900 text-3xl leading-none"
               >
                 ×
               </button>
@@ -82,13 +82,13 @@ const ExerciseVideoButton: React.FC<ExerciseVideoButtonProps> = ({
               <iframe
                 src={`https://www.youtube.com/embed/${video.id}`}
                 title={video.title}
-                className="w-full h-full rounded"
+                className="w-full h-full rounded-lg"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
             </div>
             <div className="mt-4 text-center">
-              <p className="text-zinc-300 text-sm">{video.title}</p>
+              <p className="text-gray-700 text-sm">{video.title}</p>
             </div>
           </div>
         </div>

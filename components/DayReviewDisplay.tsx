@@ -31,11 +31,11 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
       if (trimmedLine.startsWith('## ')) {
         const sectionName = trimmedLine.replace('## ', '');
         formattedElements.push(
-          <div key={keyCounter++} className="mt-6 mb-4">
-            <h3 className="text-xl font-bold text-fuchsia-400 border-b border-fuchsia-400/30 pb-2 mb-3 flex items-center">
-              <span className="text-2xl mr-2">🥊</span>
-              {sectionName}
-            </h3>
+          <div key={keyCounter++} className="mt-4 mb-3">
+            <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-300 rounded-lg">
+              <span className="text-2xl">🎯</span>
+              <h3 className="text-base font-bold text-blue-900">{sectionName}</h3>
+            </div>
           </div>
         );
       }
@@ -43,23 +43,25 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
       else if (trimmedLine.startsWith('### ') || trimmedLine.toLowerCase().includes('you did well') || trimmedLine.toLowerCase().includes('great job')) {
         const achievement = trimmedLine.replace('### ', '');
         formattedElements.push(
-          <div key={keyCounter++} className="mb-4">
-            <h4 className="text-lg font-semibold text-green-400 mb-2 flex items-center">
-              <span className="text-xl mr-2">✅</span>
-              {achievement}
-            </h4>
+          <div key={keyCounter++} className="mb-3">
+            <div className="p-3 bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg">
+              <h4 className="text-base font-semibold text-green-800 flex items-center gap-2">
+                <span className="text-xl">✅</span>
+                {achievement}
+              </h4>
+            </div>
           </div>
         );
       }
       // Handle motivational sections
       else if (trimmedLine.toLowerCase().includes('tomorrow') || trimmedLine.toLowerCase().includes('keep it up') || trimmedLine.toLowerCase().includes('fired up')) {
         formattedElements.push(
-          <div key={keyCounter++} className="mb-4">
-            <div className="bg-gradient-to-r from-fuchsia-500/20 to-pink-500/20 border border-fuchsia-500/30 rounded-lg p-4">
-              <p className="text-fuchsia-200 font-medium text-sm leading-relaxed flex items-start">
-                <span className="text-xl mr-2 mt-1">🔥</span>
+          <div key={keyCounter++} className="mb-3">
+            <div className="bg-gradient-to-r from-orange-100 to-amber-100 border-2 border-orange-300 p-4 rounded-lg">
+              <p className="text-orange-900 font-semibold text-sm leading-relaxed flex items-start gap-2">
+                <span className="text-xl">🔥</span>
                 <span 
-                  className="prose"
+                  className="prose flex-1"
                   dangerouslySetInnerHTML={{ __html: window.marked.parse(trimmedLine) }}
                 />
               </p>
@@ -73,9 +75,9 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
         formattedElements.push(
           <div key={keyCounter++} className="ml-5 mb-2">
             <div className="flex items-start">
-              <span className="text-fuchsia-400 mr-2 mt-1">•</span>
+              <span className="text-blue-600 mr-2 mt-1">•</span>
               <span 
-                className="text-gray-200 text-sm leading-relaxed prose"
+                className="text-gray-800 text-sm leading-relaxed prose"
                 dangerouslySetInnerHTML={{ __html: window.marked.parse(item) }}
               />
             </div>
@@ -88,9 +90,9 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
         formattedElements.push(
           <div key={keyCounter++} className="ml-5 mb-2">
             <div className="flex items-start">
-              <span className="text-fuchsia-400 mr-2 mt-1">•</span>
+              <span className="text-blue-600 mr-2 mt-1">•</span>
               <span 
-                className="text-gray-200 text-sm leading-relaxed prose"
+                className="text-gray-800 text-sm leading-relaxed prose"
                 dangerouslySetInnerHTML={{ __html: window.marked.parse(item) }}
               />
             </div>
@@ -102,7 +104,7 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
         formattedElements.push(
           <div key={keyCounter++} className="mb-3">
             <p 
-              className="text-gray-300 text-sm leading-relaxed prose"
+              className="text-gray-700 text-sm leading-relaxed prose"
               dangerouslySetInnerHTML={{ __html: window.marked.parse(trimmedLine) }}
             />
           </div>
@@ -119,15 +121,15 @@ const DayReviewDisplay: React.FC<DayReviewDisplayProps> = ({ reviewText }) => {
   }
 
   return (
-    <div className="mt-3 border-t border-zinc-700/50 pt-4">
-      <div className="bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 rounded-lg p-3 sm:p-4 border border-zinc-700/30">
-        <div className="flex items-center mb-4">
-          <span className="text-2xl mr-2">📊</span>
-          <h2 className="text-lg font-bold text-fuchsia-400">Your Day Review</h2>
+    <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-200 rounded-lg">
+      <div className="text-center mb-4">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="text-3xl">📊</span>
+          <h2 className="text-lg font-bold text-gray-900">Your Day Review</h2>
         </div>
-        <div className="space-y-2">
-          {formatDayReview(reviewText)}
-        </div>
+      </div>
+      <div className="space-y-3">
+        {formatDayReview(reviewText)}
       </div>
     </div>
   );

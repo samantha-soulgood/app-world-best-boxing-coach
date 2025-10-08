@@ -110,7 +110,7 @@ const workoutSchema = {
 
 const createWorkoutPlanFunction = {
     name: 'createWorkoutPlan',
-    description: 'Creates a detailed, fitness-focused workout plan when the user asks for a workout, training session, or exercise routine. Use this function even if the user profile is incomplete - create a general workout that can be adapted.',
+    description: 'Creates a detailed, fitness-focused workout plan when the user asks for a workout, training session, or exercise routine. Use this function even if the user profile is incomplete - create a general workout that can be adapted. CRITICAL: Always extract and pass the user\'s specific workout request (e.g., "upper body", "lower body", "cardio", etc.) in the userRequest parameter.',
     parameters: {
         type: 'object',
         properties: {
@@ -118,8 +118,12 @@ const createWorkoutPlanFunction = {
                 type: 'string',
                 description: 'The desired total duration of the workout, e.g., "30 minutes". If not specified, use "30 minutes" as default.'
             },
+            userRequest: {
+                type: 'string',
+                description: 'The user\'s specific workout request, extracted from their message. Examples: "upper body workout", "lower body focus", "core exercises", "cardio session", "full body", "leg day". This is CRITICAL for ensuring the workout matches their request. If not specified in the message, use "general workout".'
+            },
         },
-        required: ['duration'],
+        required: ['duration', 'userRequest'],
     },
 };
 
@@ -405,15 +409,23 @@ const App: React.FC = () => {
 
   const generateWorkoutPlan = useCallback(async (options: {
       duration?: string;
+      userRequest?: string;
       lastWorkoutMessage?: Message;
       userInfo?: OnboardingData;
       journalEntries?: JournalEntry[];
   }): Promise<WorkoutPlan> => {
     console.log("generateWorkoutPlan: Called with options:", options);
     // Use OpenAI API instead of Google Gemini
-    const { duration, lastWorkoutMessage, userInfo, journalEntries } = options;
+    const { duration, userRequest, lastWorkoutMessage, userInfo, journalEntries } = options;
     
     let prompt = 'Your task is to create a FUN and CHALLENGING workout plan that feels like an exciting adventure!\n\n';
+    
+    // User's Specific Request - HIGHEST PRIORITY
+    if (userRequest) {
+      prompt += `## 🎯 USER'S SPECIFIC REQUEST (HIGHEST PRIORITY - FOLLOW THIS EXACTLY):\n`;
+      prompt += `"${userRequest}"\n\n`;
+      prompt += `**CRITICAL: The workout MUST match this request. If they ask for "upper body", give them ONLY upper body exercises. If they ask for "legs" or "lower body", give them ONLY lower body exercises. This is NON-NEGOTIABLE.**\n\n`;
+    }
 
     // User Profile Section
     prompt += '## User Profile\n';
@@ -587,7 +599,7 @@ const App: React.FC = () => {
           'squat': {
             id: 'YaXPRqUwItQ',
             title: 'How to do a Perfect Squat - Proper Form Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
+            watchUrl: 'https://www.youtube.com/watch?v=xuf1czJv-XI&list=PLTSValX_cZ0AtR6d_LnI6FaRYw0qFNFhR'
           },
           'squats': {
             id: 'YaXPRqUwItQ',
@@ -823,113 +835,228 @@ const App: React.FC = () => {
             title: 'Neck Rolls - Mobility Exercise',
             watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
           },
-          // Boxing exercises - using proper boxing video IDs
-          'shadowboxing': {
-            id: 'g_tea8ZNk5A',
-            title: 'Shadowboxing Basics - Boxing Fundamentals',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'shadow boxing': {
-            id: 'g_tea8ZNk5A',
-            title: 'Shadowboxing Basics - Boxing Fundamentals',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
+          // Boxing exercises - 20 most common drills with proper video IDs
+          // Basic punches
           'jab': {
-            id: 'g_tea8ZNk5A',
-            title: 'How to Throw a Jab - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'hJbRpHZr_d0',
+            title: 'How to Throw a Perfect Jab - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
           },
           'jabs': {
-            id: 'g_tea8ZNk5A',
-            title: 'How to Throw a Jab - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'hJbRpHZr_d0',
+            title: 'How to Throw a Perfect Jab - Boxing Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
           },
           'cross': {
-            id: 'g_tea8ZNk5A',
-            title: 'How to Throw a Cross - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'ml6cT4AZdqI',
+            title: 'How to Throw a Cross - Boxing Fundamentals',
+            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
           },
           'hook': {
-            id: 'g_tea8ZNk5A',
-            title: 'How to Throw a Hook - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'TU8QYVCh0TI',
+            title: 'How to Throw a Hook - Boxing Technique',
+            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
           },
           'hooks': {
-            id: 'g_tea8ZNk5A',
-            title: 'How to Throw a Hook - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'TU8QYVCh0TI',
+            title: 'How to Throw a Hook - Boxing Technique',
+            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
           },
           'uppercut': {
-            id: 'g_tea8ZNk5A',
-            title: 'How to Throw an Uppercut - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'QOVaHwm-Q6U',
+            title: 'How to Throw an Uppercut - Boxing Power Punch',
+            watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
           },
           'uppercuts': {
-            id: 'g_tea8ZNk5A',
-            title: 'How to Throw an Uppercut - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'QOVaHwm-Q6U',
+            title: 'How to Throw an Uppercut - Boxing Power Punch',
+            watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
           },
+          // Combinations
           'jab cross': {
-            id: 'g_tea8ZNk5A',
-            title: 'Jab-Cross Combination - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'YaXPRqUwItQ',
+            title: 'Jab-Cross Combination - Boxing Fundamentals',
+            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
           },
           'jab-cross': {
-            id: 'g_tea8ZNk5A',
-            title: 'Jab-Cross Combination - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'YaXPRqUwItQ',
+            title: 'Jab-Cross Combination - Boxing Fundamentals',
+            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
+          },
+          'jab hook cross': {
+            id: 'IODxDxX7oi4',
+            title: 'Jab-Hook-Cross Combination - Boxing Combo',
+            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
+          },
+          // Footwork and stance
+          'boxing stance': {
+            id: 'ASdvN_XEl_c',
+            title: 'Boxing Stance - Proper Fighting Position',
+            watchUrl: 'https://www.youtube.com/watch?v=ASdvN_XEl_c'
           },
           'boxing footwork': {
-            id: 'g_tea8ZNk5A',
-            title: 'Boxing Footwork Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'nmwgirgXLYM',
+            title: 'Boxing Footwork Drills - Movement Basics',
+            watchUrl: 'https://www.youtube.com/watch?v=nmwgirgXLYM'
           },
-          'boxing stance': {
-            id: 'g_tea8ZNk5A',
-            title: 'Boxing Stance - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          'pivoting': {
+            id: 'Xyd_fa5zoEU',
+            title: 'Boxing Pivoting - Angle Changes',
+            watchUrl: 'https://www.youtube.com/watch?v=Xyd_fa5zoEU'
           },
-          'punching': {
-            id: 'g_tea8ZNk5A',
-            title: 'Basic Punching Techniques - Boxing',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+          // Shadowboxing and bag work
+          'shadowboxing': {
+            id: '1fbU_MkV7NE',
+            title: 'Shadowboxing Basics - Boxing Training',
+            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
+          },
+          'shadow boxing': {
+            id: '1fbU_MkV7NE',
+            title: 'Shadowboxing Basics - Boxing Training',
+            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
+          },
+          'heavy bag': {
+            id: 'iSSAk4XCsRA',
+            title: 'Heavy Bag Workout - Boxing Power Training',
+            watchUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA'
           },
           'punching bag': {
-            id: 'g_tea8ZNk5A',
-            title: 'Heavy Bag Workout - Boxing',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
+            id: 'iSSAk4XCsRA',
+            title: 'Heavy Bag Workout - Boxing Power Training',
+            watchUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA'
+          },
+          'speed bag': {
+            id: 'wkD8rjkodUI',
+            title: 'Speed Bag Training - Boxing Rhythm',
+            watchUrl: 'https://www.youtube.com/watch?v=wkD8rjkodUI'
+          },
+          // Defensive moves
+          'slip': {
+            id: '9AjkUyX0rVw',
+            title: 'Boxing Slips - Defensive Movement',
+            watchUrl: 'https://www.youtube.com/watch?v=9AjkUyX0rVw'
+          },
+          'slipping': {
+            id: '9AjkUyX0rVw',
+            title: 'Boxing Slips - Defensive Movement',
+            watchUrl: 'https://www.youtube.com/watch?v=9AjkUyX0rVw'
+          },
+          'bob and weave': {
+            id: 'JB2oyawG9KI',
+            title: 'Bob and Weave - Boxing Defense',
+            watchUrl: 'https://www.youtube.com/watch?v=JB2oyawG9KI'
+          },
+          'weaving': {
+            id: 'JB2oyawG9KI',
+            title: 'Bob and Weave - Boxing Defense',
+            watchUrl: 'https://www.youtube.com/watch?v=JB2oyawG9KI'
+          },
+          'parrying': {
+            id: '6kALZikXxLc',
+            title: 'Boxing Parrying - Hand Defense',
+            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
+          },
+          'blocking': {
+            id: 'y-wV4Venusw',
+            title: 'Boxing Blocks - Defensive Techniques',
+            watchUrl: 'https://www.youtube.com/watch?v=y-wV4Venusw'
+          },
+          // Advanced techniques
+          'counterpunch': {
+            id: 'hJbRpHZr_d0',
+            title: 'Counterpunching - Boxing Strategy',
+            watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
+          },
+          'counterpunching': {
+            id: 'hJbRpHZr_d0',
+            title: 'Counterpunching - Boxing Strategy',
+            watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
+          },
+          'feinting': {
+            id: 'ml6cT4AZdqI',
+            title: 'Boxing Feints - Deceptive Movement',
+            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
+          },
+          'body shot': {
+            id: 'TU8QYVCh0TI',
+            title: 'Body Shots - Boxing Power Punches',
+            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
+          },
+          'body shots': {
+            id: 'TU8QYVCh0TI',
+            title: 'Body Shots - Boxing Power Punches',
+            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
+          },
+          // General boxing terms
+          'punching': {
+            id: 'QOVaHwm-Q6U',
+            title: 'Basic Punching Techniques - Boxing',
+            watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
+          },
+          'boxing': {
+            id: 'YaXPRqUwItQ',
+            title: 'Boxing Fundamentals - Complete Guide',
+            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
+          },
+          'sparring': {
+            id: 'IODxDxX7oi4',
+            title: 'Boxing Sparring - Controlled Practice',
+            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
           }
         };
         
-        // Find the best matching video with more precise matching
+        // Enhanced tag-based matching algorithm
         const lowerTopic = topic.toLowerCase().trim();
-        let selectedVideo = null; // No default - only return video if we find a match
+        let selectedVideo = null;
         let bestMatch = '';
         let matchScore = 0;
         
         console.log("handleFindVideo: Topic:", topic);
         console.log("handleFindVideo: Lower topic:", lowerTopic);
         
-        // More precise matching - check for exact word matches first
+        // Generate tags for the input topic
+        const topicTags = generateTopicTags(lowerTopic);
+        console.log("handleFindVideo: Generated topic tags:", topicTags);
+        
+        // Match against each video's tags
         for (const [key, video] of Object.entries(videoLibrary)) {
-          const keyWords = key.split(' ');
+          const videoTags = video.tags || [];
           let currentScore = 0;
           
-          // Check for exact phrase match first (highest priority)
-          if (lowerTopic === key) {
-            currentScore = 10; // Highest score for exact match
-          } else if (lowerTopic.includes(key)) {
-            currentScore = 5; // High score for partial phrase match
-          } else {
-            // Check individual words
-            for (const word of keyWords) {
-              if (lowerTopic.includes(word)) {
-                currentScore += 1;
+          // Calculate tag-based matching score
+          for (const topicTag of topicTags) {
+            for (const videoTag of videoTags) {
+              // Exact tag match (highest priority)
+              if (topicTag === videoTag) {
+                currentScore += 10;
+              }
+              // Partial tag match
+              else if (topicTag.includes(videoTag) || videoTag.includes(topicTag)) {
+                currentScore += 5;
+              }
+              // Word-level match within tags
+              else {
+                const topicWords = topicTag.split(' ');
+                const videoWords = videoTag.split(' ');
+                for (const topicWord of topicWords) {
+                  for (const videoWord of videoWords) {
+                    if (topicWord === videoWord && topicWord.length > 2) {
+            currentScore += 2;
+                    }
+                  }
+                }
               }
             }
           }
           
-          console.log(`handleFindVideo: Key "${key}" score: ${currentScore}`);
+          // Bonus for exact key match
+          if (lowerTopic === key) {
+            currentScore += 15;
+          } else if (lowerTopic.includes(key)) {
+            currentScore += 8;
+          }
+          
+          console.log(`handleFindVideo: Video "${key}" score: ${currentScore} (tags: ${videoTags.join(', ')})`);
           
           if (currentScore > matchScore) {
             matchScore = currentScore;
@@ -941,9 +1068,9 @@ const App: React.FC = () => {
         console.log("handleFindVideo: Best match:", bestMatch, "with score:", matchScore);
         console.log("handleFindVideo: Selected video:", selectedVideo);
         
-        // Only return video if we have a reasonable match (score >= 1)
-        if (matchScore >= 1) {
-          return selectedVideo;
+        // Only return video if we have a reasonable match (score >= 3)
+        if (matchScore >= 3) {
+        return selectedVideo;
         } else {
           console.log("handleFindVideo: No good match found, returning null");
           return null;
@@ -1147,15 +1274,23 @@ const App: React.FC = () => {
             try {
                 const args = JSON.parse(workoutToolCall.function.arguments);
                 const duration = args.duration as string | undefined;
+                const userRequest = args.userRequest as string | undefined;
                 console.log("sendMessage: Workout tool call args:", args);
+                console.log("sendMessage: User's specific request:", userRequest);
                 
                 const lastCompletedWorkoutMessage = messages
                   .slice()
                   .reverse()
                   .find(msg => msg.workoutPlan && msg.isWorkoutCompleted);
 
-                console.log("sendMessage: Calling generateWorkoutPlan with duration:", duration);
-                const workoutPlan = await generateWorkoutPlan({ duration, lastWorkoutMessage: lastCompletedWorkoutMessage, userInfo: currentUser?.profile, journalEntries });
+                console.log("sendMessage: Calling generateWorkoutPlan with duration:", duration, "and userRequest:", userRequest);
+                const workoutPlan = await generateWorkoutPlan({ 
+                  duration, 
+                  userRequest,
+                  lastWorkoutMessage: lastCompletedWorkoutMessage, 
+                  userInfo: currentUser?.profile, 
+                  journalEntries 
+                });
                 console.log("sendMessage: Generated workout plan:", workoutPlan);
                 
                 const sammiResponse: Message = {
@@ -1296,14 +1431,14 @@ const App: React.FC = () => {
 
     // Add a welcome message
     const welcomeMessage: Message = {
-        id: `welcome-${Date.now()}`,
+            id: `welcome-${Date.now()}`,
         text: `Welcome to Soul Good Fitness, ${updatedUser.name}! I'm Sammi, your personal fitness coach. I'm here to help you reach your goals. What would you like to work on today?`,
-        sender: 'sammi',
-        timestamp: Date.now(),
-    };
-    
+            sender: 'sammi',
+            timestamp: Date.now(),
+        };
+        
     setMessages([welcomeMessage]);
-    setIsLoading(false);
+        setIsLoading(false);
   };
 
   const handleStartWorkout = (plan: WorkoutPlan, messageId: string) => {
@@ -1398,7 +1533,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col h-[100dvh] bg-zinc-900 text-gray-100 font-sans">
+      <div className="flex flex-col h-[100dvh] bg-gray-50 text-gray-800 font-sans">
         <Header currentUser={currentUser} onLogout={handleLogout} />
         <div className="flex-1 flex flex-col max-w-4xl w-full mx-auto px-4 sm:px-6 pb-4 overflow-hidden">
           <ChatWindow
@@ -1471,12 +1606,12 @@ const App: React.FC = () => {
                         onClick={() => setIsTopicsVisible(!isTopicsVisible)}
                         disabled={isLoading}
                         aria-label={isTopicsVisible ? 'Hide topics' : 'Show topics'}
-                        className="flex-shrink-0 p-2 sm:p-4 bg-zinc-800/80 border border-zinc-700 rounded-xl text-fuchsia-300 hover:bg-zinc-700 hover:text-fuchsia-200 transition-all duration-200 disabled:opacity-50 relative group"
+                        className="flex-shrink-0 p-2 sm:p-4 bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 rounded-lg text-orange-700 hover:from-orange-100 hover:to-amber-100 hover:border-orange-400 transition-all duration-200 disabled:opacity-50 relative group"
                         title={isTopicsVisible ? 'Hide topics' : 'Show topics'}
                     >
                        {isTopicsVisible ? <ChevronUpIcon /> : <ChevronDownIcon />}
                        {/* Mobile tooltip */}
-                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none sm:hidden whitespace-nowrap">
+                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-gradient-to-r from-orange-600 to-amber-600 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none sm:hidden whitespace-nowrap">
                            {isTopicsVisible ? 'Hide topics' : 'Show topics'}
                        </div>
                     </button>

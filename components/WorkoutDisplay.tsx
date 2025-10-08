@@ -30,25 +30,45 @@ const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) =>
     return { repetitionCount, repeatTimes };
   };
 
+  // Get emoji for phase
+  const getPhaseEmoji = (phaseName: string): string => {
+    const lowerName = phaseName.toLowerCase();
+    if (lowerName.includes('warm')) return '🔥';
+    if (lowerName.includes('main') || lowerName.includes('workout')) return '💪';
+    if (lowerName.includes('core') || lowerName.includes('finisher')) return '⚡';
+    if (lowerName.includes('cool') || lowerName.includes('stretch')) return '🧘‍♀️';
+    return '✨';
+  };
+
   return (
-    <div className="mt-3 border-t border-zinc-700/50 pt-3 text-sm">
+    <div className="mt-4 p-5 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 border-2 border-orange-200 rounded-lg">
+      <div className="mb-4 text-center">
+        <h3 className="text-lg font-bold text-gray-900 tracking-tight">🎯 Your Workout Plan</h3>
+      </div>
       {plan.workout.phases.map((phase, phaseIndex) => {
         const setInfo = getSetRepetitionInfo(phase);
+        const phaseEmoji = getPhaseEmoji(phase.name);
         
         return (
-          <div key={phaseIndex} className="mb-4 last:mb-0">
-            <h4 className="font-bold text-fuchsia-400 tracking-wide uppercase text-xs mb-2">{phase.name}</h4>
+          <div key={phaseIndex} className="mb-6 last:mb-0">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-2xl">{phaseEmoji}</span>
+              <h4 className="font-bold text-gray-900 tracking-wide uppercase text-sm flex-1">{phase.name}</h4>
+              <span className="text-xs text-gray-600 font-medium bg-white px-2 py-1 border border-gray-200 rounded-full">
+                {phase.exercises.filter(ex => ex.name.toLowerCase() !== 'rest').length} exercises
+              </span>
+            </div>
             {setInfo && (
-              <div className="mb-3 p-2 bg-yellow-400/10 border border-yellow-400/30 rounded text-xs">
-                <p className="text-yellow-400 font-semibold">
-                  📋 Set Structure: {setInfo.repetitionCount} sets, each repeated {setInfo.repeatTimes} times
+              <div className="mb-3 p-3 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 text-xs rounded-lg">
+                <p className="text-amber-900 font-bold">
+                  🔁 Set Structure: {setInfo.repetitionCount} sets, each repeated {setInfo.repeatTimes} times
                 </p>
-                <p className="text-yellow-300/80 mt-1">
-                  Total: {setInfo.repetitionCount} sets × {setInfo.repeatTimes} rounds = {setInfo.repetitionCount * parseInt(setInfo.repeatTimes)} total set rounds
+                <p className="text-amber-800 mt-1">
+                  💥 Total: {setInfo.repetitionCount} sets × {setInfo.repeatTimes} rounds = {setInfo.repetitionCount * parseInt(setInfo.repeatTimes)} total set rounds
                 </p>
               </div>
             )}
-          <ul className="space-y-2 pl-2">
+          <ul className="space-y-3">
             {phase.exercises.map((exercise, exerciseIndex) => {
               // If the current exercise is "Rest", it will be handled by the preceding exercise, so we skip rendering it.
               // We only render a "Rest" if it's the very first item in a phase, which is unlikely but a good edge case to handle.
@@ -57,8 +77,8 @@ const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) =>
                     // Render standalone rest if it's the first exercise
                      return (
                          <li key={exerciseIndex}>
-                            <strong className="text-white font-medium">{exercise.name}</strong>
-                            {exercise.duration && <span className="text-gray-400 italic ml-2">({exercise.duration})</span>}
+                            <strong className="text-gray-900 font-semibold text-base">{exercise.name}</strong>
+                            {exercise.duration && <span className="text-gray-600 italic ml-2">({exercise.duration})</span>}
                          </li>
                      );
                 }
@@ -70,29 +90,36 @@ const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) =>
               const isNextExerciseRest = nextExercise && nextExercise.name.toLowerCase() === 'rest';
 
               return (
-                <li key={exerciseIndex} className="mb-3">
+                <li key={exerciseIndex} className="group p-4 bg-white border-2 border-orange-200 hover:border-orange-300 transition-all duration-200 rounded-lg">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <strong className="text-white font-medium">{exercise.name}</strong>
-                      <div className="text-gray-300 pl-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xl">💪</span>
+                        <strong className="text-gray-900 font-bold text-base">{exercise.name}</strong>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 text-sm">
                         {/* The prompt ensures timed exercises have N/A reps, this makes the display cleaner */}
-                        {exercise.reps !== 'N/A' 
-                            ? <span>{exercise.sets} sets x {exercise.reps} reps</span>
-                            : null
-                        }
-                        {exercise.duration && 
-                            <span className="text-gray-400 italic ml-2">
-                                ({exercise.duration}
-                                {isNextExerciseRest ? ` + ${nextExercise.duration} rest` : ''})
-                            </span>
-                        }
+                        {exercise.reps !== 'N/A' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 font-semibold text-blue-800 rounded-full">
+                            <span className="text-xs">🔢</span>
+                            {exercise.sets} sets × {exercise.reps} reps
+                          </span>
+                        )}
+                        {exercise.duration && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 font-semibold text-green-800 rounded-full">
+                            <span className="text-xs">⏱️</span>
+                            {exercise.duration}
+                            {isNextExerciseRest ? ` + ${nextExercise.duration} rest` : ''}
+                          </span>
+                        )}
                       </div>
                       {exercise.notes && (
-                        <p className={`text-xs mt-1 pl-2 border-l-2 border-zinc-600 italic ${
+                        <p className={`text-xs mt-3 p-2.5 rounded-lg ${
                           exercise.notes.includes('Repeat this set') 
-                            ? 'text-yellow-400 font-semibold' 
-                            : 'text-gray-400/90'
+                            ? 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 font-bold border-2 border-amber-300' 
+                            : 'bg-gray-50 text-gray-700 italic border border-gray-200'
                         }`}>
+                          {exercise.notes.includes('Repeat this set') ? '🔁 ' : '💡 '}
                           {exercise.notes}
                         </p>
                       )}
