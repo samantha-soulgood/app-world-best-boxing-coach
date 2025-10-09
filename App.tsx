@@ -176,6 +176,7 @@ const createNutritionPlanFunction = {
 
 
 const App: React.FC = () => {
+  const [isInitializing, setIsInitializing] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isOnboarding, setIsOnboarding] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -1591,9 +1592,6 @@ const App: React.FC = () => {
     sendMessage(reviewPrompt, 'user');
   };
 
-  // Show loading state while initializing
-  const [isInitializing, setIsInitializing] = useState(true);
-  
   useEffect(() => {
     // Mark initialization complete after first render
     setIsInitializing(false);
