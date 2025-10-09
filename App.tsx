@@ -434,7 +434,7 @@ const App: React.FC = () => {
             content: prompt
           }
         ],
-        temperature: 0.9,
+        temperature: 1.0, // Higher temperature for more variety in meal plans
         max_tokens: 2048
       };
 
@@ -516,11 +516,17 @@ const App: React.FC = () => {
             .flatMap(phase => phase.exercises.map(ex => ex.name.toLowerCase()))
             .filter(name => name !== 'rest'); // Don't include 'Rest' in the list
         const uniqueLastExercises = [...new Set(lastWorkoutExercises)];
-        prompt += `- Exercises from last workout to vary from: ${uniqueLastExercises.join(', ')}\n`;
-        prompt += `- IMPORTANT: Do NOT repeat more than 50% of exercises from the previous workout. Mix in new exercises and variations to keep workouts fresh and engaging.\n`;
+        prompt += `\n## 🚫 EXERCISES TO AVOID (used in last workout):\n`;
+        prompt += `${uniqueLastExercises.join(', ')}\n\n`;
+        prompt += `**CRITICAL VARIETY RULE: You MUST avoid using AT LEAST 80% of these exercises. Only repeat 1-2 exercises maximum if they are fundamental movements. Use completely different exercises, variations, angles, and movement patterns to keep the workout fresh and engaging. The user should feel like this is a brand new workout experience!**\n\n`;
+        prompt += `**Examples of good variety:**\n`;
+        prompt += `- Instead of "Push-ups" → Try: Diamond Push-ups, Decline Push-ups, Archer Push-ups, Pike Push-ups, or Plyometric Push-ups\n`;
+        prompt += `- Instead of "Squats" → Try: Jump Squats, Bulgarian Split Squats, Pistol Squats, Sumo Squats, or Squat Pulses\n`;
+        prompt += `- Instead of "Plank" → Try: Side Plank, Plank Jacks, Plank Shoulder Taps, Plank Up-Downs, or Walking Plank\n`;
+        prompt += `- Instead of "Lunges" → Try: Reverse Lunges, Curtsy Lunges, Jumping Lunges, Walking Lunges, or Lateral Lunges\n\n`;
 
     } else {
-        prompt += `This is the user's first workout. Create a plan based on their profile.\n`;
+        prompt += `This is the user's first workout. Create a diverse and exciting plan based on their profile.\n`;
     }
 
     if (duration) {
@@ -529,17 +535,19 @@ const App: React.FC = () => {
 
     // Fun & Challenge Requirements
     prompt += '\n## Workout Requirements\n';
-    prompt += '- Make this workout FUN and EXCITING - use creative exercise names and playful challenges\n';
-    prompt += '- Make it CHALLENGING - push the user to their next level with progressive difficulty\n';
-    prompt += '- Include variety in intensity - mix high-energy bursts with focused strength work\n';
-    prompt += '- Use motivational, energetic language that makes exercises feel exciting\n';
-    prompt += '- Add achievement moments that make the user feel strong and accomplished\n';
-    prompt += '- Create fun exercise combinations or mini-circuits\n';
+    prompt += '- ✨ **CREATIVITY IS KEY**: Use unique, creative exercise names and playful challenges. Avoid generic names!\n';
+    prompt += '- 🎨 **MAXIMIZE VARIETY**: Every workout should feel fresh and different. Use different angles, tempos, ranges of motion, and movement patterns\n';
+    prompt += '- 💪 Make it CHALLENGING - push the user to their next level with progressive difficulty\n';
+    prompt += '- 🔥 Include variety in intensity - mix high-energy bursts with focused strength work\n';
+    prompt += '- 🎯 Use motivational, energetic language that makes exercises feel exciting\n';
+    prompt += '- 🏆 Add achievement moments that make the user feel strong and accomplished\n';
+    prompt += '- 🎪 Create fun exercise combinations or mini-circuits with unexpected twists\n';
+    prompt += '- 🌈 Think outside the box: Use unconventional exercises, creative variations, and playful names\n';
 
     // Instructions and Constraints Section
     prompt += '\n## Workout Structure\n';
     prompt += `Create a ${duration || '30-minute'} workout with 4 phases:\n`;
-    prompt += '1. **Warm-up**: 3-4 dynamic exercises (30s-1min each)\n';
+    prompt += '1. **Warm-up**: 3-4 dynamic exercises (30s-1min each). **USE VARIETY**: Don\'t default to arm circles and jumping jacks every time. Try dynamic lunges, inchworms, hip openers, lateral movements, rotational exercises, etc.\n';
     prompt += '2. **Main Workout Sets**: Create 2-3 different sets of 3-4 exercises each (45s-1min each) + Rest (15s) after each exercise. For each set, add "Repeat this set X times" in the last exercise notes. Calculate X based on duration: 15min=1x, 20min=2x, 30min=3x, 45min=3x, 60min=3x, 90min=3x, 120min=3x, 180min=3x, 240min=3x, 360min=3x.\n\n**IMPORTANT: Maximum 3 repetitions per set - cap at 3x regardless of duration!**\n\n**MANDATORY EXAMPLE FORMAT:**\nSet 1: Exercise 1 (45 seconds), Exercise 2 (45 seconds), Exercise 3 (45 seconds), Exercise 4 (45 seconds, notes: "Repeat this set 3 times")\nSet 2: Exercise 5 (45 seconds), Exercise 6 (45 seconds), Exercise 7 (45 seconds, notes: "Repeat this set 3 times")\nSet 3: Exercise 8 (45 seconds), Exercise 9 (45 seconds), Exercise 10 (45 seconds, notes: "Repeat this set 3 times")\n\n**CRITICAL: Every set must have "Repeat this set X times" in the last exercise notes - this is REQUIRED!**\n';
     prompt += '3. **Core Finisher**: 3-4 core exercises (30-45s each)\n';
     prompt += '4. **Cool-down**: 3-4 static stretches (30s each)\n\n';
@@ -549,10 +557,10 @@ const App: React.FC = () => {
     if (userInfo?.equipment && userInfo.equipment.toLowerCase() !== 'none' && userInfo.equipment.toLowerCase() !== 'bodyweight only') {
         prompt += `- **EQUIPMENT USAGE: Actively use "${userInfo.equipment}" in at least 60-70% of exercises. Be specific about how to use the equipment (e.g., "Dumbbell Goblet Squats", "Resistance Band Rows", "Jump Rope Double-Unders", etc.)**\n`;
     }
-    prompt += '- **BOXING FOCUS: Include 1-2 boxing exercises in each main workout set (e.g., shadowboxing, jab-cross combinations, uppercuts, hooks, boxing footwork, etc.)**\n';
-    prompt += '- Adapt to injuries: modify or avoid affected areas\n';
-    prompt += '- Vary 50%+ exercises from last workout\n';
-    prompt += '- Progress difficulty based on last RPE/feedback\n';
+    prompt += '- **BOXING FOCUS: Include 1-2 boxing exercises in each main workout set. Vary the combinations: jab-cross, hook-uppercut, slip-and-counter, footwork drills, shadowboxing with tempo changes, defensive moves, etc.**\n';
+    prompt += '- **INJURY ADAPTATION**: Carefully modify or completely avoid exercises that stress injured areas\n';
+    prompt += '- **VARIETY EMPHASIS**: Aim for 80%+ NEW exercises compared to the last workout. Only keep 1-2 core movements if absolutely necessary\n';
+    prompt += '- **PROGRESSION**: Based on RPE/feedback, adjust intensity, complexity, or volume appropriately\n';
 
 
     // Use OpenAI API call with JSON mode
@@ -568,7 +576,7 @@ const App: React.FC = () => {
           content: prompt
         }
       ],
-      temperature: 0.9,
+      temperature: 1.0, // Higher temperature for more variety in workouts
       max_tokens: 2048,
       response_format: { type: "json_object" }
     };
