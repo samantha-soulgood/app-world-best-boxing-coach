@@ -212,41 +212,63 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // Check for new key first, then fallback to old key for migration
-    let storedUserJson = localStorage.getItem('soulGoodFitnessUser');
-    if (!storedUserJson) {
-      // Migrate from old key
-      storedUserJson = localStorage.getItem('soulGoodBoxingUser');
+    try {
+      // Check for new key first, then fallback to old key for migration
+      let storedUserJson = localStorage.getItem('soulGoodFitnessUser');
+      if (!storedUserJson) {
+        // Migrate from old key
+        storedUserJson = localStorage.getItem('soulGoodBoxingUser');
+        if (storedUserJson) {
+          // Copy to new key and remove old key
+          localStorage.setItem('soulGoodFitnessUser', storedUserJson);
+          localStorage.removeItem('soulGoodBoxingUser');
+          console.log('Migrated user data from soulGoodBoxingUser to soulGoodFitnessUser');
+        }
+      }
+      
       if (storedUserJson) {
-        // Copy to new key and remove old key
-        localStorage.setItem('soulGoodFitnessUser', storedUserJson);
-        localStorage.removeItem('soulGoodBoxingUser');
-        console.log('Migrated user data from soulGoodBoxingUser to soulGoodFitnessUser');
-      }
-    }
-    
-    if (storedUserJson) {
-      const user: User = JSON.parse(storedUserJson);
-      const storedMessages = localStorage.getItem(`chatHistory_${user.id}`);
-      const storedJournal = localStorage.getItem(`journalEntries_${user.id}`);
+        const user: User = JSON.parse(storedUserJson);
+        const storedMessages = localStorage.getItem(`chatHistory_${user.id}`);
+        const storedJournal = localStorage.getItem(`journalEntries_${user.id}`);
 
-      if (storedJournal) {
-          setJournalEntries(JSON.parse(storedJournal));
-      }
+        if (storedJournal) {
+          try {
+            setJournalEntries(JSON.parse(storedJournal));
+          } catch (err) {
+            console.error('Failed to parse journal entries:', err);
+            setJournalEntries([]);
+          }
+        }
 
-      if (storedMessages) {
-        const allMessages: Message[] = JSON.parse(storedMessages);
-        const recentMessages = pruneHistoryToLastNCompletedWorkouts(allMessages, 14);
+        if (storedMessages) {
+          try {
+            const allMessages: Message[] = JSON.parse(storedMessages);
+            const recentMessages = pruneHistoryToLastNCompletedWorkouts(allMessages, 14);
 
-        setMessages(recentMessages);
-        setCurrentUser(user);
-        initChat(recentMessages, user.profile);
-      } else {
-        // This case handles a user who logged in but didn't finish onboarding
-        setCurrentUser(user);
-        setIsOnboarding(!user.profile); // Go to onboarding if profile is missing
-        setMessages([]);
+            setMessages(recentMessages);
+            setCurrentUser(user);
+            initChat(recentMessages, user.profile);
+          } catch (err) {
+            console.error('Failed to parse messages:', err);
+            setCurrentUser(user);
+            setIsOnboarding(!user.profile);
+            setMessages([]);
+          }
+        } else {
+          // This case handles a user who logged in but didn't finish onboarding
+          setCurrentUser(user);
+          setIsOnboarding(!user.profile); // Go to onboarding if profile is missing
+          setMessages([]);
+        }
       }
+    } catch (error) {
+      console.error('Error loading user data from localStorage:', error);
+      // Clear corrupted data and start fresh
+      localStorage.removeItem('soulGoodFitnessUser');
+      localStorage.removeItem('soulGoodBoxingUser');
+      setCurrentUser(null);
+      setMessages([]);
+      setIsOnboarding(false);
     }
   }, []);
 
@@ -1544,6 +1566,25 @@ const App: React.FC = () => {
     
     sendMessage(reviewPrompt, 'user');
   };
+
+  // Show loading state while initializing
+  const [isInitializing, setIsInitializing] = useState(true);
+  
+  useEffect(() => {
+    // Mark initialization complete after first render
+    setIsInitializing(false);
+  }, []);
+
+  if (isInitializing) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <p className="text-orange-700 font-semibold">Loading Soul Good Boxing...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentUser) {
     return <LoginScreen onLogin={handleLogin} />;
