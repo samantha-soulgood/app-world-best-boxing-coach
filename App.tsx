@@ -251,14 +251,38 @@ const App: React.FC = () => {
           } catch (err) {
             console.error('Failed to parse messages:', err);
             setCurrentUser(user);
-            setIsOnboarding(!user.profile);
-            setMessages([]);
+            if (!user.profile) {
+              setIsOnboarding(true);
+              setMessages([]);
+            } else {
+              // Messages corrupted but user has profile - add welcome message
+              const welcomeMessage: Message = {
+                id: `welcome-${Date.now()}`,
+                text: `Welcome back to Soul Good Fitness, ${user.name}! I'm Sammi, your personal fitness coach. Ready to train? What would you like to work on today?`,
+                sender: 'sammi',
+                timestamp: Date.now(),
+              };
+              setMessages([welcomeMessage]);
+              initChat([welcomeMessage], user.profile);
+            }
           }
         } else {
           // This case handles a user who logged in but didn't finish onboarding
           setCurrentUser(user);
-          setIsOnboarding(!user.profile); // Go to onboarding if profile is missing
-          setMessages([]);
+          if (!user.profile) {
+            setIsOnboarding(true);
+            setMessages([]);
+          } else {
+            // User has profile but no messages - add welcome message
+            const welcomeMessage: Message = {
+              id: `welcome-${Date.now()}`,
+              text: `Welcome back to Soul Good Fitness, ${user.name}! I'm Sammi, your personal fitness coach. Ready to train? What would you like to work on today?`,
+              sender: 'sammi',
+              timestamp: Date.now(),
+            };
+            setMessages([welcomeMessage]);
+            initChat([welcomeMessage], user.profile);
+          }
         }
       }
     } catch (error) {
