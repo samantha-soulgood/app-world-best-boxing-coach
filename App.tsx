@@ -433,9 +433,16 @@ const App: React.FC = () => {
         prompt += `- Activity Level: ${userInfo.activityLevel || 'Not specified'}\n`;
         prompt += `- Injuries/Concerns: ${userInfo.injuries || 'None'}\n`;
         prompt += `- Goals: ${userInfo.goals || 'Not specified'}\n`;
-        prompt += `- Equipment: ${userInfo.equipment || 'Bodyweight only'}\n\n`;
+        prompt += `- Available Equipment: ${userInfo.equipment || 'Bodyweight only'}\n\n`;
+        
+        // Emphasize equipment usage
+        if (userInfo.equipment && userInfo.equipment.toLowerCase() !== 'none' && userInfo.equipment.toLowerCase() !== 'bodyweight only') {
+            prompt += `**🔑 EQUIPMENT REQUIREMENT: The user has the following equipment available: "${userInfo.equipment}". You MUST incorporate this equipment into the workout. Design exercises that specifically use this equipment to maximize effectiveness. Do not create a bodyweight-only workout when equipment is available.**\n\n`;
+        } else {
+            prompt += `**📝 NOTE: This is a bodyweight-only workout. Use creative bodyweight exercises.**\n\n`;
+        }
     } else {
-        prompt += '- No user profile data available. Create a general workout.\n\n';
+        prompt += '- No user profile data available. Create a general bodyweight workout.\n\n';
     }
 
     // Journal Context Section
@@ -492,6 +499,9 @@ const App: React.FC = () => {
     prompt += '## Key Requirements\n';
     prompt += '- All exercises need `duration` string (e.g., "45 seconds")\n';
     prompt += '- **MANDATORY: Each set\'s last exercise must have notes: "Repeat this set X times"**\n';
+    if (userInfo?.equipment && userInfo.equipment.toLowerCase() !== 'none' && userInfo.equipment.toLowerCase() !== 'bodyweight only') {
+        prompt += `- **EQUIPMENT USAGE: Actively use "${userInfo.equipment}" in at least 60-70% of exercises. Be specific about how to use the equipment (e.g., "Dumbbell Goblet Squats", "Resistance Band Rows", "Jump Rope Double-Unders", etc.)**\n`;
+    }
     prompt += '- **BOXING FOCUS: Include 1-2 boxing exercises in each main workout set (e.g., shadowboxing, jab-cross combinations, uppercuts, hooks, boxing footwork, etc.)**\n';
     prompt += '- Adapt to injuries: modify or avoid affected areas\n';
     prompt += '- Vary 50%+ exercises from last workout\n';
