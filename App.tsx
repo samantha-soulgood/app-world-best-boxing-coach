@@ -111,20 +111,20 @@ const workoutSchema = {
 const createWorkoutPlanFunction = {
     type: 'function',
     function: {
-        name: 'createWorkoutPlan',
+    name: 'createWorkoutPlan',
         description: 'Creates a detailed, fitness-focused workout plan when the user asks for a workout, training session, or exercise routine. Use this function even if the user profile is incomplete - create a general workout that can be adapted. CRITICAL: Always extract and pass the user\'s specific workout request (e.g., "upper body", "lower body", "cardio", etc.) in the userRequest parameter.',
-        parameters: {
-            type: 'object',
-            properties: {
-                duration: {
-                    type: 'string',
-                    description: 'The desired total duration of the workout, e.g., "30 minutes". If not specified, use "30 minutes" as default.'
-                },
+    parameters: {
+        type: 'object',
+        properties: {
+            duration: {
+                type: 'string',
+                description: 'The desired total duration of the workout, e.g., "30 minutes". If not specified, use "30 minutes" as default.'
+            },
                 userRequest: {
                     type: 'string',
                     description: 'The user\'s specific workout request, extracted from their message. Examples: "upper body workout", "lower body focus", "core exercises", "cardio session", "full body", "leg day". This is CRITICAL for ensuring the workout matches their request. If not specified in the message, use "general workout".'
-            },
-            },
+        },
+    },
             required: ['duration', 'userRequest'],
         },
     }
@@ -133,56 +133,56 @@ const createWorkoutPlanFunction = {
 const findBoxingVideoFunction = {
     type: 'function',
     function: {
-        name: 'findBoxingVideo',
-        description: 'Finds and displays a relevant fitness tutorial video on YouTube when a user asks for video tutorials, exercise demonstrations, or workout videos. Use this function whenever the user requests video content, exercise demonstrations, or tutorial videos.',
-        parameters: {
-            type: 'object',
-            properties: {
-                topic: {
-                    type: 'string',
-                    description: 'The specific fitness technique or topic the user wants a video for (e.g., "squats", "cardio", "strength training").'
-                }
-            },
-            required: ['topic']
+    name: 'findBoxingVideo',
+    description: 'Finds and displays a relevant fitness tutorial video on YouTube when a user asks for video tutorials, exercise demonstrations, or workout videos. Use this function whenever the user requests video content, exercise demonstrations, or tutorial videos.',
+    parameters: {
+        type: 'object',
+        properties: {
+            topic: {
+                type: 'string',
+                description: 'The specific fitness technique or topic the user wants a video for (e.g., "squats", "cardio", "strength training").'
+            }
         },
+        required: ['topic']
+    },
     }
 };
 
 const showVideoLibraryFunction = {
     type: 'function',
     function: {
-        name: 'showVideoLibrary',
-        description: 'Shows the user the library of pre-selected video drills and tutorials when they ask to see the video list or library.',
-        parameters: {
-            type: 'object',
-            properties: {},
-        },
+    name: 'showVideoLibrary',
+    description: 'Shows the user the library of pre-selected video drills and tutorials when they ask to see the video list or library.',
+    parameters: {
+        type: 'object',
+        properties: {},
+    },
     }
 };
 
 const createNutritionPlanFunction = {
     type: 'function',
     function: {
-        name: 'createNutritionPlan',
-        description: 'Creates a personalized nutrition plan when a user asks for a diet plan, meal plan, weekly meal plan, daily meals, or any structured list of what to eat. Use this function whenever the user requests meal planning, nutrition planning, or dietary guidance.',
-        parameters: {
-            type: 'object',
-            properties: {
-                goal: {
-                    type: 'string',
-                    description: 'The specific dietary goal, e.g., "weight loss", "muscle gain", "race day prep". Inferred from the user query.'
-                },
-                dietaryRestrictions: {
-                    type: 'string',
-                    description: 'Any specific dietary restrictions or preferences the user mentions, e.g., "vegetarian", "gluten-free", "allergic to nuts".'
-                },
-                duration: {
-                    type: 'string',
-                    description: 'The duration of the meal plan, e.g., "one day", "for the week". Defaults to a single day if not specified.'
-                }
+    name: 'createNutritionPlan',
+    description: 'Creates a personalized nutrition plan when a user asks for a diet plan, meal plan, weekly meal plan, daily meals, or any structured list of what to eat. Use this function whenever the user requests meal planning, nutrition planning, or dietary guidance.',
+    parameters: {
+        type: 'object',
+        properties: {
+            goal: {
+                type: 'string',
+                description: 'The specific dietary goal, e.g., "weight loss", "muscle gain", "race day prep". Inferred from the user query.'
             },
-            required: ['goal', 'duration'],
+            dietaryRestrictions: {
+                type: 'string',
+                description: 'Any specific dietary restrictions or preferences the user mentions, e.g., "vegetarian", "gluten-free", "allergic to nuts".'
+            },
+            duration: {
+                type: 'string',
+                description: 'The duration of the meal plan, e.g., "one day", "for the week". Defaults to a single day if not specified.'
+            }
         },
+        required: ['goal', 'duration'],
+    },
     }
 };
 
@@ -226,41 +226,41 @@ const App: React.FC = () => {
 
   useEffect(() => {
     try {
-      // Check for new key first, then fallback to old key for migration
-      let storedUserJson = localStorage.getItem('soulGoodFitnessUser');
-      if (!storedUserJson) {
-        // Migrate from old key
-        storedUserJson = localStorage.getItem('soulGoodBoxingUser');
-        if (storedUserJson) {
-          // Copy to new key and remove old key
-          localStorage.setItem('soulGoodFitnessUser', storedUserJson);
-          localStorage.removeItem('soulGoodBoxingUser');
-          console.log('Migrated user data from soulGoodBoxingUser to soulGoodFitnessUser');
-        }
-      }
-      
+    // Check for new key first, then fallback to old key for migration
+    let storedUserJson = localStorage.getItem('soulGoodFitnessUser');
+    if (!storedUserJson) {
+      // Migrate from old key
+      storedUserJson = localStorage.getItem('soulGoodBoxingUser');
       if (storedUserJson) {
-        const user: User = JSON.parse(storedUserJson);
-        const storedMessages = localStorage.getItem(`chatHistory_${user.id}`);
-        const storedJournal = localStorage.getItem(`journalEntries_${user.id}`);
+        // Copy to new key and remove old key
+        localStorage.setItem('soulGoodFitnessUser', storedUserJson);
+        localStorage.removeItem('soulGoodBoxingUser');
+        console.log('Migrated user data from soulGoodBoxingUser to soulGoodFitnessUser');
+      }
+    }
+    
+    if (storedUserJson) {
+      const user: User = JSON.parse(storedUserJson);
+      const storedMessages = localStorage.getItem(`chatHistory_${user.id}`);
+      const storedJournal = localStorage.getItem(`journalEntries_${user.id}`);
 
-        if (storedJournal) {
+      if (storedJournal) {
           try {
-            setJournalEntries(JSON.parse(storedJournal));
+          setJournalEntries(JSON.parse(storedJournal));
           } catch (err) {
             console.error('Failed to parse journal entries:', err);
             setJournalEntries([]);
           }
-        }
+      }
 
-        if (storedMessages) {
+      if (storedMessages) {
           try {
-            const allMessages: Message[] = JSON.parse(storedMessages);
-            const recentMessages = pruneHistoryToLastNCompletedWorkouts(allMessages, 14);
+        const allMessages: Message[] = JSON.parse(storedMessages);
+        const recentMessages = pruneHistoryToLastNCompletedWorkouts(allMessages, 14);
 
-            setMessages(recentMessages);
-            setCurrentUser(user);
-            initChat(recentMessages, user.profile);
+        setMessages(recentMessages);
+        setCurrentUser(user);
+        initChat(recentMessages, user.profile);
           } catch (err) {
             console.error('Failed to parse messages:', err);
             setCurrentUser(user);
@@ -279,12 +279,12 @@ const App: React.FC = () => {
               initChat([welcomeMessage], user.profile);
             }
           }
-        } else {
-          // This case handles a user who logged in but didn't finish onboarding
-          setCurrentUser(user);
+      } else {
+        // This case handles a user who logged in but didn't finish onboarding
+        setCurrentUser(user);
           if (!user.profile) {
             setIsOnboarding(true);
-            setMessages([]);
+        setMessages([]);
           } else {
             // User has profile but no messages - add welcome message
             const welcomeMessage: Message = {
@@ -497,7 +497,7 @@ const App: React.FC = () => {
         // Emphasize equipment usage
         if (userInfo.equipment && userInfo.equipment.toLowerCase() !== 'none' && userInfo.equipment.toLowerCase() !== 'bodyweight only') {
             prompt += `**🔑 EQUIPMENT REQUIREMENT: The user has the following equipment available: "${userInfo.equipment}". You MUST incorporate this equipment into the workout. Design exercises that specifically use this equipment to maximize effectiveness. Do not create a bodyweight-only workout when equipment is available.**\n\n`;
-        } else {
+    } else {
             prompt += `**📝 NOTE: This is a bodyweight-only workout. Use creative bodyweight exercises.**\n\n`;
         }
     } else {
@@ -524,28 +524,46 @@ const App: React.FC = () => {
         if (lastWorkoutMessage.feedback) {
             prompt += `- Last Workout Feedback: "${lastWorkoutMessage.feedback}"\n`;
         }
+        
+        // Safely extract exercises with error handling
+        let uniqueLastExercises: string[] = [];
+        try {
+            if (lastWorkoutMessage.workoutPlan.workout?.phases) {
         const lastWorkoutExercises = lastWorkoutMessage.workoutPlan.workout.phases
-            .flatMap(phase => phase.exercises.map(ex => ex.name.toLowerCase()))
-            .filter(name => name !== 'rest'); // Don't include 'Rest' in the list
-        const uniqueLastExercises = [...new Set(lastWorkoutExercises)];
-        prompt += `\n## 🚫 EXERCISES TO AVOID (used in last workout):\n`;
+                    .flatMap(phase => {
+                        if (!phase?.exercises) return [];
+                        return phase.exercises
+                            .map(ex => ex?.name)
+                            .filter(name => name && typeof name === 'string')
+                            .map(name => name.toLowerCase())
+                            .filter(name => name !== 'rest');
+                    });
+                uniqueLastExercises = [...new Set(lastWorkoutExercises)];
+            }
+        } catch (error) {
+            console.error("Error extracting last workout exercises:", error);
+            uniqueLastExercises = [];
+        }
+        
+        if (uniqueLastExercises.length > 0) {
+        prompt += `\n## 🚫 EXERCISES TO COMPLETELY AVOID (used in last workout):\n`;
         prompt += `${uniqueLastExercises.join(', ')}\n\n`;
-        prompt += `**🔴 CRITICAL VARIETY RULE (NON-NEGOTIABLE):**\n`;
-        prompt += `You MUST avoid using AT LEAST 90% of these exercises. That means if there were 20 exercises, you can ONLY repeat 2 at most.\n\n`;
-        prompt += `**This applies to EVERY phase:**\n`;
-        prompt += `- ✨ Warm-up: Use COMPLETELY different dynamic movements\n`;
-        prompt += `- 💪 Main Workout: Use ENTIRELY different exercises and variations\n`;
-        prompt += `- 🎯 Core Finisher: Use DIFFERENT core exercises\n`;
-        prompt += `- 🧘 Cool-down: Use DIFFERENT stretches\n\n`;
-        prompt += `**Examples of good variety:**\n`;
-        prompt += `- Instead of "Push-ups" → Try: Diamond Push-ups, Decline Push-ups, Archer Push-ups, Pike Push-ups, Plyometric Push-ups, Sphinx Push-ups, T Push-ups\n`;
-        prompt += `- Instead of "Squats" → Try: Jump Squats, Bulgarian Split Squats, Pistol Squats, Sumo Squats, Squat Pulses, Cossack Squats, Sissy Squats\n`;
-        prompt += `- Instead of "Plank" → Try: Side Plank, Plank Jacks, Plank Shoulder Taps, Plank Up-Downs, Walking Plank, Plank with Leg Lifts, Spiderman Plank\n`;
-        prompt += `- Instead of "Lunges" → Try: Reverse Lunges, Curtsy Lunges, Jumping Lunges, Walking Lunges, Lateral Lunges, Clock Lunges, Slider Lunges\n`;
-        prompt += `- Instead of "Arm Circles" → Try: Arm Swings, Windmills, Shoulder Rolls, Arm Crossovers, Dynamic Arm Reaches\n`;
-        prompt += `- Instead of "Jumping Jacks" → Try: Star Jumps, Seal Jacks, Plank Jacks, Split Jacks, Cross Jacks\n\n`;
-        prompt += `**Remember: The user wants to see NEW exercises every time. Surprise and delight them with creative variations!**\n\n`;
-
+        prompt += `**🔴 ABSOLUTE ZERO REPETITION RULE (NON-NEGOTIABLE):**\n`;
+        prompt += `DO NOT use ANY of these exercises or their variations. This means:\n`;
+        prompt += `- If last workout had "Push-ups", you CANNOT use ANY push-up variation (diamond, wide, decline, etc.)\n`;
+        prompt += `- If last workout had "Squats", you CANNOT use ANY squat variation (jump, sumo, pistol, etc.)\n`;
+        prompt += `- If last workout had "Plank", you CANNOT use ANY plank variation (side, shoulder taps, etc.)\n`;
+        prompt += `- If last workout had "Lunges", you CANNOT use ANY lunge variation (reverse, walking, jumping, etc.)\n\n`;
+        prompt += `**This applies to ALL phases - create an ENTIRELY NEW workout with 100% different exercises.**\n\n`;
+        prompt += `**Examples of COMPLETELY DIFFERENT alternatives:**\n`;
+        prompt += `- Last workout had "Push-ups"? → Use: Dips, Bear Crawls, Burpees, Mountain Climbers, Inchworms, Commandos (NOT any push-up variation)\n`;
+        prompt += `- Last workout had "Squats"? → Use: Deadlifts, Step-ups, Box Jumps, Wall Sits, Glute Bridges, Single-leg RDLs (NOT any squat variation)\n`;
+        prompt += `- Last workout had "Plank"? → Use: Dead Bug, Hollow Body Hold, Bird Dog, Russian Twists, V-ups, Leg Raises (NOT any plank variation)\n`;
+        prompt += `- Last workout had "Lunges"? → Use: Single-leg Deadlifts, Cossack Squats, Skater Hops, Lateral Bounds, Side Shuffles (NOT any lunge variation)\n`;
+        prompt += `- Last workout had "Arm Circles"? → Use: Band Pull-Aparts, Scapular Push-ups, YTWs, Overhead Reaches, Arm Haulers (NOT any circle variation)\n`;
+        prompt += `- Last workout had "Jumping Jacks"? → Use: High Knees, Butt Kicks, Jumping Rope, Skater Jumps, Tuck Jumps (NOT any jack variation)\n\n`;
+        prompt += `**Remember: Use COMPLETELY DIFFERENT movement patterns. If the base exercise was used before, choose an entirely different exercise category!**\n\n`;
+        }
     } else {
         prompt += `This is the user's first workout. Create a diverse and exciting plan based on their profile.\n`;
     }
@@ -556,8 +574,10 @@ const App: React.FC = () => {
 
     // Fun & Challenge Requirements
     prompt += '\n## Workout Requirements\n';
+    prompt += '- 🔴 **SETS MUST HAVE EXACTLY 4 EXERCISES**: Every workout set contains EXACTLY 4 exercises, not 3, not 5, not 6 - ONLY 4. This is mandatory.\n';
     prompt += '- ✨ **CREATIVITY IS KEY**: Use unique, creative exercise names and playful challenges. Avoid generic names!\n';
     prompt += '- 🎨 **MAXIMIZE VARIETY**: Every workout should feel fresh and different. Use different angles, tempos, ranges of motion, and movement patterns\n';
+    prompt += '- 🚫 **NO EXERCISE REPETITION WITHIN WORKOUT**: Each exercise must be UNIQUE across all phases. If you use "Push-ups" in the warm-up, you CANNOT use any push-up variation in the main workout or core finisher. Each movement pattern should only appear ONCE in the entire workout.\n';
     prompt += '- 💪 Make it CHALLENGING - push the user to their next level with progressive difficulty\n';
     prompt += '- 🔥 Include variety in intensity - mix high-energy bursts with focused strength work\n';
     prompt += '- 🎯 Use motivational, energetic language that makes exercises feel exciting\n';
@@ -567,11 +587,45 @@ const App: React.FC = () => {
 
     // Instructions and Constraints Section
     prompt += '\n## Workout Structure\n';
-    prompt += `Create a ${duration || '30-minute'} workout with 4 phases:\n`;
-    prompt += '1. **Warm-up**: 3-4 dynamic exercises (30s-1min each). **🔥 VARIETY IS MANDATORY**: NEVER use the same warm-up exercises twice in a row. Examples: dynamic lunges with twist, inchworms, world\'s greatest stretch, leg swings, hip circles, cat-cow flow, arm swings, torso rotations, lateral shuffles, high knees with arm reach, butt kicks with shoulder rolls, etc. Get creative!\n';
-    prompt += '2. **Main Workout Sets**: Create 2-3 different sets of 3-4 exercises each (45s-1min each) + Rest (15s) after each exercise. For each set, add "Repeat this set X times" in the last exercise notes. Calculate X based on duration: 15min=1x, 20min=2x, 30min=3x, 45min=3x, 60min=3x, 90min=3x, 120min=3x, 180min=3x, 240min=3x, 360min=3x.\n\n**IMPORTANT: Maximum 3 repetitions per set - cap at 3x regardless of duration!**\n\n**MANDATORY EXAMPLE FORMAT:**\nSet 1: Exercise 1 (45 seconds), Exercise 2 (45 seconds), Exercise 3 (45 seconds), Exercise 4 (45 seconds, notes: "Repeat this set 3 times")\nSet 2: Exercise 5 (45 seconds), Exercise 6 (45 seconds), Exercise 7 (45 seconds, notes: "Repeat this set 3 times")\nSet 3: Exercise 8 (45 seconds), Exercise 9 (45 seconds), Exercise 10 (45 seconds, notes: "Repeat this set 3 times")\n\n**CRITICAL: Every set must have "Repeat this set X times" in the last exercise notes - this is REQUIRED!**\n';
-    prompt += '3. **Core Finisher**: 3-4 core exercises (30-45s each)\n';
-    prompt += '4. **Cool-down**: 3-4 static stretches (30s each)\n\n';
+    prompt += `Create a ${duration || '30-minute'} workout with 4 phases:\n\n`;
+    prompt += `**🔴 CRITICAL RULE: NO EXERCISE OR MOVEMENT PATTERN CAN REPEAT ACROSS PHASES!**\n`;
+    prompt += `Each phase must use COMPLETELY DIFFERENT exercises. If warm-up includes lunges, main workout CANNOT have any lunge variations. If main workout has planks, core finisher CANNOT have any plank variations. This ensures maximum variety and prevents boredom.\n\n`;
+    prompt += '1. **Warm-up**: 3-4 dynamic exercises (30s-1min each). Use movements like: dynamic lunges with twist, inchworms, world\'s greatest stretch, leg swings, hip circles, cat-cow flow, arm swings, torso rotations, lateral shuffles, high knees with arm reach, butt kicks with shoulder rolls, etc.\n';
+    prompt += '2. **Main Workout Sets**: Create 2-3 SEPARATE sets. Each set has EXACTLY 4 EXERCISES (not counting Rest).\n\n';
+    prompt += '**🔴 NON-NEGOTIABLE SET STRUCTURE:**\n';
+    prompt += '- Each SET = EXACTLY 4 ACTUAL EXERCISES (NOT 3, NOT 5, NOT 6, NOT 8 - ONLY 4)\n';
+    prompt += '- ⚠️ IMPORTANT: "Rest" is NOT an exercise! Do NOT count Rest in your 4 exercises.\n';
+    prompt += '- Rest periods go BETWEEN exercises automatically - you don\'t need to add them as separate exercises\n';
+    prompt += '- Count ONLY actual exercises: 1, 2, 3, 4 - then STOP and start a new set\n';
+    prompt += '- Each exercise = 45 seconds work\n';
+    prompt += '- Rest happens automatically between exercises (15 seconds)\n';
+    prompt += '- The 4th (LAST) exercise in EVERY set MUST have notes: "Repeat this set X times"\n';
+    prompt += '- Calculate X: 15min=1x, 20min=2x, 30min=3x (MAX 3x for any duration)\n\n';
+    prompt += '**EXACT FORMAT YOU MUST FOLLOW:**\n';
+    prompt += '```\n';
+    prompt += 'Set 1 has 4 EXERCISES (Rest is automatic, not counted):\n';
+    prompt += '  1. Exercise 1 (45 seconds) ← First exercise\n';
+    prompt += '  2. Rest (15 seconds) ← Automatic, not counted\n';
+    prompt += '  3. Exercise 2 (45 seconds) ← Second exercise\n';
+    prompt += '  4. Rest (15 seconds) ← Automatic, not counted\n';
+    prompt += '  5. Exercise 3 (45 seconds) ← Third exercise\n';
+    prompt += '  6. Rest (15 seconds) ← Automatic, not counted\n';
+    prompt += '  7. Exercise 4 (45 seconds, notes: "Repeat this set 3 times") ← Fourth exercise\n';
+    prompt += '  8. Rest (30 seconds) ← Between-set rest\n\n';
+    prompt += 'Set 2 has 4 EXERCISES (Rest is automatic, not counted):\n';
+    prompt += '  1. Exercise 5 (45 seconds) ← First exercise\n';
+    prompt += '  2. Rest (15 seconds) ← Automatic, not counted\n';
+    prompt += '  3. Exercise 6 (45 seconds) ← Second exercise\n';
+    prompt += '  4. Rest (15 seconds) ← Automatic, not counted\n';
+    prompt += '  5. Exercise 7 (45 seconds) ← Third exercise\n';
+    prompt += '  6. Rest (15 seconds) ← Automatic, not counted\n';
+    prompt += '  7. Exercise 8 (45 seconds, notes: "Repeat this set 3 times") ← Fourth exercise\n';
+    prompt += '  8. Rest (30 seconds) ← Between-set rest\n';
+    prompt += '```\n\n';
+    prompt += '**❌ WRONG:** Counting Rest as an exercise (that would be 5 items per set)\n';
+    prompt += '**✅ CORRECT:** 4 exercises + Rest in between (Rest is automatic, not an exercise)\n\n';
+    prompt += '3. **Core Finisher**: 3-4 core exercises (30-45s each). Use DIFFERENT core movements than what appeared in warm-up or main workout (e.g., if main workout had mountain climbers, use Russian twists, dead bugs, or bicycle crunches here instead).\n';
+    prompt += '4. **Cool-down**: 3-4 static stretches (30s each). Use DIFFERENT stretches than what appeared earlier (e.g., quad stretch, hamstring stretch, shoulder stretch, spinal twist, child\'s pose, etc.).\n\n';
     prompt += '## Key Requirements\n';
     prompt += '- All exercises need `duration` string (e.g., "45 seconds")\n';
     prompt += '- **MANDATORY: Each set\'s last exercise must have notes: "Repeat this set X times"**\n';
@@ -668,10 +722,10 @@ const App: React.FC = () => {
           title: `${cleanTopic} - Tutorial`,
           watchUrl: searchUrl
         };
-        
+
       } catch (error) {
         console.error("Error generating video search:", error);
-        return null;
+          return null;
       }
   }, []);
 
@@ -711,13 +765,13 @@ const App: React.FC = () => {
     ];
     
     try {
-      const requestBody = {
-        model: "gpt-4o-mini",
-        messages: [
+    const requestBody = {
+      model: "gpt-4o-mini",
+      messages: [
           { role: 'system', content: systemMessage },
           ...allMessages
-        ],
-        temperature: 0.9,
+      ],
+      temperature: 0.9,
         max_tokens: 1500,
         tools: [
           createWorkoutPlanFunction,
@@ -729,32 +783,32 @@ const App: React.FC = () => {
       };
       
       console.log("sendDirectApiCall: About to fetch from:", '/api-proxy/v1/chat/completions');
-      console.log("sendDirectApiCall: Request body:", JSON.stringify(requestBody, null, 2));
-      
-      const response = await fetch('/api-proxy/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      });
+    console.log("sendDirectApiCall: Request body:", JSON.stringify(requestBody, null, 2));
+    
+    const response = await fetch('/api-proxy/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    });
 
-      console.log("sendDirectApiCall: Response status:", response.status);
-      console.log("sendDirectApiCall: Response headers:", Object.fromEntries(response.headers.entries()));
+    console.log("sendDirectApiCall: Response status:", response.status);
+    console.log("sendDirectApiCall: Response headers:", Object.fromEntries(response.headers.entries()));
 
-      if (!response.ok) {
-        const errorText = await response.text();
+    if (!response.ok) {
+      const errorText = await response.text();
         console.error("sendDirectApiCall: API error response:", errorText);
         console.error("sendDirectApiCall: Response status:", response.status);
         throw new Error(`API call failed: ${response.status} - ${errorText}`);
-      }
+    }
 
-      const result = await response.json();
+    const result = await response.json();
       console.log("sendDirectApiCall: API result:", JSON.stringify(result, null, 2));
       
       console.log("sendDirectApiCall: Full API result:", JSON.stringify(result, null, 2));
       
-      return result;
+    return result;
     } catch (error) {
       console.error("sendDirectApiCall: Error:", error);
       throw error;
@@ -802,16 +856,6 @@ const App: React.FC = () => {
         console.log("sendMessage: Full OpenAI response:", JSON.stringify(response, null, 2));
         console.log("sendMessage: Response choices:", response.choices);
         console.log("sendMessage: Response message:", response.choices?.[0]?.message);
-        
-        // Check if this is a duplicate request
-        const lastMessage = messages[messages.length - 1];
-        console.log("sendMessage: Last message:", lastMessage);
-        console.log("sendMessage: Current text:", text);
-        console.log("sendMessage: Current sender:", sender);
-        if (lastMessage && lastMessage.text === text && lastMessage.sender === sender) {
-          console.warn("sendMessage: Duplicate message detected, skipping");
-          return;
-        }
         
         // Add a timestamp to track request timing
         const requestId = Date.now() + Math.random();
