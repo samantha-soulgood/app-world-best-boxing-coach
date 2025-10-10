@@ -557,10 +557,11 @@ const App: React.FC = () => {
     if (userInfo?.equipment && userInfo.equipment.toLowerCase() !== 'none' && userInfo.equipment.toLowerCase() !== 'bodyweight only') {
         prompt += `- **EQUIPMENT USAGE: Actively use "${userInfo.equipment}" in at least 60-70% of exercises. Be specific about how to use the equipment (e.g., "Dumbbell Goblet Squats", "Resistance Band Rows", "Jump Rope Double-Unders", etc.)**\n`;
     }
-    prompt += '- **BOXING FOCUS: Include 1-2 boxing exercises in each main workout set. Vary the combinations: jab-cross, hook-uppercut, slip-and-counter, footwork drills, shadowboxing with tempo changes, defensive moves, etc.**\n';
+    prompt += '- **BOXING FOCUS: Include popular 1-2 boxing drills in each main workout set.\n';
     prompt += '- **INJURY ADAPTATION**: Carefully modify or completely avoid exercises that stress injured areas\n';
     prompt += '- **VARIETY EMPHASIS**: Aim for 80%+ NEW exercises compared to the last workout. Only keep 1-2 core movements if absolutely necessary\n';
     prompt += '- **PROGRESSION**: Based on RPE/feedback, adjust intensity, complexity, or volume appropriately\n';
+    prompt += '- **MANDATORY: Provide description on how to perform the exercises in the workout plan\n';
 
 
     // Use OpenAI API call with JSON mode
@@ -618,532 +619,38 @@ const App: React.FC = () => {
   }, []);
 
   const handleFindVideo = useCallback(async (topic: string): Promise<Video | null> => {
-      // Use OpenAI API instead of Google Gemini
       try {
-        const prompt = `Find a high-quality, embeddable YouTube video tutorial for fitness ${topic}, preferably taught by a female instructor. Prioritize reputable trainers and coaches.`;
-
-        // Use OpenAI API call
-        const requestBody = {
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: SAMMI_PERSONA
-            },
-            {
-              role: "user", 
-              content: prompt
-            }
-          ],
-          temperature: 0.9,
-          max_tokens: 500
-        };
-
-        const response = await fetch('/api-proxy/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-          throw new Error(`API call failed: ${response.status}`);
-        }
-
-        const result = await response.json();
-        const responseText = result.choices?.[0]?.message?.content;
+        console.log("handleFindVideo: Generating YouTube search for:", topic);
         
-        // Return a curated video based on the topic
-        console.log("Video search requested for:", topic);
-        console.log("AI response:", responseText);
+        // Clean up the exercise name for better search results
+        const cleanTopic = topic
+          .replace(/\([^)]*\)/g, '') // Remove parenthetical notes
+          .replace(/\d+\s*(seconds?|minutes?|reps?)/gi, '') // Remove duration/rep info
+          .trim();
         
-        // Curated list of real YouTube fitness videos with proper matching
-        const videoLibrary = {
-          // Basic exercises with correct video IDs
-          'squat': {
-            id: 'YaXPRqUwItQ',
-            title: 'How to do a Perfect Squat - Proper Form Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=xuf1czJv-XI&list=PLTSValX_cZ0AtR6d_LnI6FaRYw0qFNFhR'
-          },
-          'squats': {
-            id: 'YaXPRqUwItQ',
-            title: 'How to do a Perfect Squat - Proper Form Tutorial',
-            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
-          },
-          'pushup': {
-            id: 'IODxDxX7oi4',
-            title: 'How to do Push-Ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
-          },
-          'push-ups': {
-            id: 'IODxDxX7oi4',
-            title: 'How to do Push-Ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
-          },
-          'push ups': {
-            id: 'IODxDxX7oi4',
-            title: 'How to do Push-Ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
-          },
-          'plank': {
-            id: 'ASdvN_XEl_c',
-            title: 'How to do a Plank - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=ASdvN_XEl_c'
-          },
-          'lunge': {
-            id: 'QOVaHwm-Q6U',
-            title: 'How to do Lunges - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
-          },
-          'lunges': {
-            id: 'QOVaHwm-Q6U',
-            title: 'How to do Lunges - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
-          },
-          'burpee': {
-            id: 'TU8QYVCh0TI',
-            title: 'How to do Burpees - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
-          },
-          'burpees': {
-            id: 'TU8QYVCh0TI',
-            title: 'How to do Burpees - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
-          },
-          'jumping jack': {
-            id: 'iSSAk4XCsRA',
-            title: 'How to do Jumping Jacks - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA'
-          },
-          'jumping jacks': {
-            id: 'iSSAk4XCsRA',
-            title: 'How to do Jumping Jacks - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA'
-          },
-          'mountain climber': {
-            id: 'nmwgirgXLYM',
-            title: 'How to do Mountain Climbers - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=nmwgirgXLYM'
-          },
-          'mountain climbers': {
-            id: 'nmwgirgXLYM',
-            title: 'How to do Mountain Climbers - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=nmwgirgXLYM'
-          },
-          // Core exercises
-          'crunch': {
-            id: 'Xyd_fa5zoEU',
-            title: 'How to do Crunches - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=Xyd_fa5zoEU'
-          },
-          'crunches': {
-            id: 'Xyd_fa5zoEU',
-            title: 'How to do Crunches - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=Xyd_fa5zoEU'
-          },
-          'sit up': {
-            id: '1fbU_MkV7NE',
-            title: 'How to do Sit-ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
-          },
-          'sit-ups': {
-            id: '1fbU_MkV7NE',
-            title: 'How to do Sit-ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
-          },
-          'sit ups': {
-            id: '1fbU_MkV7NE',
-            title: 'How to do Sit-ups - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
-          },
-          'russian twist': {
-            id: 'wkD8rjkodUI',
-            title: 'Russian Twists - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=wkD8rjkodUI'
-          },
-          'russian twists': {
-            id: 'wkD8rjkodUI',
-            title: 'Russian Twists - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=wkD8rjkodUI'
-          },
-          'bicycle crunch': {
-            id: '9AjkUyX0rVw',
-            title: 'Bicycle Crunches - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=9AjkUyX0rVw'
-          },
-          'bicycle crunches': {
-            id: '9AjkUyX0rVw',
-            title: 'Bicycle Crunches - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=9AjkUyX0rVw'
-          },
-          'leg raise': {
-            id: 'JB2oyawG9KI',
-            title: 'Leg Raises - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=JB2oyawG9KI'
-          },
-          'leg raises': {
-            id: 'JB2oyawG9KI',
-            title: 'Leg Raises - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=JB2oyawG9KI'
-          },
-          // Cardio exercises
-          'high knees': {
-            id: 'ml6cT4AZdqI',
-            title: 'High Knees Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
-          },
-          'butt kicks': {
-            id: 'ml6cT4AZdqI',
-            title: 'Butt Kicks Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
-          },
-          'butt kick': {
-            id: 'ml6cT4AZdqI',
-            title: 'Butt Kicks Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
-          },
-          'marching': {
-            id: 'ml6cT4AZdqI',
-            title: 'Marching in Place',
-            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
-          },
-          'march': {
-            id: 'ml6cT4AZdqI',
-            title: 'Marching in Place',
-            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
-          },
-          // Upper body exercises
-          'tricep dip': {
-            id: '6kALZikXxLc',
-            title: 'Tricep Dips - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
-          },
-          'tricep dips': {
-            id: '6kALZikXxLc',
-            title: 'Tricep Dips - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
-          },
-          'dip': {
-            id: '6kALZikXxLc',
-            title: 'Tricep Dips - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
-          },
-          'dips': {
-            id: '6kALZikXxLc',
-            title: 'Tricep Dips - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
-          },
-          'wall sit': {
-            id: 'y-wV4Venusw',
-            title: 'Wall Sit - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=y-wV4Venusw'
-          },
-          'wall sits': {
-            id: 'y-wV4Venusw',
-            title: 'Wall Sit - Proper Form',
-            watchUrl: 'https://www.youtube.com/watch?v=y-wV4Venusw'
-          },
-          // Stretching and mobility
-          'stretch': {
-            id: 'g_tea8ZNk5A',
-            title: 'Full Body Stretching Routine',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'stretching': {
-            id: 'g_tea8ZNk5A',
-            title: 'Full Body Stretching Routine',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'warm up': {
-            id: 'g_tea8ZNk5A',
-            title: 'Full Body Stretching Routine',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'hip circle': {
-            id: 'g_tea8ZNk5A',
-            title: 'Hip Circles - Mobility Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'hip circles': {
-            id: 'g_tea8ZNk5A',
-            title: 'Hip Circles - Mobility Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'arm circle': {
-            id: 'g_tea8ZNk5A',
-            title: 'Arm Circles - Warm-up Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'arm circles': {
-            id: 'g_tea8ZNk5A',
-            title: 'Arm Circles - Warm-up Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'shoulder roll': {
-            id: 'g_tea8ZNk5A',
-            title: 'Shoulder Rolls - Mobility Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'shoulder rolls': {
-            id: 'g_tea8ZNk5A',
-            title: 'Shoulder Rolls - Mobility Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'neck roll': {
-            id: 'g_tea8ZNk5A',
-            title: 'Neck Rolls - Mobility Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          'neck rolls': {
-            id: 'g_tea8ZNk5A',
-            title: 'Neck Rolls - Mobility Exercise',
-            watchUrl: 'https://www.youtube.com/watch?v=g_tea8ZNk5A'
-          },
-          // Boxing exercises - 20 most common drills with proper video IDs
-          // Basic punches
-          'jab': {
-            id: 'hJbRpHZr_d0',
-            title: 'How to Throw a Perfect Jab - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
-          },
-          'jabs': {
-            id: 'hJbRpHZr_d0',
-            title: 'How to Throw a Perfect Jab - Boxing Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
-          },
-          'cross': {
-            id: 'ml6cT4AZdqI',
-            title: 'How to Throw a Cross - Boxing Fundamentals',
-            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
-          },
-          'hook': {
-            id: 'TU8QYVCh0TI',
-            title: 'How to Throw a Hook - Boxing Technique',
-            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
-          },
-          'hooks': {
-            id: 'TU8QYVCh0TI',
-            title: 'How to Throw a Hook - Boxing Technique',
-            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
-          },
-          'uppercut': {
-            id: 'QOVaHwm-Q6U',
-            title: 'How to Throw an Uppercut - Boxing Power Punch',
-            watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
-          },
-          'uppercuts': {
-            id: 'QOVaHwm-Q6U',
-            title: 'How to Throw an Uppercut - Boxing Power Punch',
-            watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
-          },
-          // Combinations
-          'jab cross': {
-            id: 'YaXPRqUwItQ',
-            title: 'Jab-Cross Combination - Boxing Fundamentals',
-            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
-          },
-          'jab-cross': {
-            id: 'YaXPRqUwItQ',
-            title: 'Jab-Cross Combination - Boxing Fundamentals',
-            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
-          },
-          'jab hook cross': {
-            id: 'IODxDxX7oi4',
-            title: 'Jab-Hook-Cross Combination - Boxing Combo',
-            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
-          },
-          // Footwork and stance
-          'boxing stance': {
-            id: 'ASdvN_XEl_c',
-            title: 'Boxing Stance - Proper Fighting Position',
-            watchUrl: 'https://www.youtube.com/watch?v=ASdvN_XEl_c'
-          },
-          'boxing footwork': {
-            id: 'nmwgirgXLYM',
-            title: 'Boxing Footwork Drills - Movement Basics',
-            watchUrl: 'https://www.youtube.com/watch?v=nmwgirgXLYM'
-          },
-          'pivoting': {
-            id: 'Xyd_fa5zoEU',
-            title: 'Boxing Pivoting - Angle Changes',
-            watchUrl: 'https://www.youtube.com/watch?v=Xyd_fa5zoEU'
-          },
-          // Shadowboxing and bag work
-          'shadowboxing': {
-            id: '1fbU_MkV7NE',
-            title: 'Shadowboxing Basics - Boxing Training',
-            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
-          },
-          'shadow boxing': {
-            id: '1fbU_MkV7NE',
-            title: 'Shadowboxing Basics - Boxing Training',
-            watchUrl: 'https://www.youtube.com/watch?v=1fbU_MkV7NE'
-          },
-          'heavy bag': {
-            id: 'iSSAk4XCsRA',
-            title: 'Heavy Bag Workout - Boxing Power Training',
-            watchUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA'
-          },
-          'punching bag': {
-            id: 'iSSAk4XCsRA',
-            title: 'Heavy Bag Workout - Boxing Power Training',
-            watchUrl: 'https://www.youtube.com/watch?v=iSSAk4XCsRA'
-          },
-          'speed bag': {
-            id: 'wkD8rjkodUI',
-            title: 'Speed Bag Training - Boxing Rhythm',
-            watchUrl: 'https://www.youtube.com/watch?v=wkD8rjkodUI'
-          },
-          // Defensive moves
-          'slip': {
-            id: '9AjkUyX0rVw',
-            title: 'Boxing Slips - Defensive Movement',
-            watchUrl: 'https://www.youtube.com/watch?v=9AjkUyX0rVw'
-          },
-          'slipping': {
-            id: '9AjkUyX0rVw',
-            title: 'Boxing Slips - Defensive Movement',
-            watchUrl: 'https://www.youtube.com/watch?v=9AjkUyX0rVw'
-          },
-          'bob and weave': {
-            id: 'JB2oyawG9KI',
-            title: 'Bob and Weave - Boxing Defense',
-            watchUrl: 'https://www.youtube.com/watch?v=JB2oyawG9KI'
-          },
-          'weaving': {
-            id: 'JB2oyawG9KI',
-            title: 'Bob and Weave - Boxing Defense',
-            watchUrl: 'https://www.youtube.com/watch?v=JB2oyawG9KI'
-          },
-          'parrying': {
-            id: '6kALZikXxLc',
-            title: 'Boxing Parrying - Hand Defense',
-            watchUrl: 'https://www.youtube.com/watch?v=6kALZikXxLc'
-          },
-          'blocking': {
-            id: 'y-wV4Venusw',
-            title: 'Boxing Blocks - Defensive Techniques',
-            watchUrl: 'https://www.youtube.com/watch?v=y-wV4Venusw'
-          },
-          // Advanced techniques
-          'counterpunch': {
-            id: 'hJbRpHZr_d0',
-            title: 'Counterpunching - Boxing Strategy',
-            watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
-          },
-          'counterpunching': {
-            id: 'hJbRpHZr_d0',
-            title: 'Counterpunching - Boxing Strategy',
-            watchUrl: 'https://www.youtube.com/watch?v=hJbRpHZr_d0'
-          },
-          'feinting': {
-            id: 'ml6cT4AZdqI',
-            title: 'Boxing Feints - Deceptive Movement',
-            watchUrl: 'https://www.youtube.com/watch?v=ml6cT4AZdqI'
-          },
-          'body shot': {
-            id: 'TU8QYVCh0TI',
-            title: 'Body Shots - Boxing Power Punches',
-            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
-          },
-          'body shots': {
-            id: 'TU8QYVCh0TI',
-            title: 'Body Shots - Boxing Power Punches',
-            watchUrl: 'https://www.youtube.com/watch?v=TU8QYVCh0TI'
-          },
-          // General boxing terms
-          'punching': {
-            id: 'QOVaHwm-Q6U',
-            title: 'Basic Punching Techniques - Boxing',
-            watchUrl: 'https://www.youtube.com/watch?v=QOVaHwm-Q6U'
-          },
-          'boxing': {
-            id: 'YaXPRqUwItQ',
-            title: 'Boxing Fundamentals - Complete Guide',
-            watchUrl: 'https://www.youtube.com/watch?v=YaXPRqUwItQ'
-          },
-          'sparring': {
-            id: 'IODxDxX7oi4',
-            title: 'Boxing Sparring - Controlled Practice',
-            watchUrl: 'https://www.youtube.com/watch?v=IODxDxX7oi4'
-          }
+        // Create a focused search query for exercise tutorials
+        // We'll search for: "exercise name how to proper form tutorial"
+        const searchQuery = `${cleanTopic} exercise how to proper form tutorial`;
+        const encodedQuery = encodeURIComponent(searchQuery);
+        
+        // Generate YouTube search URL
+        const searchUrl = `https://www.youtube.com/results?search_query=${encodedQuery}`;
+        
+        console.log("handleFindVideo: Generated search URL:", searchUrl);
+        console.log("handleFindVideo: Clean topic:", cleanTopic);
+        
+        // Return a Video object with the search URL
+        // When users click the video button, they'll see YouTube search results
+        // filtered for tutorials and proper form videos from reputable channels
+        return {
+          id: `search_${Date.now()}`,
+          title: `${cleanTopic} - Tutorial`,
+          watchUrl: searchUrl
         };
         
-        // Enhanced tag-based matching algorithm
-        const lowerTopic = topic.toLowerCase().trim();
-        let selectedVideo = null;
-        let bestMatch = '';
-        let matchScore = 0;
-        
-        console.log("handleFindVideo: Topic:", topic);
-        console.log("handleFindVideo: Lower topic:", lowerTopic);
-        
-        // Generate tags for the input topic
-        const topicTags = generateTopicTags(lowerTopic);
-        console.log("handleFindVideo: Generated topic tags:", topicTags);
-        
-        // Match against each video's tags
-        for (const [key, video] of Object.entries(videoLibrary)) {
-          const videoTags = video.tags || [];
-          let currentScore = 0;
-          
-          // Calculate tag-based matching score
-          for (const topicTag of topicTags) {
-            for (const videoTag of videoTags) {
-              // Exact tag match (highest priority)
-              if (topicTag === videoTag) {
-                currentScore += 10;
-              }
-              // Partial tag match
-              else if (topicTag.includes(videoTag) || videoTag.includes(topicTag)) {
-                currentScore += 5;
-              }
-              // Word-level match within tags
-              else {
-                const topicWords = topicTag.split(' ');
-                const videoWords = videoTag.split(' ');
-                for (const topicWord of topicWords) {
-                  for (const videoWord of videoWords) {
-                    if (topicWord === videoWord && topicWord.length > 2) {
-            currentScore += 2;
-                    }
-                  }
-                }
-              }
-            }
-          }
-          
-          // Bonus for exact key match
-          if (lowerTopic === key) {
-            currentScore += 15;
-          } else if (lowerTopic.includes(key)) {
-            currentScore += 8;
-          }
-          
-          console.log(`handleFindVideo: Video "${key}" score: ${currentScore} (tags: ${videoTags.join(', ')})`);
-          
-          if (currentScore > matchScore) {
-            matchScore = currentScore;
-            selectedVideo = video;
-            bestMatch = key;
-          }
-        }
-        
-        console.log("handleFindVideo: Best match:", bestMatch, "with score:", matchScore);
-        console.log("handleFindVideo: Selected video:", selectedVideo);
-        
-        // Only return video if we have a reasonable match (score >= 3)
-        if (matchScore >= 3) {
-        return selectedVideo;
-        } else {
-          console.log("handleFindVideo: No good match found, returning null");
-          return null;
-        }
-
       } catch (error) {
-          console.error("Error finding video with Google Search:", error);
-          return null;
+        console.error("Error generating video search:", error);
+        return null;
       }
   }, []);
 
@@ -1168,78 +675,68 @@ const App: React.FC = () => {
       systemMessage = `${systemMessage}\n\nUser: ${currentUser.name} (Profile not yet completed - create a general workout that can be adapted to their needs)`;
     }
     
-    console.log("sendDirectApiCall: System message includes profile:", systemMessage.includes("User Profile:"));
+    // Get last 8 messages (4 rounds of conversation) for context
+    const recentMessages = messages.slice(-8);
     
-    // Build conversation history - last 4 rounds (8 messages: 4 user + 4 assistant)
-    const conversationHistory = messages
-      .slice(-8) // Get last 8 messages (4 rounds)
-      .map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'assistant',
-        content: msg.text
-      }));
+    const conversationHistory = recentMessages.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.text
+    }));
     
-    console.log("sendDirectApiCall: Including conversation history:", conversationHistory.length, "messages");
+    // Add the current message
+    const allMessages = [
+      ...conversationHistory,
+      { role: 'user', content: text }
+    ];
     
-    const requestBody = {
-      model: "gpt-4o-mini",
-      // model: "llama-3.1-70b-versatile", // Groq model - much faster and free tier available
-      messages: [
-        {
-          role: "system",
-          content: systemMessage
+    try {
+      const requestBody = {
+        model: "gpt-4o-mini",
+        messages: [
+          { role: 'system', content: systemMessage },
+          ...allMessages
+        ],
+        temperature: 0.9,
+        max_tokens: 1500,
+        tools: [
+          createWorkoutPlanFunction,
+          findBoxingVideoFunction,
+          showVideoLibraryFunction,
+          createNutritionPlanFunction
+        ],
+        tool_choice: 'auto'
+      };
+      
+      const response = await fetch('/api-proxy/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        ...conversationHistory, // Include conversation context
-        {
-          role: "user", 
-          content: text
-        }
-      ],
-      temperature: 0.9,
-      max_tokens: 2048,
-      tools: [{
-        type: "function",
-        function: createWorkoutPlanFunction
-      }, {
-        type: "function", 
-        function: findBoxingVideoFunction
-      }, {
-        type: "function",
-        function: showVideoLibraryFunction
-      }, {
-        type: "function",
-        function: createNutritionPlanFunction
-      }]
-    };
-    
-    console.log("sendDirectApiCall: Request body:", JSON.stringify(requestBody, null, 2));
-    console.log("sendDirectApiCall: Available tools:", requestBody.tools.map(t => t.function.name));
-    console.log("sendDirectApiCall: Request URL:", '/api-proxy/v1/chat/completions');
-    console.log("sendDirectApiCall: Request headers:", {
-      'Content-Type': 'application/json',
-    });
-    
-    const response = await fetch('/api-proxy/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody)
-    });
+        body: JSON.stringify(requestBody)
+      });
 
-    console.log("sendDirectApiCall: Response status:", response.status);
-    console.log("sendDirectApiCall: Response headers:", Object.fromEntries(response.headers.entries()));
+      console.log("sendDirectApiCall: Response status:", response.status);
+      console.log("sendDirectApiCall: Response headers:", Object.fromEntries(response.headers.entries()));
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("sendDirectApiCall: Error response:", errorText);
-      throw new Error(`API call failed: ${response.status} ${response.statusText} - ${errorText}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("sendDirectApiCall: API error:", errorText);
+        throw new Error(`API call failed: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("sendDirectApiCall: API result:", JSON.stringify(result, null, 2));
+      
+      console.log("sendDirectApiCall: Full API result:", JSON.stringify(result, null, 2));
+      
+      return result;
+    } catch (error) {
+      console.error("sendDirectApiCall: Error:", error);
+      throw error;
     }
+  }, [currentUser, messages]);
 
-    const result = await response.json();
-    console.log("sendDirectApiCall: Success response:", result);
-    return result;
-  }, [currentUser]);
-  
+  // Send message handler
   const sendMessage = useCallback(async (text: string, sender: Sender) => {
     if (!text.trim()) return;
 
