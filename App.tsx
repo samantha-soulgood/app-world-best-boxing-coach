@@ -530,12 +530,21 @@ const App: React.FC = () => {
         const uniqueLastExercises = [...new Set(lastWorkoutExercises)];
         prompt += `\n## 🚫 EXERCISES TO AVOID (used in last workout):\n`;
         prompt += `${uniqueLastExercises.join(', ')}\n\n`;
-        prompt += `**CRITICAL VARIETY RULE: You MUST avoid using AT LEAST 80% of these exercises. Only repeat 1-2 exercises maximum if they are fundamental movements. Use completely different exercises, variations, angles, and movement patterns to keep the workout fresh and engaging. The user should feel like this is a brand new workout experience!**\n\n`;
+        prompt += `**🔴 CRITICAL VARIETY RULE (NON-NEGOTIABLE):**\n`;
+        prompt += `You MUST avoid using AT LEAST 90% of these exercises. That means if there were 20 exercises, you can ONLY repeat 2 at most.\n\n`;
+        prompt += `**This applies to EVERY phase:**\n`;
+        prompt += `- ✨ Warm-up: Use COMPLETELY different dynamic movements\n`;
+        prompt += `- 💪 Main Workout: Use ENTIRELY different exercises and variations\n`;
+        prompt += `- 🎯 Core Finisher: Use DIFFERENT core exercises\n`;
+        prompt += `- 🧘 Cool-down: Use DIFFERENT stretches\n\n`;
         prompt += `**Examples of good variety:**\n`;
-        prompt += `- Instead of "Push-ups" → Try: Diamond Push-ups, Decline Push-ups, Archer Push-ups, Pike Push-ups, or Plyometric Push-ups\n`;
-        prompt += `- Instead of "Squats" → Try: Jump Squats, Bulgarian Split Squats, Pistol Squats, Sumo Squats, or Squat Pulses\n`;
-        prompt += `- Instead of "Plank" → Try: Side Plank, Plank Jacks, Plank Shoulder Taps, Plank Up-Downs, or Walking Plank\n`;
-        prompt += `- Instead of "Lunges" → Try: Reverse Lunges, Curtsy Lunges, Jumping Lunges, Walking Lunges, or Lateral Lunges\n\n`;
+        prompt += `- Instead of "Push-ups" → Try: Diamond Push-ups, Decline Push-ups, Archer Push-ups, Pike Push-ups, Plyometric Push-ups, Sphinx Push-ups, T Push-ups\n`;
+        prompt += `- Instead of "Squats" → Try: Jump Squats, Bulgarian Split Squats, Pistol Squats, Sumo Squats, Squat Pulses, Cossack Squats, Sissy Squats\n`;
+        prompt += `- Instead of "Plank" → Try: Side Plank, Plank Jacks, Plank Shoulder Taps, Plank Up-Downs, Walking Plank, Plank with Leg Lifts, Spiderman Plank\n`;
+        prompt += `- Instead of "Lunges" → Try: Reverse Lunges, Curtsy Lunges, Jumping Lunges, Walking Lunges, Lateral Lunges, Clock Lunges, Slider Lunges\n`;
+        prompt += `- Instead of "Arm Circles" → Try: Arm Swings, Windmills, Shoulder Rolls, Arm Crossovers, Dynamic Arm Reaches\n`;
+        prompt += `- Instead of "Jumping Jacks" → Try: Star Jumps, Seal Jacks, Plank Jacks, Split Jacks, Cross Jacks\n\n`;
+        prompt += `**Remember: The user wants to see NEW exercises every time. Surprise and delight them with creative variations!**\n\n`;
 
     } else {
         prompt += `This is the user's first workout. Create a diverse and exciting plan based on their profile.\n`;
@@ -559,7 +568,7 @@ const App: React.FC = () => {
     // Instructions and Constraints Section
     prompt += '\n## Workout Structure\n';
     prompt += `Create a ${duration || '30-minute'} workout with 4 phases:\n`;
-    prompt += '1. **Warm-up**: 3-4 dynamic exercises (30s-1min each). **USE VARIETY**: Don\'t default to arm circles and jumping jacks every time. Try dynamic lunges, inchworms, hip openers, lateral movements, rotational exercises, etc.\n';
+    prompt += '1. **Warm-up**: 3-4 dynamic exercises (30s-1min each). **🔥 VARIETY IS MANDATORY**: NEVER use the same warm-up exercises twice in a row. Examples: dynamic lunges with twist, inchworms, world\'s greatest stretch, leg swings, hip circles, cat-cow flow, arm swings, torso rotations, lateral shuffles, high knees with arm reach, butt kicks with shoulder rolls, etc. Get creative!\n';
     prompt += '2. **Main Workout Sets**: Create 2-3 different sets of 3-4 exercises each (45s-1min each) + Rest (15s) after each exercise. For each set, add "Repeat this set X times" in the last exercise notes. Calculate X based on duration: 15min=1x, 20min=2x, 30min=3x, 45min=3x, 60min=3x, 90min=3x, 120min=3x, 180min=3x, 240min=3x, 360min=3x.\n\n**IMPORTANT: Maximum 3 repetitions per set - cap at 3x regardless of duration!**\n\n**MANDATORY EXAMPLE FORMAT:**\nSet 1: Exercise 1 (45 seconds), Exercise 2 (45 seconds), Exercise 3 (45 seconds), Exercise 4 (45 seconds, notes: "Repeat this set 3 times")\nSet 2: Exercise 5 (45 seconds), Exercise 6 (45 seconds), Exercise 7 (45 seconds, notes: "Repeat this set 3 times")\nSet 3: Exercise 8 (45 seconds), Exercise 9 (45 seconds), Exercise 10 (45 seconds, notes: "Repeat this set 3 times")\n\n**CRITICAL: Every set must have "Repeat this set X times" in the last exercise notes - this is REQUIRED!**\n';
     prompt += '3. **Core Finisher**: 3-4 core exercises (30-45s each)\n';
     prompt += '4. **Cool-down**: 3-4 static stretches (30s each)\n\n';
