@@ -109,69 +109,81 @@ const workoutSchema = {
 };
 
 const createWorkoutPlanFunction = {
-    name: 'createWorkoutPlan',
-    description: 'Creates a detailed, fitness-focused workout plan when the user asks for a workout, training session, or exercise routine. Use this function even if the user profile is incomplete - create a general workout that can be adapted. CRITICAL: Always extract and pass the user\'s specific workout request (e.g., "upper body", "lower body", "cardio", etc.) in the userRequest parameter.',
-    parameters: {
-        type: 'object',
-        properties: {
-            duration: {
-                type: 'string',
-                description: 'The desired total duration of the workout, e.g., "30 minutes". If not specified, use "30 minutes" as default.'
+    type: 'function',
+    function: {
+        name: 'createWorkoutPlan',
+        description: 'Creates a detailed, fitness-focused workout plan when the user asks for a workout, training session, or exercise routine. Use this function even if the user profile is incomplete - create a general workout that can be adapted. CRITICAL: Always extract and pass the user\'s specific workout request (e.g., "upper body", "lower body", "cardio", etc.) in the userRequest parameter.',
+        parameters: {
+            type: 'object',
+            properties: {
+                duration: {
+                    type: 'string',
+                    description: 'The desired total duration of the workout, e.g., "30 minutes". If not specified, use "30 minutes" as default.'
+                },
+                userRequest: {
+                    type: 'string',
+                    description: 'The user\'s specific workout request, extracted from their message. Examples: "upper body workout", "lower body focus", "core exercises", "cardio session", "full body", "leg day". This is CRITICAL for ensuring the workout matches their request. If not specified in the message, use "general workout".'
             },
-            userRequest: {
-                type: 'string',
-                description: 'The user\'s specific workout request, extracted from their message. Examples: "upper body workout", "lower body focus", "core exercises", "cardio session", "full body", "leg day". This is CRITICAL for ensuring the workout matches their request. If not specified in the message, use "general workout".'
+            },
+            required: ['duration', 'userRequest'],
         },
-        },
-        required: ['duration', 'userRequest'],
-    },
+    }
 };
 
 const findBoxingVideoFunction = {
-    name: 'findBoxingVideo',
-    description: 'Finds and displays a relevant fitness tutorial video on YouTube when a user asks for video tutorials, exercise demonstrations, or workout videos. Use this function whenever the user requests video content, exercise demonstrations, or tutorial videos.',
-    parameters: {
-        type: 'object',
-        properties: {
-            topic: {
-                type: 'string',
-                description: 'The specific fitness technique or topic the user wants a video for (e.g., "squats", "cardio", "strength training").'
-            }
+    type: 'function',
+    function: {
+        name: 'findBoxingVideo',
+        description: 'Finds and displays a relevant fitness tutorial video on YouTube when a user asks for video tutorials, exercise demonstrations, or workout videos. Use this function whenever the user requests video content, exercise demonstrations, or tutorial videos.',
+        parameters: {
+            type: 'object',
+            properties: {
+                topic: {
+                    type: 'string',
+                    description: 'The specific fitness technique or topic the user wants a video for (e.g., "squats", "cardio", "strength training").'
+                }
+            },
+            required: ['topic']
         },
-        required: ['topic']
-    },
+    }
 };
 
 const showVideoLibraryFunction = {
-    name: 'showVideoLibrary',
-    description: 'Shows the user the library of pre-selected video drills and tutorials when they ask to see the video list or library.',
-    parameters: {
-        type: 'object',
-        properties: {},
-    },
+    type: 'function',
+    function: {
+        name: 'showVideoLibrary',
+        description: 'Shows the user the library of pre-selected video drills and tutorials when they ask to see the video list or library.',
+        parameters: {
+            type: 'object',
+            properties: {},
+        },
+    }
 };
 
 const createNutritionPlanFunction = {
-    name: 'createNutritionPlan',
-    description: 'Creates a personalized nutrition plan when a user asks for a diet plan, meal plan, weekly meal plan, daily meals, or any structured list of what to eat. Use this function whenever the user requests meal planning, nutrition planning, or dietary guidance.',
-    parameters: {
-        type: 'object',
-        properties: {
-            goal: {
-                type: 'string',
-                description: 'The specific dietary goal, e.g., "weight loss", "muscle gain", "race day prep". Inferred from the user query.'
+    type: 'function',
+    function: {
+        name: 'createNutritionPlan',
+        description: 'Creates a personalized nutrition plan when a user asks for a diet plan, meal plan, weekly meal plan, daily meals, or any structured list of what to eat. Use this function whenever the user requests meal planning, nutrition planning, or dietary guidance.',
+        parameters: {
+            type: 'object',
+            properties: {
+                goal: {
+                    type: 'string',
+                    description: 'The specific dietary goal, e.g., "weight loss", "muscle gain", "race day prep". Inferred from the user query.'
+                },
+                dietaryRestrictions: {
+                    type: 'string',
+                    description: 'Any specific dietary restrictions or preferences the user mentions, e.g., "vegetarian", "gluten-free", "allergic to nuts".'
+                },
+                duration: {
+                    type: 'string',
+                    description: 'The duration of the meal plan, e.g., "one day", "for the week". Defaults to a single day if not specified.'
+                }
             },
-            dietaryRestrictions: {
-                type: 'string',
-                description: 'Any specific dietary restrictions or preferences the user mentions, e.g., "vegetarian", "gluten-free", "allergic to nuts".'
-            },
-            duration: {
-                type: 'string',
-                description: 'The duration of the meal plan, e.g., "one day", "for the week". Defaults to a single day if not specified.'
-            }
+            required: ['goal', 'duration'],
         },
-        required: ['goal', 'duration'],
-    },
+    }
 };
 
 
@@ -707,6 +719,9 @@ const App: React.FC = () => {
         tool_choice: 'auto'
       };
       
+      console.log("sendDirectApiCall: About to fetch from:", '/api-proxy/v1/chat/completions');
+      console.log("sendDirectApiCall: Request body:", JSON.stringify(requestBody, null, 2));
+      
       const response = await fetch('/api-proxy/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -720,7 +735,8 @@ const App: React.FC = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("sendDirectApiCall: API error:", errorText);
+        console.error("sendDirectApiCall: API error response:", errorText);
+        console.error("sendDirectApiCall: Response status:", response.status);
         throw new Error(`API call failed: ${response.status} - ${errorText}`);
       }
 
