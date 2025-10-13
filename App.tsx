@@ -395,18 +395,31 @@ const App: React.FC = () => {
       // Use OpenAI API instead of Google Gemini
       const { goal, dietaryRestrictions, duration, userInfo, journalEntries } = options;
       
-      let prompt = `Your task is to act as Sammi, a fitness coach, and create a practical, personalized nutritional plan for a client. The output MUST be well-structured markdown.\n\n`;
-
-      // Food Allergies - HIGHEST PRIORITY
+      // Food Allergies - ABSOLUTE HIGHEST PRIORITY - MUST BE FIRST
       if (userInfo?.foodAllergies && userInfo.foodAllergies.trim() !== '' && userInfo.foodAllergies.toLowerCase() !== 'none') {
-          prompt += `🔴🔴🔴 CRITICAL SAFETY ALERT 🔴🔴🔴\n`;
-          prompt += `FOOD ALLERGIES: ${userInfo.foodAllergies}\n\n`;
-          prompt += `**YOU MUST ABSOLUTELY AVOID THESE FOODS IN ALL MEALS:**\n`;
-          prompt += `- Do NOT suggest any foods containing these allergens\n`;
-          prompt += `- Do NOT suggest foods that "might be okay"\n`;
-          prompt += `- Only suggest foods that are 100% safe and allergen-free\n`;
-          prompt += `- This is a safety issue - strictly adhere to these restrictions\n\n`;
+          console.log("🚨 ALLERGY DETECTED:", userInfo.foodAllergies);
+          const allergyList = userInfo.foodAllergies.split(',').map(a => a.trim());
+          console.log("🚨 ALLERGY LIST:", allergyList);
+          
+          prompt = `🚨🚨🚨 LIFE-THREATENING ALLERGY WARNING 🚨🚨🚨\n\n`;
+          prompt += `THE USER HAS THE FOLLOWING FOOD ALLERGIES:\n`;
+          allergyList.forEach(allergy => {
+              prompt += `❌ ${allergy.toUpperCase()}\n`;
+          });
+          prompt += `\n**ABSOLUTE RULES - NO EXCEPTIONS:**\n`;
+          allergyList.forEach((allergy, index) => {
+              prompt += `${index + 1}. DO NOT include ${allergy} in ANY meal\n`;
+              prompt += `${index + 1}a. DO NOT suggest foods containing ${allergy}\n`;
+              prompt += `${index + 1}b. DO NOT suggest ${allergy} salads, ${allergy} bowls, ${allergy} anything\n`;
+          });
+          prompt += `\n🚫 BANNED: ${allergyList.join(', ')}\n`;
+          prompt += `✅ ALLOWED: Everything EXCEPT ${allergyList.join(' and ')}\n\n`;
+          prompt += `If you suggest ANY food containing ${allergyList.join(' or ')}, you have FAILED.\n`;
+          prompt += `Double-check EVERY meal to ensure it is ${allergyList.join('-')}-free.\n\n`;
           prompt += `═══════════════════════════════════════════════════════════\n\n`;
+          prompt += `Your task is to act as Sammi, a fitness coach, and create a practical, personalized nutritional plan for a client. The output MUST be well-structured markdown.\n\n`;
+      } else {
+          prompt = `Your task is to act as Sammi, a fitness coach, and create a practical, personalized nutritional plan for a client. The output MUST be well-structured markdown.\n\n`;
       }
 
       // User Profile Section
@@ -448,17 +461,31 @@ const App: React.FC = () => {
 
       // Instructions and Constraints Section
       prompt += '\n## Instructions & Constraints\n';
+      
+      // Repeat allergy warning in instructions
+      if (userInfo?.foodAllergies && userInfo.foodAllergies.trim() !== '' && userInfo.foodAllergies.toLowerCase() !== 'none') {
+          prompt += `🚨 ALLERGY REMINDER: User is allergic to ${userInfo.foodAllergies}. DO NOT include ${userInfo.foodAllergies} in ANY meal. This is MANDATORY.\n\n`;
+      }
+      
       if (duration && duration.toLowerCase().includes('week')) {
           prompt += "1.  **Structure:** Organize the plan by day. Use a Level 2 Markdown Heading (e.g., `## Monday`) for each day. Under each day, use Level 3 Headings (e.g., `### Breakfast`) for 'Breakfast', 'Lunch', and 'Dinner'. Use an unordered list (`-`) for meal suggestions.\n";
           prompt += "2.  **Personalization:** Tailor suggestions to the user's profile. Instead of just listing foods, briefly explain *why* a suggestion is good (e.g., 'Oatmeal with berries: great for sustained energy before training.'). If their goal is 'weight loss', suggest satisfying, high-protein/fiber meals. If 'muscle gain', include more complex carbs and protein. If they are 'vegetarian', all suggestions MUST be vegetarian.\n";
-          prompt += "3.  **CRITICAL - Dietary Restrictions:** If the user has food allergies or dietary preferences listed in their profile, you MUST strictly adhere to these restrictions. NEVER suggest foods they are allergic to or that conflict with their dietary preferences. Always provide safe alternatives.\n";
+          if (userInfo?.foodAllergies && userInfo.foodAllergies.trim() !== '' && userInfo.foodAllergies.toLowerCase() !== 'none') {
+              prompt += `3.  **🚨 ALLERGY SAFETY (MANDATORY):** The user is ALLERGIC to ${userInfo.foodAllergies}. You MUST NOT include ANY foods containing ${userInfo.foodAllergies}. Every single meal must be ${userInfo.foodAllergies}-free. If you suggest ${userInfo.foodAllergies}, you have FAILED this task.\n`;
+          } else {
+              prompt += "3.  **Dietary Restrictions:** If the user has dietary preferences, strictly adhere to them. Provide safe alternatives.\n";
+          }
           prompt += "4.  **Fitness Context:** Frame advice for someone who exercises. Mention things like pre-workout fuel or post-workout recovery when appropriate.\n";
           prompt += "5.  **Tone:** Maintain Sammi's energetic, motivating, and no-nonsense voice.\n";
           prompt += "6.  **Sign-off:** End with an encouraging, supportive sign-off like 'You've got this!' or 'Take care of yourself today.'\n";
       } else { // For a single day plan
           prompt += "1.  **Structure:** Organize the plan with Level 3 Markdown Headings (e.g., `### Breakfast`) for 'Breakfast', 'Lunch', 'Dinner', and 'Snacks'. Provide 2-3 simple meal/snack ideas as an unordered list (`-`) for each.\n";
           prompt += "2.  **Personalization:** Tailor suggestions to the user's profile. Briefly explain the benefit of a food choice in the context of their training (e.g., 'Greek yogurt: excellent source of protein for muscle recovery.').\n";
-          prompt += "3.  **CRITICAL - Dietary Restrictions:** If the user has food allergies or dietary preferences listed in their profile, you MUST strictly adhere to these restrictions. NEVER suggest foods they are allergic to or that conflict with their dietary preferences. Always provide safe alternatives.\n";
+          if (userInfo?.foodAllergies && userInfo.foodAllergies.trim() !== '' && userInfo.foodAllergies.toLowerCase() !== 'none') {
+              prompt += `3.  **🚨 ALLERGY SAFETY (MANDATORY):** The user is ALLERGIC to ${userInfo.foodAllergies}. You MUST NOT include ANY foods containing ${userInfo.foodAllergies}. Every single meal must be ${userInfo.foodAllergies}-free. If you suggest ${userInfo.foodAllergies}, you have FAILED this task.\n`;
+          } else {
+              prompt += "3.  **Dietary Restrictions:** If the user has dietary preferences, strictly adhere to them. Provide safe alternatives.\n";
+          }
           prompt += "4.  **Boxing Context:** Frame advice for an athlete. Mention pre-workout fuel or post-workout recovery.\n";
           prompt += "5.  **Tone:** Maintain Sammi's energetic, motivating, and no-nonsense voice.\n";
           prompt += "6.  **Sign-off:** End with an encouraging, supportive sign-off like 'You've got this!' or 'Take care of yourself today.'\n";
