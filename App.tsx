@@ -186,6 +186,24 @@ const createNutritionPlanFunction = {
     }
 };
 
+const updateAllergiesFunction = {
+    type: 'function',
+    function: {
+        name: 'updateAllergies',
+        description: 'Updates the user\'s food allergy information when they mention allergies, dietary restrictions, or foods they cannot eat. Use this when the user says things like "I\'m allergic to...", "I can\'t eat...", "I have a... allergy", or "avoid... in my meals".',
+        parameters: {
+            type: 'object',
+            properties: {
+                allergies: {
+                    type: 'string',
+                    description: 'Comma-separated list of food allergies or restrictions mentioned by the user, e.g., "quinoa, nuts, dairy"'
+                }
+            },
+            required: ['allergies'],
+        },
+    }
+};
+
 
 const App: React.FC = () => {
   const [isInitializing, setIsInitializing] = useState(true);
@@ -842,7 +860,8 @@ const App: React.FC = () => {
           createWorkoutPlanFunction,
           findBoxingVideoFunction,
           showVideoLibraryFunction,
-          createNutritionPlanFunction
+          createNutritionPlanFunction,
+          updateAllergiesFunction
         ],
         tool_choice: 'auto'
       };
@@ -948,6 +967,7 @@ const App: React.FC = () => {
         const videoToolCall = finalToolCalls.find(tc => tc.function?.name === 'findBoxingVideo');
         const videoLibraryToolCall = finalToolCalls.find(tc => tc.function?.name === 'showVideoLibrary');
         const nutritionToolCall = finalToolCalls.find(tc => tc.function?.name === 'createNutritionPlan');
+        const updateAllergiesToolCall = finalToolCalls.find(tc => tc.function?.name === 'updateAllergies');
 
 
         if (nutritionToolCall) {
@@ -1065,6 +1085,38 @@ const App: React.FC = () => {
             };
             console.log("sendMessage: Adding video library response to messages");
             setMessages(prev => [...prev, sammiResponse]);
+        } else if (updateAllergiesToolCall) {
+            try {
+                const args = JSON.parse(updateAllergiesToolCall.function.arguments);
+                const allergies = args.allergies as string;
+                
+                console.log("🚨 Updating user allergies:", allergies);
+                
+                // Update the user's profile with new allergy information
+                if (currentUser?.profile) {
+                    const updatedProfile = {
+                        ...currentUser.profile,
+                        foodAllergies: allergies
+                    };
+                    const updatedUser = { ...currentUser, profile: updatedProfile };
+                    setCurrentUser(updatedUser);
+                    localStorage.setItem('soulGoodFitnessUser', JSON.stringify(updatedUser));
+                    
+                    const sammiResponse: Message = {
+                        id: (Date.now() + 1).toString(),
+                        text: `Got it! I've updated your profile. You're allergic to: ${allergies}. I'll make sure to avoid these in all meal plans. Your safety is my top priority! 🛡️`,
+                        sender: 'sammi',
+                        timestamp: Date.now(),
+                    };
+                    console.log("sendMessage: Adding allergy update confirmation");
+                    setMessages(prev => [...prev, sammiResponse]);
+                }
+            } catch (e) {
+                console.error("Allergy update failed:", e);
+                const errorMessage = "I had trouble updating your allergy information. Can you tell me again what you're allergic to?";
+                const errorResponse: Message = { id: (Date.now() + 1).toString(), text: errorMessage, sender: 'sammi', timestamp: Date.now() };
+                setMessages(prev => [...prev, errorResponse]);
+            }
         } else {
             // Handle regular text response from OpenAI
             const responseText = response.choices?.[0]?.message?.content || response.text || "Sorry, I couldn't process that request.";
