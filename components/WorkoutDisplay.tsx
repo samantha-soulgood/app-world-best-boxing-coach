@@ -90,47 +90,43 @@ const WorkoutDisplay: React.FC<WorkoutDisplayProps> = ({ plan, onFindVideo }) =>
               const isNextExerciseRest = nextExercise && nextExercise.name.toLowerCase() === 'rest';
 
               return (
-                <li key={exerciseIndex} className="group p-4 bg-white border border-orange-200 hover:border-orange-300 transition-all duration-200 rounded-lg">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xl">💪</span>
-                        <strong className="text-gray-900 font-bold text-base">{exercise.name}</strong>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 text-sm">
-                        {/* The prompt ensures timed exercises have N/A reps, this makes the display cleaner */}
-                        {exercise.reps !== 'N/A' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 font-semibold text-blue-800 rounded-full">
-                            <span className="text-xs">🔢</span>
-                            {exercise.sets} sets × {exercise.reps} reps
-                          </span>
-                        )}
-                        {exercise.duration && (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 font-semibold text-green-800 rounded-full">
-                            <span className="text-xs">⏱️</span>
-                            {exercise.duration}
-                            {isNextExerciseRest ? ` + ${nextExercise.duration} rest` : ''}
-                          </span>
-                        )}
-                      </div>
-                      {exercise.notes && (
-                        <p className={`text-xs mt-3 p-2.5 rounded-lg ${
-                          exercise.notes.includes('Repeat this set') 
-                            ? 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 font-bold border border-amber-300' 
-                            : 'bg-gray-50 text-gray-700 italic border border-gray-200'
-                        }`}>
-                          {exercise.notes.includes('Repeat this set') ? '🔁 ' : '💡 '}
-                          {exercise.notes}
-                        </p>
-                      )}
-                    </div>
-                    {onFindVideo && (
-                      <div className="ml-3 flex-shrink-0">
+                <li key={exerciseIndex} className="group p-3 sm:p-4 bg-white border border-orange-200 hover:border-orange-300 transition-all duration-200 rounded-lg">
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg sm:text-xl">💪</span>
+                      <strong className="text-gray-900 font-bold text-sm sm:text-base flex-1">{exercise.name}</strong>
+                      {onFindVideo && (
                         <ExerciseVideoButton
                           exerciseName={exercise.name}
                           onFindVideo={onFindVideo}
                         />
-                      </div>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+                      {/* The prompt ensures timed exercises have N/A reps, this makes the display cleaner */}
+                      {exercise.reps !== 'N/A' && (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 font-semibold text-blue-800 rounded-full">
+                          <span className="text-xs">🔢</span>
+                          {exercise.sets} sets × {exercise.reps} reps
+                        </span>
+                      )}
+                      {exercise.duration && (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 font-semibold text-green-800 rounded-full">
+                          <span className="text-xs">⏱️</span>
+                          {exercise.duration}
+                          {isNextExerciseRest ? ` + ${nextExercise.duration} rest` : ''}
+                        </span>
+                      )}
+                    </div>
+                    {exercise.notes && (
+                      <p className={`text-xs mt-1 p-2 sm:p-2.5 rounded-lg ${
+                        exercise.notes.includes('Repeat this set') 
+                          ? 'bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 font-bold border border-amber-300' 
+                          : 'bg-gray-50 text-gray-700 italic border border-gray-200'
+                      }`}>
+                        {exercise.notes.includes('Repeat this set') ? '🔁 ' : '💡 '}
+                        {exercise.notes}
+                      </p>
                     )}
                   </div>
                 </li>
