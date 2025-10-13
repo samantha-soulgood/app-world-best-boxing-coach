@@ -13,6 +13,7 @@ import VideoLibrary from './components/VideoLibrary';
 import VideoPlayer from './components/VideoPlayer';
 import TopicButton from './components/TopicButton';
 import Journal from './components/Journal';
+import ProfileEditModal from './components/ProfileEditModal';
 import { ChevronDownIcon, ChevronUpIcon } from './components/Icons';
 import { parseWorkoutJson } from './utils';
 
@@ -219,6 +220,7 @@ const App: React.FC = () => {
   const [activeVideo, setActiveVideo] = useState<Video | null>(null);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [showJournal, setShowJournal] = useState<boolean>(false);
+  const [showProfileEdit, setShowProfileEdit] = useState<boolean>(false);
   const [isTopicsVisible, setIsTopicsVisible] = useState(true);
   const chatWindowRef = useRef<ChatWindowRef>(null);
 
@@ -294,9 +296,9 @@ const App: React.FC = () => {
           initChat([...recentMessages, welcomeBackMessage], user.profile);
         } else {
           // Recent session - just load existing messages
-          setMessages(recentMessages);
-          setCurrentUser(user);
-          initChat(recentMessages, user.profile);
+        setMessages(recentMessages);
+        setCurrentUser(user);
+        initChat(recentMessages, user.profile);
         }
           } catch (err) {
             console.error('Failed to parse messages:', err);
@@ -508,6 +510,14 @@ const App: React.FC = () => {
           prompt += "5.  **Tone:** Maintain Sammi's energetic, motivating, and no-nonsense voice.\n";
           prompt += "6.  **Sign-off:** End with an encouraging, supportive sign-off like 'You've got this!' or 'Take care of yourself today.'\n";
       }
+      
+      // Final allergy reminder at the end
+      if (userInfo?.foodAllergies && userInfo.foodAllergies.trim() !== '' && userInfo.foodAllergies.toLowerCase() !== 'none') {
+          prompt += `\n\n🚨🚨🚨 FINAL SAFETY CHECK 🚨🚨🚨\n`;
+          prompt += `Before you finalize this meal plan, verify that ZERO meals contain: ${userInfo.foodAllergies}\n`;
+          prompt += `If ANY meal contains ${userInfo.foodAllergies}, DELETE IT and replace with a safe alternative.\n`;
+          prompt += `The user is counting on you to keep them safe.\n`;
+      }
 
       // Use OpenAI API call
       const requestBody = {
@@ -522,7 +532,7 @@ const App: React.FC = () => {
             content: prompt
           }
         ],
-        temperature: 1.0, // Higher temperature for more variety in meal plans
+        temperature: 0.8, // Lowered from 1.0 to improve rule-following
         max_tokens: 2048
       };
 
@@ -977,6 +987,14 @@ const App: React.FC = () => {
                 const dietaryRestrictions = args.dietaryRestrictions as string | undefined;
                 const duration = args.duration as string | undefined;
                 
+                console.log("🍎 Generating nutrition plan with user info:", {
+                    goal,
+                    dietaryRestrictions,
+                    duration,
+                    userAllergies: currentUser?.profile?.foodAllergies,
+                    userPreferences: currentUser?.profile?.dietaryPreferences
+                });
+                
                 const nutritionPlanText = await generateNutritionPlan({ goal, dietaryRestrictions, duration, userInfo: currentUser?.profile, journalEntries });
 
                 const sammiResponse: Message = {
@@ -1171,6 +1189,23 @@ const App: React.FC = () => {
     }
   }, [generateWorkoutPlan, handleFindVideo, messages, currentUser, generateNutritionPlan, journalEntries]);
 
+  const handleProfileUpdate = (data: OnboardingData) => {
+    if (!currentUser) return;
+    
+    const updatedUser = { ...currentUser, profile: data };
+    setCurrentUser(updatedUser);
+    localStorage.setItem('soulGoodFitnessUser', JSON.stringify(updatedUser));
+    
+    // Add a confirmation message
+    const confirmationMessage: Message = {
+      id: `profile-update-${Date.now()}`,
+      text: `✅ Profile updated! I've saved your changes and will use this information for all future workouts and meal plans.`,
+      sender: 'sammi',
+      timestamp: Date.now(),
+    };
+    setMessages(prev => [...prev, confirmationMessage]);
+  };
+
   const handleOnboardingSubmit = async (data: OnboardingData) => {
     if (!currentUser) {
         setError("An error occurred. Please try logging in again.");
@@ -1320,6 +1355,7 @@ const App: React.FC = () => {
             onStartWorkout={handleStartWorkout}
             currentUser={currentUser}
             onFindVideo={handleFindVideo}
+            onAvatarClick={() => setShowProfileEdit(true)}
           />
           <div className="flex-shrink-0 pt-4">
               <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isTopicsVisible ? 'max-h-48' : 'max-h-0'}`}>
@@ -1418,6 +1454,13 @@ const App: React.FC = () => {
             entries={journalEntries}
             onClose={() => setShowJournal(false)}
             onAddEntry={handleAddJournalEntry}
+        />
+      )}
+      {showProfileEdit && currentUser && (
+        <ProfileEditModal
+          user={currentUser}
+          onClose={() => setShowProfileEdit(false)}
+          onSave={handleProfileUpdate}
         />
       )}
     </>

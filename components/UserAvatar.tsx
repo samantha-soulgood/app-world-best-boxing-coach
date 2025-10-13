@@ -4,9 +4,10 @@ import type { User } from '../types';
 interface UserAvatarProps {
   user: User;
   size?: string;
+  onClick?: () => void;
 }
 
-const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8' }) => {
+const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8', onClick }) => {
   const [imageError, setImageError] = useState(false);
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
   
@@ -80,8 +81,12 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8' }) => {
   // });
 
   return (
-    <div className={`${size} rounded-full p-0.5 bg-gradient-to-tr from-fuchsia-500 to-pink-500 flex-shrink-0`} title={`Avatar for ${user.name}`}>
-      <div className="w-full h-full rounded-full overflow-hidden border border-zinc-900 bg-zinc-800 flex items-center justify-center">
+    <div 
+      className={`${size} rounded-full p-0.5 bg-gradient-to-tr from-orange-400 to-amber-400 flex-shrink-0 ${onClick ? 'cursor-pointer hover:from-orange-500 hover:to-amber-500 transition-all' : ''}`} 
+      title={onClick ? `Click to edit profile` : `Avatar for ${user.name}`}
+      onClick={onClick}
+    >
+      <div className="w-full h-full rounded-full overflow-hidden border border-gray-300 bg-gray-100 flex items-center justify-center">
         {!imageError && !isMobileSafari ? (
           <img
             key={currentServiceIndex} // Force re-render when service changes

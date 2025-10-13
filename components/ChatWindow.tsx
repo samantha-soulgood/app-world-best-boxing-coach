@@ -16,13 +16,14 @@ interface ChatWindowProps {
   onStartWorkout: (plan: WorkoutPlan, messageId: string) => void;
   currentUser: User | null;
   onFindVideo?: (exerciseName: string) => Promise<Video | null>;
+  onAvatarClick?: () => void;
 }
 
 export interface ChatWindowRef {
   scrollToEnd: () => void;
 }
 
-const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoading, isGeneratingWorkout, onStartWorkout, currentUser, onFindVideo }, ref) => {
+const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoading, isGeneratingWorkout, onStartWorkout, currentUser, onFindVideo, onAvatarClick }, ref) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -186,6 +187,7 @@ const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoa
           currentUser={currentUser}
           renderContent={renderMessageContent}
           onStartWorkout={onStartWorkout}
+          onAvatarClick={onAvatarClick}
         />
       ))}
       {isLoading && (
@@ -217,16 +219,17 @@ interface MemoMessageProps {
   currentUser: User | null;
   renderContent: (m: Message) => React.ReactNode;
   onStartWorkout: (plan: WorkoutPlan, messageId: string) => void;
+  onAvatarClick?: () => void;
 }
 
-const MemoMessage: React.FC<MemoMessageProps> = React.memo(({ message, currentUser, renderContent, onStartWorkout }) => {
+const MemoMessage: React.FC<MemoMessageProps> = React.memo(({ message, currentUser, renderContent, onStartWorkout, onAvatarClick }) => {
   return (
     <div
       className={`flex items-end gap-2 sm:gap-3 ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
     >
       <div className="flex-shrink-0">
         {message.sender === 'user' && currentUser ? (
-          <UserAvatar user={currentUser} size="w-7 h-7 sm:w-8 sm:h-8" />
+          <UserAvatar user={currentUser} size="w-7 h-7 sm:w-8 sm:h-8" onClick={onAvatarClick} />
         ) : (
           <Avatar size="w-7 h-7 sm:w-8 sm:h-8" />
         )}
@@ -259,7 +262,8 @@ const MemoMessage: React.FC<MemoMessageProps> = React.memo(({ message, currentUs
     prev.message.text === next.message.text &&
     prev.message.workoutPlan === next.message.workoutPlan &&
     prev.message.video === next.message.video &&
-    prev.currentUser === next.currentUser
+    prev.currentUser === next.currentUser &&
+    prev.onAvatarClick === next.onAvatarClick
   );
 });
 
