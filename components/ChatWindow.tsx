@@ -231,14 +231,13 @@ const MemoMessage: React.FC<MemoMessageProps> = React.memo(({ message, currentUs
           <Avatar size="w-7 h-7 sm:w-8 sm:h-8" />
         )}
       </div>
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1">
         <div
-          className={`w-full sm:max-w-[75%] md:max-w-md lg:max-w-lg px-3 py-2 sm:px-4 sm:py-3 rounded-lg break-words ${
+          className={`max-w-full sm:max-w-[75%] md:max-w-md lg:max-w-lg px-3 py-2 sm:px-4 sm:py-3 rounded-lg ${
             message.sender === 'user'
               ? 'bg-gradient-to-br from-orange-100 to-amber-100 text-gray-900 border border-orange-300'
               : 'bg-white border border-orange-200 text-gray-800'
           }`}
-          style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
           {renderContent(message)}
         </div>
