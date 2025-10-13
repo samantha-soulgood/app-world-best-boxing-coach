@@ -70,4 +70,33 @@ body {
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
+  
+  /* Optimize prose text for mobile chat bubbles */
+  .prose {
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    max-width: 100% !important;
+  }
+  
+  .prose p {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 1rem !important;
+  }
+  
+  .prose ul, .prose ol {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    padding-left: 1.25rem !important;
+  }
+  
+  .prose li {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
 }

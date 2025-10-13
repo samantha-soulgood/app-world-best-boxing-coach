@@ -258,9 +258,28 @@ const App: React.FC = () => {
         const allMessages: Message[] = JSON.parse(storedMessages);
         const recentMessages = pruneHistoryToLastNCompletedWorkouts(allMessages, 14);
 
-        setMessages(recentMessages);
-        setCurrentUser(user);
-        initChat(recentMessages, user.profile);
+        // Check if the last message is recent (within last hour)
+        const lastMessageTime = recentMessages[recentMessages.length - 1]?.timestamp || 0;
+        const oneHourAgo = Date.now() - (60 * 60 * 1000);
+        const isRecentSession = lastMessageTime > oneHourAgo;
+        
+        // Only add welcome back message if it's been more than an hour
+        if (!isRecentSession) {
+          const welcomeBackMessage: Message = {
+            id: `welcome-back-${Date.now()}`,
+            text: `Welcome back, ${user.name}! 💪 Ready to continue your fitness journey? What would you like to work on today?`,
+            sender: 'sammi',
+            timestamp: Date.now(),
+          };
+          setMessages([...recentMessages, welcomeBackMessage]);
+          setCurrentUser(user);
+          initChat([...recentMessages, welcomeBackMessage], user.profile);
+        } else {
+          // Recent session - just load existing messages
+          setMessages(recentMessages);
+          setCurrentUser(user);
+          initChat(recentMessages, user.profile);
+        }
           } catch (err) {
             console.error('Failed to parse messages:', err);
             setCurrentUser(user);
@@ -378,6 +397,18 @@ const App: React.FC = () => {
       
       let prompt = `Your task is to act as Sammi, a fitness coach, and create a practical, personalized nutritional plan for a client. The output MUST be well-structured markdown.\n\n`;
 
+      // Food Allergies - HIGHEST PRIORITY
+      if (userInfo?.foodAllergies && userInfo.foodAllergies.trim() !== '' && userInfo.foodAllergies.toLowerCase() !== 'none') {
+          prompt += `🔴🔴🔴 CRITICAL SAFETY ALERT 🔴🔴🔴\n`;
+          prompt += `FOOD ALLERGIES: ${userInfo.foodAllergies}\n\n`;
+          prompt += `**YOU MUST ABSOLUTELY AVOID THESE FOODS IN ALL MEALS:**\n`;
+          prompt += `- Do NOT suggest any foods containing these allergens\n`;
+          prompt += `- Do NOT suggest foods that "might be okay"\n`;
+          prompt += `- Only suggest foods that are 100% safe and allergen-free\n`;
+          prompt += `- This is a safety issue - strictly adhere to these restrictions\n\n`;
+          prompt += `═══════════════════════════════════════════════════════════\n\n`;
+      }
+
       // User Profile Section
       prompt += '## User Profile\n';
       if (userInfo) {
@@ -477,7 +508,14 @@ const App: React.FC = () => {
     // Use OpenAI API instead of Google Gemini
     const { duration, userRequest, lastWorkoutMessage, userInfo, journalEntries } = options;
     
-    let prompt = 'Your task is to create a FUN and CHALLENGING workout plan that feels like an exciting adventure!\n\n';
+    let prompt = '🔴🔴🔴 CRITICAL FORMAT RULE - READ THIS FIRST 🔴🔴🔴\n\n';
+    prompt += 'Each workout SET must have EXACTLY 4 exercises. NOT 3, NOT 5, NOT 8 - ONLY 4.\n';
+    prompt += 'If you create a set with 8 exercises, you are doing it WRONG.\n';
+    prompt += 'Instead, create TWO SEPARATE SETS, each with 4 exercises.\n\n';
+    prompt += '✅ CORRECT: Set 1 (4 exercises), Set 2 (4 exercises)\n';
+    prompt += '❌ WRONG: Set 1 (8 exercises)\n\n';
+    prompt += '═══════════════════════════════════════════════════════════\n\n';
+    prompt += 'Your task is to create a FUN and CHALLENGING workout plan that feels like an exciting adventure!\n\n';
     
     // User's Specific Request - HIGHEST PRIORITY
     if (userRequest) {

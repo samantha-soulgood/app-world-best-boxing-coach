@@ -55,11 +55,12 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
   // Detect set repetitions when entering Main Workout phase
   useEffect(() => {
     const currentPhase = workout.workout.phases[currentPhaseIndex];
-    const isMainWorkout = currentPhase?.name?.toLowerCase().includes('main') && 
-                          currentPhase?.name?.toLowerCase().includes('workout');
+    const phaseName = currentPhase?.name || '';
+    const isMainWorkout = phaseName.toLowerCase().includes('main') && 
+                          phaseName.toLowerCase().includes('workout');
     
     console.log('=== PHASE DETECTION ===');
-    console.log('Current phase name:', currentPhase?.name);
+    console.log('Current phase name:', phaseName);
     console.log('Is main workout?', isMainWorkout);
     
     if (isMainWorkout) {
@@ -119,8 +120,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
 
   const advanceToNextExercise = () => {
     // Check if we're in the Main Workout phase and need to repeat the circuit
-    const isMainWorkoutPhase = currentPhase?.name?.toLowerCase().includes('main') || 
-                                currentPhase?.name?.toLowerCase().includes('workout');
+    const phaseName = currentPhase?.name || '';
+    const isMainWorkoutPhase = phaseName.toLowerCase().includes('main') && 
+                                phaseName.toLowerCase().includes('workout');
     
     console.log('advanceToNextExercise called:', {
       isMainWorkoutPhase,
@@ -187,13 +189,14 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
       totalExercises: currentPhase?.exercises.length,
       circuitRepetitions,
       currentCircuitRound,
-      isMainWorkoutPhase: currentPhase?.name?.toLowerCase().includes('main') || 
-                          currentPhase?.name?.toLowerCase().includes('workout'),
+      isMainWorkoutPhase: (currentPhase?.name || '').toLowerCase().includes('main') && 
+                          (currentPhase?.name || '').toLowerCase().includes('workout'),
       currentExerciseNotes: currentExercise?.notes
     });
     
-    const isMainWorkoutPhase = currentPhase?.name?.toLowerCase().includes('main') || 
-                                currentPhase?.name?.toLowerCase().includes('workout');
+    const phaseName = currentPhase?.name || '';
+    const isMainWorkoutPhase = phaseName.toLowerCase().includes('main') && 
+                                phaseName.toLowerCase().includes('workout');
     const isEndOfSet = currentExercise?.notes?.match(/Repeat this set (\d+) times?/i);
     
     // Determine rest duration based on context
@@ -243,8 +246,9 @@ const WorkoutPlayer: React.FC<WorkoutPlayerProps> = ({ workout, onClose, onCompl
 
   // Helper function to get the current set number (1, 2, 3, etc.)
   const getCurrentSetNumber = () => {
-    const isMainWorkout = currentPhase?.name?.toLowerCase().includes('main') || 
-                          currentPhase?.name?.toLowerCase().includes('workout');
+    const phaseName = currentPhase?.name || '';
+    const isMainWorkout = phaseName.toLowerCase().includes('main') && 
+                          phaseName.toLowerCase().includes('workout');
     if (!currentPhase || !isMainWorkout) return 0;
     
     let setNumber = 1;

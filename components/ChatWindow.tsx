@@ -178,7 +178,7 @@ const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoa
   };
 
   return (
-    <div ref={containerRef} className="flex-1 overflow-y-auto px-2 py-4 sm:px-4 space-y-6">
+    <div ref={containerRef} className="flex-1 overflow-y-auto px-2 py-2 sm:px-4 sm:py-4 space-y-3 sm:space-y-4">
       {messages.map((message) => (
         <MemoMessage
           key={message.id}
@@ -189,14 +189,14 @@ const ChatWindow = forwardRef<ChatWindowRef, ChatWindowProps>(({ messages, isLoa
         />
       ))}
       {isLoading && (
-        <div className="flex items-end gap-3 flex-row">
+        <div className="flex items-end gap-2 sm:gap-3 flex-row">
             <div className="flex-shrink-0">
               <Avatar size="w-8 h-8" />
             </div>
-            <div className="bg-gradient-to-r from-amber-100 to-orange-100 border border-orange-300 text-gray-800 p-4 inline-flex items-center justify-center gap-2 rounded-lg">
+            <div className="bg-gradient-to-r from-amber-100 to-orange-100 border border-orange-300 text-gray-800 px-3 py-2 sm:p-4 inline-flex items-center justify-center gap-2 rounded-lg">
                 <LoadingIcon />
                 {isGeneratingWorkout && (
-                  <span className="text-sm text-orange-800 font-semibold">✨ Sammi's building your workout...</span>
+                  <span className="text-xs sm:text-sm text-orange-800 font-semibold">✨ Sammi's building your workout...</span>
                 )}
             </div>
         </div>
@@ -222,31 +222,32 @@ interface MemoMessageProps {
 const MemoMessage: React.FC<MemoMessageProps> = React.memo(({ message, currentUser, renderContent, onStartWorkout }) => {
   return (
     <div
-      className={`flex items-end gap-3 ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+      className={`flex items-end gap-2 sm:gap-3 ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
     >
       <div className="flex-shrink-0">
         {message.sender === 'user' && currentUser ? (
-          <UserAvatar user={currentUser} size="w-8 h-8" />
+          <UserAvatar user={currentUser} size="w-7 h-7 sm:w-8 sm:h-8" />
         ) : (
-          <Avatar size="w-8 h-8" />
+          <Avatar size="w-7 h-7 sm:w-8 sm:h-8" />
         )}
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col min-w-0 flex-1">
         <div
-          className={`max-w-[280px] sm:max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-lg ${
+          className={`max-w-[85%] sm:max-w-[75%] md:max-w-md lg:max-w-lg px-3 py-2 sm:px-4 sm:py-3 rounded-lg break-words ${
             message.sender === 'user'
               ? 'bg-gradient-to-br from-orange-100 to-amber-100 text-gray-900 border border-orange-300'
               : 'bg-white border border-orange-200 text-gray-800'
           }`}
+          style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         >
           {renderContent(message)}
         </div>
         {message.sender === 'sammi' && message.workoutPlan && (
           <button
             onClick={() => onStartWorkout(message.workoutPlan, message.id)}
-            className="mt-3 self-start text-sm font-bold text-gray-900 bg-gradient-to-r from-orange-100 to-amber-100 px-4 py-2.5 hover:from-orange-200 hover:to-amber-200 transition-all duration-200 flex items-center justify-center gap-2 animate-fade-in border border-orange-300 rounded-lg"
+            className="mt-2 sm:mt-3 self-start text-xs sm:text-sm font-bold text-gray-900 bg-gradient-to-r from-orange-100 to-amber-100 px-3 py-2 sm:px-4 sm:py-2.5 hover:from-orange-200 hover:to-amber-200 transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 animate-fade-in border border-orange-300 rounded-lg"
           >
-            <PlayIcon className="w-5 h-5" />
+            <PlayIcon className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>▶️ Play Workout</span>
           </button>
         )}
