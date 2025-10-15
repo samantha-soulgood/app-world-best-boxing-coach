@@ -69,22 +69,19 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8', onClick
     console.log(`Avatar loaded successfully for user: ${user.name} using service ${currentServiceIndex}`);
   };
   
-  // console.log("UserAvatar Debug:", {
-  //   userId: user.id,
-  //   userName: user.name,
-  //   currentAvatarUrl,
-  //   currentServiceIndex,
-  //   initials,
-  //   imageError,
-  //   isMobileSafari,
-  //   userAgent: navigator.userAgent
-  // });
-
   return (
     <div 
       className={`${size} rounded-full p-0.5 bg-gradient-to-tr from-orange-400 to-amber-400 flex-shrink-0 ${onClick ? 'cursor-pointer hover:from-orange-500 hover:to-amber-500 transition-all' : ''}`} 
       title={onClick ? `Click to edit profile` : `Avatar for ${user.name}`}
       onClick={onClick}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      } : undefined}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
     >
       <div className="w-full h-full rounded-full overflow-hidden border border-gray-300 bg-gray-100 flex items-center justify-center">
         {!imageError && !isMobileSafari ? (
@@ -100,7 +97,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user, size = 'w-8 h-8', onClick
             onLoad={handleImageLoad}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-500 to-amber-600 text-white font-bold text-sm">
             {initials}
           </div>
         )}

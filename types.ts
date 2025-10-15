@@ -60,3 +60,22 @@ export interface JournalEntry {
   text: string;
   timestamp: number;
 }
+
+export interface ScheduledClass {
+  id: string;
+  title: string;
+  description: string;
+  instructor: string;
+  startTime: number; // timestamp
+  endTime: number; // timestamp
+  capacity: number;
+  bookedCount: number;
+  type: 'boxing' | 'strength' | 'cardio' | 'yoga' | 'nutrition';
+}
+
+export interface ClassBooking {
+  id: string;
+  classId: string;
+  userId: string;
+  timestamp: number;
+}

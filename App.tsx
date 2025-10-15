@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 // OpenAI integration - no client library needed, using direct API calls
-import type { Message, Sender, OnboardingData, User, WorkoutPlan, Video, JournalEntry } from './types';
+import type { Message, Sender, OnboardingData, User, WorkoutPlan, Video, JournalEntry, ScheduledClass, ClassBooking } from './types';
 import { SAMMI_PERSONA } from './constants';
 import Header from './components/Header';
 import ChatWindow, { type ChatWindowRef } from './components/ChatWindow';
@@ -14,6 +14,7 @@ import VideoPlayer from './components/VideoPlayer';
 import TopicButton from './components/TopicButton';
 import Journal from './components/Journal';
 import ProfileEditModal from './components/ProfileEditModal';
+import BookingCalendar from './components/BookingCalendar';
 import { ChevronDownIcon, ChevronUpIcon } from './components/Icons';
 import { parseWorkoutJson } from './utils';
 
@@ -221,6 +222,9 @@ const App: React.FC = () => {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [showJournal, setShowJournal] = useState<boolean>(false);
   const [showProfileEdit, setShowProfileEdit] = useState<boolean>(false);
+  const [showBookingCalendar, setShowBookingCalendar] = useState<boolean>(false);
+  const [scheduledClasses, setScheduledClasses] = useState<ScheduledClass[]>([]);
+  const [userBookings, setUserBookings] = useState<ClassBooking[]>([]);
   const [isTopicsVisible, setIsTopicsVisible] = useState(true);
   const chatWindowRef = useRef<ChatWindowRef>(null);
 
@@ -231,6 +235,151 @@ const App: React.FC = () => {
   const displayedMessages = useMemo(() => {
     return pruneHistoryToLast24Hours(messages);
   }, [messages]);
+
+  // Initialize scheduled classes (mock data for demo)
+  useEffect(() => {
+    const initializeClasses = () => {
+      const now = new Date();
+      const classes: ScheduledClass[] = [];
+      
+      // Generate classes for the next 2 weeks
+      for (let day = 0; day < 14; day++) {
+        const classDate = new Date(now);
+        classDate.setDate(now.getDate() + day);
+        classDate.setHours(0, 0, 0, 0);
+        
+        // Skip Sundays
+        if (classDate.getDay() === 0) continue;
+        
+        // Morning Boxing Class (9 AM)
+        if (classDate.getDay() !== 6) { // Not on Saturday
+          const morningClass = new Date(classDate);
+          morningClass.setHours(9, 0, 0, 0);
+          classes.push({
+            id: `boxing-morning-${day}`,
+            title: 'Morning Boxing Fundamentals',
+            description: 'Start your day with high-energy boxing drills and technique work',
+            instructor: 'Coach Sammi',
+            startTime: morningClass.getTime(),
+            endTime: new Date(morningClass.getTime() + 60 * 60 * 1000).getTime(),
+            capacity: 15,
+            bookedCount: Math.floor(Math.random() * 10),
+            type: 'boxing'
+          });
+        }
+        
+        // Lunch Strength Training (12 PM)
+        if (classDate.getDay() === 1 || classDate.getDay() === 3 || classDate.getDay() === 5) { // Mon, Wed, Fri
+          const lunchClass = new Date(classDate);
+          lunchClass.setHours(12, 0, 0, 0);
+          classes.push({
+            id: `strength-lunch-${day}`,
+            title: 'Power Hour: Strength & Conditioning',
+            description: 'Build strength and power with compound lifts and functional movements',
+            instructor: 'Coach Alex',
+            startTime: lunchClass.getTime(),
+            endTime: new Date(lunchClass.getTime() + 60 * 60 * 1000).getTime(),
+            capacity: 12,
+            bookedCount: Math.floor(Math.random() * 8),
+            type: 'strength'
+          });
+        }
+        
+        // Evening Cardio (6 PM)
+        if (classDate.getDay() === 2 || classDate.getDay() === 4) { // Tue, Thu
+          const eveningClass = new Date(classDate);
+          eveningClass.setHours(18, 0, 0, 0);
+          classes.push({
+            id: `cardio-evening-${day}`,
+            title: 'HIIT Cardio Blast',
+            description: 'High-intensity interval training to boost your metabolism',
+            instructor: 'Coach Jordan',
+            startTime: eveningClass.getTime(),
+            endTime: new Date(eveningClass.getTime() + 45 * 60 * 1000).getTime(),
+            capacity: 20,
+            bookedCount: Math.floor(Math.random() * 15),
+            type: 'cardio'
+          });
+        }
+        
+        // Evening Boxing (7 PM)
+        if (classDate.getDay() === 1 || classDate.getDay() === 3) { // Mon, Wed
+          const eveningBoxing = new Date(classDate);
+          eveningBoxing.setHours(19, 0, 0, 0);
+          classes.push({
+            id: `boxing-evening-${day}`,
+            title: 'Advanced Boxing Techniques',
+            description: 'Master advanced combinations, footwork, and defensive skills',
+            instructor: 'Coach Sammi',
+            startTime: eveningBoxing.getTime(),
+            endTime: new Date(eveningBoxing.getTime() + 75 * 60 * 1000).getTime(),
+            capacity: 12,
+            bookedCount: Math.floor(Math.random() * 8),
+            type: 'boxing'
+          });
+        }
+        
+        // Saturday Special Classes
+        if (classDate.getDay() === 6) {
+          // Morning Yoga (8 AM)
+          const yogaClass = new Date(classDate);
+          yogaClass.setHours(8, 0, 0, 0);
+          classes.push({
+            id: `yoga-saturday-${day}`,
+            title: 'Recovery Yoga & Stretching',
+            description: 'Gentle yoga flow to improve flexibility and aid recovery',
+            instructor: 'Coach Maya',
+            startTime: yogaClass.getTime(),
+            endTime: new Date(yogaClass.getTime() + 60 * 60 * 1000).getTime(),
+            capacity: 15,
+            bookedCount: Math.floor(Math.random() * 10),
+            type: 'yoga'
+          });
+          
+          // Nutrition Workshop (10 AM)
+          const nutritionClass = new Date(classDate);
+          nutritionClass.setHours(10, 0, 0, 0);
+          classes.push({
+            id: `nutrition-saturday-${day}`,
+            title: 'Nutrition for Athletes Workshop',
+            description: 'Learn meal planning, macros, and fueling strategies for performance',
+            instructor: 'Coach Taylor',
+            startTime: nutritionClass.getTime(),
+            endTime: new Date(nutritionClass.getTime() + 90 * 60 * 1000).getTime(),
+            capacity: 25,
+            bookedCount: Math.floor(Math.random() * 12),
+            type: 'nutrition'
+          });
+        }
+      }
+      
+      setScheduledClasses(classes);
+    };
+    
+    initializeClasses();
+  }, []);
+
+  // Load bookings from localStorage
+  useEffect(() => {
+    if (currentUser) {
+      const storedBookings = localStorage.getItem(`classBookings_${currentUser.id}`);
+      if (storedBookings) {
+        try {
+          setUserBookings(JSON.parse(storedBookings));
+        } catch (err) {
+          console.error('Failed to parse bookings:', err);
+          setUserBookings([]);
+        }
+      }
+    }
+  }, [currentUser]);
+
+  // Save bookings to localStorage
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem(`classBookings_${currentUser.id}`, JSON.stringify(userBookings));
+    }
+  }, [userBookings, currentUser]);
 
   const initChat = (historyMessages: Message[], userProfile?: OnboardingData) => {
     try {
@@ -1307,6 +1456,93 @@ const App: React.FC = () => {
     };
     setJournalEntries(prev => [newEntry, ...prev]);
   };
+
+  const handleBookClass = useCallback((classId: string) => {
+    if (!currentUser) return;
+    
+    // Check if already booked
+    const existingBooking = userBookings.find(b => b.classId === classId);
+    if (existingBooking) {
+      return; // Already booked
+    }
+    
+    // Check if class is full
+    const classToBook = scheduledClasses.find(c => c.id === classId);
+    if (!classToBook || classToBook.bookedCount >= classToBook.capacity) {
+      return; // Class is full
+    }
+    
+    // Create new booking
+    const newBooking: ClassBooking = {
+      id: `booking-${Date.now()}`,
+      classId: classId,
+      userId: currentUser.id,
+      timestamp: Date.now()
+    };
+    
+    // Update bookings
+    setUserBookings(prev => [...prev, newBooking]);
+    
+    // Update class booked count
+    setScheduledClasses(prev => prev.map(cls => 
+      cls.id === classId ? { ...cls, bookedCount: cls.bookedCount + 1 } : cls
+    ));
+    
+    // Add confirmation message
+    const className = classToBook.title;
+    const classTime = new Date(classToBook.startTime).toLocaleString('en-US', {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+    
+    const confirmationMessage: Message = {
+      id: `booking-confirm-${Date.now()}`,
+      text: `✅ You're booked! See you at "${className}" on ${classTime}. Can't wait to train with you! 🥊`,
+      sender: 'sammi',
+      timestamp: Date.now()
+    };
+    setMessages(prev => [...prev, confirmationMessage]);
+  }, [currentUser, userBookings, scheduledClasses]);
+
+  const handleCancelBooking = useCallback((bookingId: string) => {
+    // Find the booking
+    const booking = userBookings.find(b => b.id === bookingId);
+    if (!booking) return;
+    
+    // Find the class
+    const bookedClass = scheduledClasses.find(c => c.id === booking.classId);
+    
+    // Remove booking
+    setUserBookings(prev => prev.filter(b => b.id !== bookingId));
+    
+    // Update class booked count
+    setScheduledClasses(prev => prev.map(cls => 
+      cls.id === booking.classId ? { ...cls, bookedCount: Math.max(0, cls.bookedCount - 1) } : cls
+    ));
+    
+    // Add cancellation message
+    if (bookedClass) {
+      const className = bookedClass.title;
+      const classTime = new Date(bookedClass.startTime).toLocaleString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+      
+      const cancellationMessage: Message = {
+        id: `booking-cancel-${Date.now()}`,
+        text: `Your booking for "${className}" on ${classTime} has been cancelled. Hope to see you at another class soon! 💪`,
+        sender: 'sammi',
+        timestamp: Date.now()
+      };
+      setMessages(prev => [...prev, cancellationMessage]);
+    }
+  }, [userBookings, scheduledClasses]);
   
   const handleDayReview = () => {
     const journalContext = journalEntries.length > 0 
@@ -1401,7 +1637,7 @@ const App: React.FC = () => {
                         disabled={isLoading}
                     />
                     <TopicButton
-                        topic="📅 Weekly Meal Plan"
+                        topic="🗓️ Weekly Meal Plan"
                         onClick={() => {
                             sendMessage("Create a meal plan for the week.", 'user');
                             scrollToEnd();
@@ -1461,6 +1697,16 @@ const App: React.FC = () => {
           user={currentUser}
           onClose={() => setShowProfileEdit(false)}
           onSave={handleProfileUpdate}
+        />
+      )}
+      {showBookingCalendar && currentUser && (
+        <BookingCalendar
+          classes={scheduledClasses}
+          userBookings={userBookings}
+          currentUser={currentUser}
+          onBook={handleBookClass}
+          onCancel={handleCancelBooking}
+          onClose={() => setShowBookingCalendar(false)}
         />
       )}
     </>
